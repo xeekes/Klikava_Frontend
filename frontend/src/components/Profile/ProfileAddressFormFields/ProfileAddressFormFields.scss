@@ -1,0 +1,88 @@
+@use "../../../styles/variables" as *;
+
+.profile-address-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+
+  .profile-address-form-fields__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 1rem;
+  }
+
+  .profile-address-form-fields__field--postal {
+    grid-column: 1 / 2;
+  }
+
+  .profile-address-form-fields__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .profile-address-form-fields__delete {
+    margin-right: auto;
+    padding: 0.7rem 1.25rem;
+    border: none;
+    border-radius: 12px;
+    background: #e53935;
+    color: $white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .profile-address-form-fields__submit {
+    padding: 0.85rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  &.profile-address-form-fields--create {
+    .profile-address-form-fields__actions {
+      display: block;
+    }
+
+    .profile-address-form-fields__submit {
+      width: 100%;
+      background: $white;
+      color: $gray;
+
+      &:hover {
+        background: $light-light-gray;
+      }
+    }
+  }
+
+  &.profile-address-form-fields--edit {
+    .profile-address-form-fields__submit {
+      background: $dark-gray;
+      color: $white;
+
+      &:hover {
+        opacity: 0.88;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-address-form-fields {
+    .profile-address-form-fields__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .profile-address-form-fields__field--postal {
+      grid-column: auto;
+    }
+  }
+}

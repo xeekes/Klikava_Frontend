@@ -1,0 +1,117 @@
+@use "../../styles/variables" as *;
+
+.seller-stats-page {
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  &__back {
+    position: absolute;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    color: $dark-gray;
+    font-size: 1.75rem;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  &__title {
+    margin: 0;
+    color: $dark-gray;
+    font-size: 1.75rem;
+    font-weight: 500;
+  }
+
+  &__chart-wrap {
+    padding: 1.25rem;
+    border-radius: 8px;
+    background: $dash-surface;
+    margin-bottom: 1rem;
+  }
+
+  &__chart {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    align-items: end;
+    gap: 0.75rem;
+    height: 12rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid $dash-border;
+  }
+
+  &__chart-col {
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+  }
+
+  &__chart-bar {
+    width: 100%;
+    min-height: 2px;
+    border-radius: 4px 4px 0 0;
+    background: $gray;
+    transition: height 0.25s ease;
+  }
+
+  &__metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  &__metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 5.5rem;
+    padding: 0.85rem;
+    border: none;
+    border-radius: 8px;
+    background: $light-light-gray;
+    color: $dark-gray;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &--active {
+      background: $gray;
+      color: $white;
+    }
+  }
+
+  &__metric-label {
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+
+  &__metric-value {
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .seller-stats-page {
+    &__metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+@media (max-width: 520px) {
+  .seller-stats-page {
+    &__metrics {
+      grid-template-columns: 1fr;
+    }
+  }
+}

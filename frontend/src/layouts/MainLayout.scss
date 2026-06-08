@@ -1,0 +1,51 @@
+@use "../styles/variables" as *;
+
+.main-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  overflow-x: clip;
+
+  .main-content {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .footer {
+    margin-top: auto;
+  }
+
+  &:has(.order-success),
+  &:has(.not-found) {
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .page-transition {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      width: 100%;
+    }
+
+    .order-success,
+    .not-found {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 0;
+      padding: 1.5rem;
+      box-sizing: border-box;
+    }
+  }
+}

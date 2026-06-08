@@ -1,0 +1,10 @@
+.orders-page {
+  &__table {
+    min-width: 900px;
+  }
+
+  &__billing {
+    max-width: 22rem;
+    line-height: 1.35;
+  }
+}

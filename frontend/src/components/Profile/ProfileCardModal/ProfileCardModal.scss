@@ -1,0 +1,13 @@
+@use "../../../styles/variables" as *;
+
+.profile-card-modal__panel {
+  max-width: 520px;
+  padding: 2rem 2.25rem;
+  background: $white;
+  border-radius: 20px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+}
+
+.profile-card-modal {
+  width: 100%;
+}

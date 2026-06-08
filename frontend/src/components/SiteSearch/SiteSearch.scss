@@ -1,0 +1,235 @@
+@use "../../styles/variables" as *;
+
+.site-search {
+  position: relative;
+  width: 100%;
+
+  .site-search__form {
+    display: flex;
+    align-items: center;
+  }
+
+  .site-search__input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: none;
+    outline: none;
+    font: inherit;
+    font-weight: 500;
+    color: $dark-gray;
+
+    &::placeholder {
+      color: rgba($dark-gray, 0.65);
+    }
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+
+  .site-search__submit {
+    background: none;
+    display: grid;
+    place-items: center;
+    .site-search__icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .site-search__dropdown {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    max-height: min(28rem, calc(100vh - 8rem));
+    overflow: auto;
+    padding: 1rem;
+    border-radius: 20px;
+    background: $white;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+    transform-origin: top center;
+  }
+
+  .site-search__section {
+    &:not(:first-child) {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid $light-light-gray;
+    }
+  }
+
+  .site-search__section-title {
+    margin: 0 0 0.75rem;
+    color: $gray;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .site-search__chips {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .site-search__chip {
+    white-space: nowrap;
+    border: 0;
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    background: $light-light-gray;
+    color: $dark-gray;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover {
+      background: $light-green;
+    }
+  }
+
+  .site-search__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-search__item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+      background: $light-light-gray;
+    }
+
+    img {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 12px;
+      object-fit: cover;
+      background: $light-light-gray;
+      flex-shrink: 0;
+    }
+  }
+
+  .site-search__category-icon {
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: $light-green;
+    color: $dark-gray;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .site-search__item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .site-search__item-title {
+    color: $dark-gray;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .site-search__item-meta {
+    color: $gray;
+    font-size: 0.85rem;
+  }
+
+  .site-search__empty {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    p {
+      margin: 0;
+      color: $gray;
+      line-height: 1.4;
+    }
+  }
+
+  .site-search__empty-action,
+  .site-search__view-all {
+    width: 100%;
+    border: 0;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    background: $light-green;
+    color: $dark-gray;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .site-search__view-all {
+    margin-top: 1rem;
+  }
+
+  &.site-search--header {
+    min-width: 18rem;
+
+    .site-search__dropdown {
+      min-width: 22rem;
+      z-index: 1;
+    }
+
+    &.site-search--open {
+      z-index: 130;
+    }
+  }
+
+  &.site-search--hero {
+    max-width: 44rem;
+    margin: 0 auto;
+
+    .site-search__form {
+      padding: 0.35rem 0.35rem 0.35rem 1.25rem;
+      border-radius: 999px;
+      background: $white;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    .site-search__input {
+      font-size: 1.05rem;
+      padding: 0.85rem 0;
+    }
+
+    .site-search__submit {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: $light-green;
+    }
+
+    .site-search__dropdown {
+      top: calc(100% + 1rem);
+    }
+  }
+}

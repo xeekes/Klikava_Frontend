@@ -1,0 +1,33 @@
+@use "../../styles/variables" as *;
+
+.see-more-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 2.5rem;
+  background: $light-green;
+  color: $dark-gray;
+  font-size: 1rem;
+  line-height: 1;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity var(--motion-fast) ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.see-more-button-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+
+  @media (max-width: 1050px) {
+    margin-top: 1.5rem;
+  }
+}

@@ -1,0 +1,53 @@
+@use "../../styles/variables" as *;
+
+.seller-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+
+  &__label {
+    color: $gray;
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+
+  &__control-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  &__control {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 0.95rem;
+    border: none;
+    border-radius: 8px;
+    background: $dash-surface;
+    color: $dark-gray;
+    font-size: 0.92rem;
+    font-weight: 500;
+    font-family: inherit;
+    box-shadow: inset 0 0 0 1px rgba($black, 0.05);
+
+    &:focus {
+      outline: 2px solid rgba($light-green, 0.35);
+      outline-offset: 1px;
+    }
+
+    &--area {
+      min-height: 8.5rem;
+      resize: vertical;
+      padding-right: 0.95rem;
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    right: 0.85rem;
+    color: $gray;
+    font-size: 0.9rem;
+    line-height: 1;
+    pointer-events: none;
+  }
+}

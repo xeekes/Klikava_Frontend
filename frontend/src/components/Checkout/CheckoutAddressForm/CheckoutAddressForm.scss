@@ -1,0 +1,37 @@
+@use "../../../styles/variables" as *;
+@use "../checkout-shared";
+
+.checkout-address-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  &__title {
+    margin: 0;
+    text-align: center;
+    color: $dark-gray;
+    font-size: 2.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem 2.25rem;
+  }
+
+  &__postal {
+    grid-column: 1 / 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-address-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-address-form__postal {
+    grid-column: auto;
+  }
+}

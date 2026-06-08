@@ -1,0 +1,20 @@
+@use "../../styles/variables" as *;
+
+.auth-modal__panel {
+  position: relative;
+  max-width: 452px;
+  width: 100%;
+  padding: 2.5rem;
+  background: $white;
+  border-radius: 20px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+
+  .auth-modal {
+    position: relative;
+    width: 100%;
+
+    > * {
+      animation: fade-in-up var(--motion-base) var(--motion-ease-out) both;
+    }
+  }
+}

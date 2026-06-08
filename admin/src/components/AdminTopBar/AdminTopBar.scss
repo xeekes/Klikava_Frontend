@@ -1,0 +1,52 @@
+@use "../../styles/variables" as *;
+
+.admin-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: $dash-bg;
+
+  &__menu {
+    display: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid $dash-border;
+    border-radius: 8px;
+    background: $dash-surface;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  &__search,
+  &__spacer {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__profile {
+    display: grid;
+    place-items: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    padding: 0;
+    border: 2px solid $light-green;
+    border-radius: 50%;
+    background: $light-green;
+    color: $dark-gray;
+    font-size: 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-top-bar {
+    padding: 0.75rem 1rem;
+
+    &__menu {
+      display: grid;
+      place-items: center;
+    }
+  }
+}

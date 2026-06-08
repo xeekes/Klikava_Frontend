@@ -1,0 +1,270 @@
+@use "../../styles/variables" as *;
+
+$form-text: #595858;
+
+.profile-personal-info {
+  color: $form-text;
+
+  .profile-page__title {
+    color: $form-text;
+  }
+
+  .profile-personal-info__card {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0;
+    width: 100%;
+    min-height: 0;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+
+    .profile-page__body {
+      flex: 1;
+      min-height: 0;
+    }
+  }
+
+  .profile-personal-info__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 183px) minmax(0, 1fr) minmax(0, 1fr) minmax(
+        0,
+        1fr
+      );
+    grid-template-areas:
+      "avatar firstName phone phone"
+      "avatar lastName email email"
+      "city city country country"
+      "address address password password";
+    gap: 1rem 2.5rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .profile-personal-info__avatar-block {
+    grid-area: avatar;
+    grid-row: 1 / 3;
+    align-self: stretch;
+    display: flex;
+    min-height: 0;
+  }
+
+  .profile-personal-info__avatar-wrap {
+    position: relative;
+    height: 100%;
+    width: auto;
+    max-width: 183px;
+    max-height: 183px;
+    aspect-ratio: 1 / 1;
+    justify-self: start;
+    align-self: start;
+  }
+
+  .profile-personal-info__avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    background: $white;
+  }
+
+  .profile-personal-info__avatar-upload {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid $white;
+    border-radius: 50%;
+    background: $black;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .profile-personal-info__upload-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    display: block;
+    background-color: $green;
+  }
+
+  .profile-personal-info__field--firstName {
+    grid-area: firstName;
+  }
+
+  .profile-personal-info__field--phone {
+    grid-area: phone;
+  }
+
+  .profile-personal-info__field--lastName {
+    grid-area: lastName;
+  }
+
+  .profile-personal-info__field--email {
+    grid-area: email;
+  }
+
+  .profile-personal-info__field--city {
+    grid-area: city;
+  }
+
+  .profile-personal-info__field--country {
+    grid-area: country;
+  }
+
+  .profile-personal-info__field--address {
+    grid-area: address;
+  }
+
+  .profile-personal-info__field--password {
+    grid-area: password;
+  }
+
+  .profile-personal-info__control-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .profile-personal-info__control {
+    padding-right: 2.75rem;
+    color: $form-text;
+    font-size: 0.95rem;
+    font-weight: 500;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+
+    &::placeholder {
+      color: $form-text;
+      font-weight: 500;
+    }
+  }
+
+  .profile-personal-info__edit-btn {
+    position: absolute;
+    right: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    padding: 0;
+    color: $form-text;
+    cursor: pointer;
+  }
+
+  .profile-personal-info__filter-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    display: block;
+    background-color: currentColor;
+  }
+
+  .profile-personal-info__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    padding-top: 2rem;
+  }
+
+  .profile-personal-info__sellers-btn {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    background: $green;
+    color: $white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .profile-personal-info__footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+
+  .profile-personal-info__delete-btn {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    background: #e74c3c;
+    color: $white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .profile-personal-info__save-btn {
+    padding: 0.7rem 2rem;
+    border: none;
+    border-radius: 12px;
+    background: $black;
+    color: $white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+}
+
+@media (max-width: 1100px) {
+  .profile-personal-info {
+    .profile-personal-info__grid {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "avatar"
+        "firstName"
+        "phone"
+        "lastName"
+        "email"
+        "city"
+        "country"
+        "address"
+        "password";
+    }
+
+    .profile-personal-info__avatar-wrap {
+      width: 100%;
+      max-width: 183px;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      min-height: auto;
+    }
+    .profile-personal-info__footer {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .profile-personal-info__footer-actions {
+      margin-left: 0;
+      justify-content: space-between;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-personal-info {
+    .profile-personal-info__footer-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .profile-personal-info__save-btn {
+      width: 100%;
+    }
+  }
+}

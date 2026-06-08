@@ -1,0 +1,160 @@
+@use "./variables" as *;
+@use "./theme";
+@use "./reset";
+@use "./fonts";
+@use "./icons";
+@use "./motion";
+
+a,
+button,
+input,
+select,
+textarea,
+.nav-link,
+.footer-link,
+.product-card,
+.offer-bubble,
+.header-user-menu__item,
+.catalog-listing__checkbox,
+.site-search__chip,
+.page-search-hero__popular-chip,
+.top-products-page__tab,
+.category-listing-page__subnav-link {
+  transition:
+    color var(--motion-fast) ease,
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    opacity var(--motion-fast) ease,
+    transform var(--motion-base) var(--motion-ease-out),
+    box-shadow var(--motion-fast) ease;
+}
+
+:root {
+  --header-offset: 8rem;
+}
+
+@media (max-width: 1050px) {
+  :root {
+    --header-height: 99.5px;
+    --header-search-overhang: 1.15rem;
+    --header-offset: calc(
+      var(--header-height) + var(--header-search-overhang) + 1.25rem
+    );
+  }
+}
+
+html {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  font-size: 16px;
+  @media (max-width: 1300px) {
+    font-size: 14px;
+  }
+  // @media (max-width:525px) {
+  //     font-size: 12px;
+  // }
+}
+
+body {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+a,
+p,
+li {
+  font-size: 1rem;
+  color: $dark-gray;
+  line-height: 100%;
+  letter-spacing: 0;
+}
+
+img {
+  object-fit: cover;
+}
+
+header,
+main,
+footer {
+  width: 100%;
+}
+
+main {
+  padding-top: var(--header-offset);
+}
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  min-height: 100vh;
+}
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+  max-width: 1720px;
+  // @media (max-width: 1300px) {
+  //     max-width: 1100px;
+  // }
+}
+
+main {
+  flex: 1;
+}
+
+h1 {
+  @include h1;
+}
+h2 {
+  @include h2;
+}
+h3 {
+  @include h3;
+}
+h4 {
+  @include h4;
+}
+// .section-title {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 12px;
+//   align-items: center;
+//   h1 {
+//     text-align: center;
+//   }
+//   div {
+//     width: fit-content;
+//     display: flex;
+//     align-items: center;
+//     gap: 8px;
+//     img {
+//       width: 40px;
+//     }
+
+//     hr {
+//       display: block;
+//       width: 100px;
+//       height: 1px;
+//       border: 0;
+//       border-top: 1px solid $black;
+//     }
+//   }
+// }
+
+.hidden {
+  display: none;
+}

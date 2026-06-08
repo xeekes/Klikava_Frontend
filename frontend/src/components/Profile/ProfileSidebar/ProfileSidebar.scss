@@ -1,0 +1,52 @@
+@use "../../../styles/variables" as *;
+
+.profile-sidebar {
+  flex: 0 0 382px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  background: $white;
+  border-radius: 20px;
+  padding: 1.25rem;
+  max-width: 382px;
+  width: 100%;
+
+  .profile-sidebar__nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+
+    .profile-sidebar__divider {
+      height: 3rem;
+    }
+
+    .profile-sidebar__link {
+      padding: 0.625rem;
+      border-radius: 12px;
+      background: transparent;
+      color: $dark-gray;
+      font-size: 1.5rem;
+      font-weight: 400;
+      line-height: 1;
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      border: none;
+      width: 100%;
+    }
+
+    .profile-sidebar__link:hover {
+      background: $light-light-gray;
+    }
+
+    .profile-sidebar__link--active {
+      background: $light-light-gray;
+    }
+
+    .profile-sidebar__link--logout {
+      margin-top: auto;
+    }
+  }
+}

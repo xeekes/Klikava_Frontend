@@ -1,0 +1,25 @@
+.login-page {
+  &__quick-login {
+    display: block;
+    width: 100%;
+    margin-top: 0.85rem;
+    padding: 0.65rem 1rem;
+    border: 1px dashed rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.82rem;
+    font-family: inherit;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      border-color: rgba(255, 255, 255, 0.55);
+      color: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+  }
+}

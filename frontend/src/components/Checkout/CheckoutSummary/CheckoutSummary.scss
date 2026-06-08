@@ -1,0 +1,63 @@
+@use "../../../styles/variables" as *;
+
+.checkout-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: $white;
+  border-radius: 20px;
+  height: fit-content;
+
+  &__thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__thumb {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 12px;
+    object-fit: cover;
+    display: block;
+    background: $light-light-gray;
+  }
+
+  &__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: $dark-gray;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  &__place-order {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    border: none;
+    border-radius: 12px;
+    background: $dark-gray;
+    color: $white;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.88;
+    }
+  }
+}

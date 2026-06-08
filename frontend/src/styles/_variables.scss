@@ -1,0 +1,110 @@
+$light-green: #65e4a3;
+$green: #00a751;
+$white: #ffffff;
+$black: #000000;
+$light-light-gray: #ececec;
+$light-gray: #dedede;
+$gray: #595959;
+$dark-gray: #2e2e2e;
+
+@mixin AV($property, $maxVal, $minVal, $measure) {
+  #{$property}: #{$maxVal}#{$measure};
+  // color: #cdfcdd
+  @media (max-width: 1720px) {
+    #{$property}: calc(
+      #{$minVal}#{$measure} + (#{$maxVal} - #{$minVal}) *
+        ((100vw - 320px) / (1720 - 320))
+    );
+  }
+}
+
+// @mixin dflt-btn {
+//   @include AV("padding-top", 1, 1, "rem");
+//   @include AV("padding-bottom", 1, 1, "rem");
+//   @include AV("padding-right", 2.75, 2, "rem");
+//   @include AV("padding-left", 2.75, 2, "rem");
+//   position: relative;
+//   width: fit-content;
+//   background: $black;
+//   color: $white;
+//   border-radius: 60px;
+//   font-size: 1.25rem;
+//   line-height: auto;
+//   font-weight: 500;
+//   @media (hover: hover) {
+//     &:hover {
+//       background-color: #16213e;
+//     }
+//   }
+
+//   @media (max-width: 1300px) {
+//     font-size: 1rem;
+//   }
+// }
+
+@mixin h1 {
+  font-size: 7rem;
+  // letter-spacing: -0.04em;
+  line-height: 100%; // 40px ÷ 16
+  font-weight: 400;
+  // @media (max-width: 1300px) {
+  //   font-size: 5rem;
+  // }
+}
+
+@mixin h2 {
+  color: $dark-gray;
+  font-size: 3rem;
+  line-height: 100%;
+  font-weight: 400;
+  // letter-spacing: -0.04em;
+  @media (max-width: 480px) {
+    font-size: 2rem;
+  }
+}
+
+@mixin h3 {
+  color: $black;
+  font-size: 1.5rem;
+  line-height: 100%;
+  font-weight: 400;
+  // letter-spacing: -0.04em;
+  // @media (max-width: 1300px) {
+  //   font-size: 1rem;
+  // }
+}
+@mixin h4 {
+  color: $black;
+  font-size: 1.25rem;
+  line-height: 100%; // 28px ÷ 16
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  // @media (max-width: 1300px) {
+  //   font-size: 1.25rem; // 24px ÷ 16
+  //   // line-height: 1.75rem; // 28px ÷ 16
+  // }
+}
+
+@mixin paragraph {
+  font-size: 1rem;
+  line-height: 100%;
+  font-weight: 400;
+  color: $gray;
+  letter-spacing: 0;
+}
+
+// @mixin large-paragraph {
+//   font-size: 1.25rem;
+//   line-height: 150%; // 24px ÷ 16
+//   font-weight: 300;
+//   color: $gray;
+//   letter-spacing: 1px;
+
+// }
+
+@mixin header-link {
+  font-size: 1rem;
+  line-height: 100%; // 28px ÷ 16
+  font-weight: 400;
+  color: $black;
+}

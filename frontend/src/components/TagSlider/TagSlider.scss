@@ -1,0 +1,22 @@
+.tag-slider {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+
+  .tag-slider__swiper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+
+    &.swiper {
+      overflow: hidden;
+    }
+  }
+
+  .tag-slider__slide {
+    width: auto;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+}

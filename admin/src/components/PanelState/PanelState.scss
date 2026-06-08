@@ -1,0 +1,18 @@
+@use "../../styles/variables" as *;
+
+.panel-state {
+  margin: 0 0 0.85rem;
+  font-size: 0.88rem;
+
+  &--loading {
+    color: $gray;
+  }
+
+  &--error {
+    color: $dash-delete;
+  }
+
+  &--success {
+    color: $green;
+  }
+}

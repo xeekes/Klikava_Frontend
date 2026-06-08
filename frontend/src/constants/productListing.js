@@ -1,0 +1,2 @@
+export const PRODUCTS_INITIAL_PAGE_SIZE = 24;
+export const PRODUCTS_LOAD_MORE_SIZE = 24;

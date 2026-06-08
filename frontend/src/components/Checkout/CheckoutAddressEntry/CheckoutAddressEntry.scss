@@ -1,0 +1,72 @@
+@use "../../../styles/variables" as *;
+@use "../checkout-shared";
+
+.checkout-address-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  & + & {
+    padding-top: 1.25rem;
+  }
+
+  &__top {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  &__fields {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  &__address-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    border: 1px solid $light-light-gray;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+  }
+
+  &__address-line {
+    margin: 0;
+    color: $gray;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 2.25rem;
+  }
+
+  &__action-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .checkout-outline-btn {
+      color: $gray;
+    }
+  }
+
+  .checkout-text-btn {
+    color: $gray;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-address-entry__fields {
+    grid-template-columns: 1fr;
+  }
+}

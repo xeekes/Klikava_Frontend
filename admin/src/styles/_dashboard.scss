@@ -1,0 +1,303 @@
+@use "./variables" as *;
+
+.dash-search {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 999px;
+  background: $dash-surface;
+  color: $dark-gray;
+  box-shadow: 0 1px 2px rgba($black, 0.04);
+
+  &__icon {
+    color: $dash-text-muted;
+    font-size: 0.95rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 0.92rem;
+    font-family: inherit;
+
+    &::placeholder {
+      color: $dash-text-muted;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.dash-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+
+  &__search {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__filter {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: $dash-text-muted;
+    font-size: 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}
+
+.dash-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1.15rem;
+  border: none;
+  border-radius: 8px;
+  background: $dash-btn-dark;
+  color: $white;
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &--light {
+    background: $light-light-gray;
+    color: $dark-gray;
+  }
+
+  &--pill {
+    border-radius: 999px;
+  }
+}
+
+.dash-table-wrap {
+  background: $dash-surface;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.85rem 0.9rem;
+    text-align: left;
+    border-bottom: 1px solid $dash-border;
+    vertical-align: middle;
+    font-size: 0.88rem;
+    color: $dark-gray;
+  }
+
+  th {
+    font-weight: 500;
+    color: $dark-gray;
+    background: $dash-surface;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  &__checkbox {
+    width: 1rem;
+    height: 1rem;
+    accent-color: $dark-gray;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  &__action {
+    display: grid;
+    place-items: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: 0.95rem;
+    cursor: pointer;
+
+    &--edit {
+      color: $dash-edit;
+    }
+
+    &--delete {
+      color: $dash-delete;
+      font-weight: 700;
+    }
+  }
+}
+
+.dash-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.85rem;
+  flex-wrap: wrap;
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  &__pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    color: $dark-gray;
+    font-size: 0.82rem;
+  }
+
+  &__rows {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  &__select {
+    padding: 0.25rem 0.45rem;
+    border: 1px solid $dash-border;
+    border-radius: 4px;
+    background: $dash-surface;
+    font-size: 0.82rem;
+    font-family: inherit;
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  &__nav-btn {
+    display: grid;
+    place-items: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.25rem;
+    border: none;
+    background: transparent;
+    color: $dark-gray;
+    font-size: 0.82rem;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.dash-panel {
+  border-radius: 8px;
+  overflow: hidden;
+  background: $dash-surface;
+
+  &__head {
+    padding: 0.65rem 0.9rem;
+    background: $dash-panel-head;
+    color: $dark-gray;
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+
+  &__body {
+    padding: 0.9rem;
+  }
+}
+
+.dash-page-title {
+  margin: 0 0 1rem;
+  color: $dark-gray;
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.dash-page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dash-input {
+  width: 100%;
+  padding: 0.75rem 0.95rem;
+  border: none;
+  border-radius: 8px;
+  background: $dash-surface;
+  color: $dark-gray;
+  font-size: 0.92rem;
+  font-family: inherit;
+  box-shadow: inset 0 0 0 1px rgba($black, 0.04);
+
+  &::placeholder {
+    color: $dash-text-muted;
+  }
+
+  &:focus {
+    outline: 2px solid rgba($light-green, 0.35);
+    outline-offset: 1px;
+  }
+
+  &--area {
+    min-height: 10rem;
+    resize: vertical;
+  }
+}
+
+@media (max-width: 900px) {
+  .dash-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .dash-table-wrap {
+    overflow-x: auto;
+  }
+
+  .dash-table {
+    min-width: 760px;
+  }
+}

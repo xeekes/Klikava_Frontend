@@ -1,0 +1,102 @@
+@use "../../../styles/variables" as *;
+
+.profile-order-card {
+  background: $white;
+  border-radius: 20px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .profile-order-card__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+
+    .profile-order-card__gallery {
+      position: relative;
+      min-width: 0;
+      flex: 1;
+
+      .profile-order-card__swiper {
+        width: 100%;
+        height: max-content;
+        overflow: hidden;
+      }
+
+      .profile-order-card__slide {
+        width: 280px;
+        height: 186px;
+      }
+
+      .profile-order-card__image {
+        width: 100%;
+        height: 100%;
+        border-radius: 16px;
+        object-fit: cover;
+        display: block;
+        background: $light-gray;
+      }
+
+      .profile-order-card__gallery-next {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        z-index: 2;
+        transform: translateY(-50%);
+
+        &.motion-surface--closed,
+        &.motion-surface--closing {
+          transform: translateY(-50%) translateX(6px);
+        }
+
+        &.motion-surface--open {
+          transform: translateY(-50%) translateX(0);
+        }
+        width: 42px;
+        height: 98px;
+        border: none;
+        padding: 0;
+        background: none;
+        cursor: pointer;
+      }
+    }
+    .profile-order-card__actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      max-width: 225px;
+      width: 100%;
+
+      .profile-order-card__action {
+        color: $gray;
+        font-size: 1rem;
+        font-weight: 400;
+        width: 100%;
+        padding: 0.625rem;
+        line-height: 1;
+        border: 1px solid $light-gray;
+        text-align: center;
+        background: none;
+        border-radius: 12px;
+      }
+    }
+  }
+
+  .profile-order-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: $light-light-gray;
+    border-radius: 12px;
+    padding: 0.625rem 1.25rem;
+
+    .profile-order-card__meta-item {
+      p {
+        margin: 0;
+        color: $gray;
+      }
+    }
+  }
+}

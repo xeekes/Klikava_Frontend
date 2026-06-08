@@ -1,0 +1,35 @@
+@use "../../styles/variables" as *;
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+
+  &--published,
+  &--delivered {
+    background: rgba($green, 0.12);
+    color: $green;
+  }
+
+  &--draft,
+  &--processing {
+    background: rgba($gray, 0.12);
+    color: $gray;
+  }
+
+  &--out_of_stock,
+  &--cancelled {
+    background: rgba(#c0392b, 0.12);
+    color: #c0392b;
+  }
+
+  &--shipped {
+    background: rgba(#2f80ed, 0.12);
+    color: #2f80ed;
+  }
+}

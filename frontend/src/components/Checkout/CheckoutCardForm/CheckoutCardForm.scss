@@ -1,0 +1,137 @@
+@use "../../../styles/variables" as *;
+@use "../checkout-shared";
+
+.checkout-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  &__title {
+    margin: 0;
+    text-align: center;
+    color: $dark-gray;
+    font-size: 2.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  &__card-input-wrap {
+    position: relative;
+  }
+
+  &__card-brand {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2rem;
+    height: 1.25rem;
+    border-radius: 4px;
+    background:
+      radial-gradient(circle at 35% 50%, #eb001b 0 48%, transparent 49%),
+      radial-gradient(circle at 65% 50%, #f79e1b 0 48%, transparent 49%);
+    pointer-events: none;
+  }
+
+  &__card-number .form-field__control {
+    padding-left: 3.5rem;
+  }
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 2.25rem;
+  }
+
+  &__expiry {
+    flex: 0 0 auto;
+  }
+
+  &__expiry-fields {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__expiry-month,
+  &__expiry-year {
+    text-align: center;
+  }
+
+  &__expiry-month {
+    flex: 0 0 5rem;
+    min-width: 0;
+  }
+
+  &__expiry-year {
+    flex: 0 0 5rem;
+    min-width: 0;
+  }
+
+  &__expiry-separator {
+    color: $gray;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  &__cvv {
+    flex: 0 0 auto;
+    width: 5.5rem;
+
+    .form-field__control {
+      width: 100%;
+    }
+  }
+
+  &__billing {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  &__billing-label {
+    display: block;
+  }
+
+  &__billing-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    border: 1px solid $light-light-gray;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+  }
+
+  &__billing-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__billing-line {
+    margin: 0;
+    color: $gray;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.35;
+    min-width: 0;
+  }
+
+  &__billing-edit {
+    flex-shrink: 0;
+    margin-left: auto;
+    color: $gray;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.35;
+    text-decoration: none;
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+
+}

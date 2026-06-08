@@ -1,0 +1,109 @@
+@use "../../styles/variables" as *;
+
+.discounts {
+  $nav-btn-height: 6rem;
+  $nav-btn-width: calc(#{$nav-btn-height} * 175 / 408);
+
+  padding-bottom: 4.5rem;
+  overflow: visible;
+
+  .discounts__title {
+    text-align: center;
+    margin: 2.25rem 0;
+    @media (max-width: 768px) {
+      margin: 1.125rem 0;
+    }
+  }
+
+  .discounts__slider-wrap {
+    position: relative;
+    width: 100%;
+    padding: 0 1.25rem;
+    box-sizing: border-box;
+    overflow: visible;
+    @media (max-width: 768px) {
+      padding: 0 0.5rem;
+    }
+    .discounts__slider {
+      width: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+
+      .swiper-slide {
+        height: auto;
+      }
+    }
+
+    .discounts__slide {
+      width: 100%;
+      height: auto;
+      box-sizing: border-box;
+      padding-bottom: 12px;
+
+      .product-card {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+
+    .discounts__nav {
+      position: absolute;
+      top: 50%;
+      z-index: 3;
+      width: $nav-btn-width;
+      height: $nav-btn-height;
+      border: none;
+      padding: 0;
+      background: none;
+      transform: translateY(-50%);
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+
+    .discounts__nav--prev {
+      left: 0;
+    }
+
+    .discounts__nav--next {
+      right: 0;
+    }
+  }
+
+  .discounts__see-more-wrap {
+    margin-top: 1.5rem;
+  }
+
+  .discounts__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 1.75rem;
+
+    @media (max-width: 1300px) {
+      display: none;
+    }
+
+    .discounts__pagination-bullet {
+      width: 7px;
+      height: 4px;
+      padding: 0;
+      border: none;
+      border-radius: 999px;
+      background: #b5b5b5;
+      cursor: pointer;
+      transition:
+        width var(--motion-base) var(--motion-ease-out),
+        background-color var(--motion-fast) ease;
+
+      &.discounts__pagination-bullet--active {
+        width: 91px;
+        height: 4px;
+        background: $dark-gray;
+      }
+    }
+  }
+}

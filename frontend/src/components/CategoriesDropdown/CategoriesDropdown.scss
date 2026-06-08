@@ -1,0 +1,130 @@
+@use "../../styles/variables" as *;
+
+.header-categories-dropdown-wrap {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1100px;
+  padding-top: 0.75rem;
+  pointer-events: none;
+}
+
+.header--categories-open .header-categories-dropdown-wrap {
+  pointer-events: auto;
+}
+
+.categories-dropdown {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  width: 100%;
+  min-height: 33.5rem;
+  background: $white;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
+
+  ul#{&}__main-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  ul#{&}__subcategories-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 0.625rem;
+    column-gap: 1.25rem;
+    align-content: start;
+  }
+
+  ul#{&}__main-list {
+    padding: 1.25rem;
+    width: 18.5rem;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    max-height: 33.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: $light-gray transparent;
+
+    &::-webkit-scrollbar {
+      width: 7px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $light-gray;
+      border-radius: 12px;
+    }
+  }
+
+  &__subcategories {
+    flex: 1;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow-y: auto;
+    max-height: 33.5rem;
+  }
+
+  &__subcategories-title {
+    margin: 0;
+    color: $dark-gray;
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  &__subcategories-divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid $light-gray;
+    margin: 0.5rem 0 1.25rem 0;
+  }
+
+  &__item {
+    width: 100%;
+    display: block;
+    border: none;
+    text-align: left;
+    background: transparent;
+    padding: 0.625rem;
+    border-radius: 10px;
+    color: $gray;
+    font-size: 1rem;
+    line-height: 1.2;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &--active,
+    &:hover {
+      background: $light-gray;
+      color: $dark-gray;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .categories-dropdown {
+    ul.categories-dropdown__subcategories-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}

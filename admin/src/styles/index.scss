@@ -1,0 +1,39 @@
+@use "./variables" as *;
+@import "./fonts.scss";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html {
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: inherit;
+  color: $dark-gray;
+  background: $dash-bg;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.admin-loading-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: $gray;
+}

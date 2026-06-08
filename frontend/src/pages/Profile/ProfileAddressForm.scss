@@ -1,0 +1,109 @@
+@use "../../styles/variables" as *;
+
+.profile-address-form {
+  .profile-address-form__card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .profile-address-form__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem 1rem;
+
+      .profile-address-form__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+
+        p {
+          margin: 0;
+        }
+
+        span {
+          color: $gray;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+
+        .profile-address-form__control {
+          width: 100%;
+          padding: 0.85rem 1rem;
+          border: none;
+          border-radius: 12px;
+          background: $light-light-gray;
+          color: $gray;
+          font-size: 0.95rem;
+          font-weight: 500;
+          outline: none;
+          box-sizing: border-box;
+        }
+
+        .profile-address-form__control:focus {
+          box-shadow: 0 0 0 2px rgba($light-green, 0.45);
+        }
+      }
+
+      .profile-address-form__field--postal {
+        grid-column: 1 / 2;
+      }
+    }
+
+    .profile-address-form__actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .profile-address-form__delete {
+        margin-right: auto;
+        padding: 0.7rem 1.25rem;
+        border: none;
+        border-radius: 12px;
+        background: #e53935;
+        color: $white;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .profile-address-form__save {
+        padding: 0.7rem 2rem;
+        border: none;
+        border-radius: 12px;
+        background: $light-light-gray;
+        color: $gray;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .profile-address-form__back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: $gray;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .profile-address-form__back-link:hover {
+    opacity: 0.75;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-address-form {
+    .profile-address-form__card {
+      .profile-address-form__grid {
+        grid-template-columns: 1fr;
+
+        .profile-address-form__field--postal {
+          grid-column: auto;
+        }
+      }
+    }
+  }
+}

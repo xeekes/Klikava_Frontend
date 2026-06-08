@@ -1,0 +1,104 @@
+@use "../../styles/variables" as *;
+
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  &__stat-card {
+    padding: 1.1rem 1.15rem;
+    border-radius: 16px;
+    background: $white;
+    border: 1px solid $admin-border;
+  }
+
+  &__stat-label {
+    margin: 0;
+    color: $gray;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__stat-value {
+    margin: 0.45rem 0 0.2rem;
+    color: $dark-gray;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  &__stat-hint {
+    margin: 0;
+    color: $gray;
+    font-size: 0.82rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  &__panel {
+    padding: 1.15rem;
+    border-radius: 16px;
+    background: $white;
+    border: 1px solid $admin-border;
+
+    h3 {
+      margin: 0 0 0.85rem;
+      color: $dark-gray;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+
+    li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.5rem 1rem;
+      align-items: center;
+      color: $dark-gray;
+      font-size: 0.9rem;
+
+      span:first-child {
+        color: $gray;
+      }
+
+      strong {
+        justify-self: end;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  .dashboard-page__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard-page {
+    &__stats,
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

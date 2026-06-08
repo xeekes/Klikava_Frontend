@@ -1,0 +1,61 @@
+@use "../../styles/variables" as *;
+
+.portal-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+
+  &--admin {
+    background: rgba($white, 0.14);
+    color: $white;
+    border: 1px solid rgba($white, 0.28);
+  }
+
+  &--seller {
+    background: rgba($light-green, 0.18);
+    color: $light-green;
+    border: 1px solid rgba($light-green, 0.45);
+  }
+
+  &--sidebar {
+    margin-top: 0.65rem;
+  }
+
+  &--topbar {
+    flex-shrink: 0;
+    font-size: 0.68rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  &--auth {
+    margin: 0 auto 1rem;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.85rem;
+  }
+
+  &--compact {
+    font-size: 0.65rem;
+    padding: 0.28rem 0.55rem;
+  }
+}
+
+.auth-page .portal-badge--admin {
+  background: rgba($white, 0.12);
+  color: rgba($white, 0.92);
+  border-color: rgba($white, 0.25);
+}
+
+.auth-page .portal-badge--seller {
+  background: rgba($light-green, 0.15);
+  color: $light-green;
+  border-color: rgba($light-green, 0.4);
+}

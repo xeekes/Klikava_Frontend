@@ -1,0 +1,39 @@
+@use "../../../styles/variables" as *;
+@use "../checkout-shared";
+
+.checkout-address-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  .checkout-text-btn {
+    color: $gray;
+  }
+
+  .checkout-card-footer-link {
+    color: $gray;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    .checkout-address-entry {
+      animation: fade-in-up var(--motion-fast) var(--motion-ease-out) both;
+
+      @for $i from 1 through 6 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{($i - 1) * 40}ms;
+        }
+      }
+    }
+  }
+
+  &__list-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 2.25rem;
+  }
+}

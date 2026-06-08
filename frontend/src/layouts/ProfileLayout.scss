@@ -1,0 +1,24 @@
+.profile-layout {
+  .profile-layout__grid {
+    display: flex;
+    gap: 5rem;
+    align-items: stretch;
+
+    .profile-layout__content {
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  .profile-layout {
+    .profile-layout__grid {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  }
+}

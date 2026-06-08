@@ -1,0 +1,11 @@
+.catalog-page {
+  min-height: calc(100vh - 70px);
+
+  .catalog-listing {
+    padding-top: 2.5rem;
+
+    @media (max-width: 768px) {
+      padding-top: 1.5rem;
+    }
+  }
+}

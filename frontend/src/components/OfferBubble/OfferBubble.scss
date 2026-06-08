@@ -1,0 +1,93 @@
+@use "../../styles/variables" as *;
+
+.offer-bubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  text-decoration: none;
+  color: inherit;
+  overflow: visible;
+
+  img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    position: relative;
+  }
+
+  .offer-bubble__badges {
+    position: absolute;
+    top: -2%;
+    right: 10%;
+    width: 54px;
+    height: 54px;
+
+    .offer-bubble__price {
+      position: relative;
+      z-index: 2;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $light-green;
+
+      p {
+        margin: 0;
+        font-weight: 500;
+        font-size: 1.25rem;
+      }
+    }
+
+    .offer-bubble__cart {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      width: 54px;
+      height: 54px;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      background: $light-green;
+      cursor: pointer;
+      transform: translate(0, 0);
+      transition: transform var(--motion-base) var(--motion-ease-out);
+
+      .offer-bubble__cart-icon {
+        width: 1.35rem;
+        height: 1.35rem;
+        color: $dark-gray;
+        display: block;
+      }
+    }
+  }
+
+  &:hover,
+  &:focus-within {
+    .offer-bubble__cart {
+      transform: translate(45px, 45px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .offer-bubble__cart {
+      transform: translate(45px, 45px) !important;
+    }
+  }
+  &.offer-bubble--gray {
+    background: $gray;
+  }
+
+  &.offer-bubble--white {
+    background: $white;
+  }
+}

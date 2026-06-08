@@ -1,0 +1,29 @@
+.category-nav {
+  margin-bottom: 20px;
+}
+
+.category-link {
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.category-link:hover {
+  background: var(--secondary-color);
+}
+
+.category-link.active {
+  background: #4caf50;
+  color: white;
+}
+
+.category-link.active:hover {
+  background: #45a049;
+}

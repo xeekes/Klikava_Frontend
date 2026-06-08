@@ -1,0 +1,31 @@
+@use "../../styles/variables" as *;
+
+.auth-form__field--invalid {
+  .auth-form__input,
+  .auth-form__code-input {
+    box-shadow: 0 0 0 2px rgba(139, 30, 30, 0.35);
+  }
+}
+
+.auth-form__field-error {
+  margin: 0.35rem 0 0;
+  color: #8b1e1e;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.auth-form__code-group--invalid {
+  .auth-form__code-input {
+    box-shadow: 0 0 0 2px rgba(139, 30, 30, 0.35);
+  }
+}
+
+.auth-form__code-error {
+  width: 100%;
+  margin: 0;
+  color: #8b1e1e;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  text-align: center;
+}

@@ -1,0 +1,43 @@
+@use "../../styles/variables" as *;
+
+.profile-browsing-history {
+  .profile-browsing-history__groups {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .profile-browsing-history__date {
+    margin: 0 0 1rem;
+    color: $dark-gray;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .profile-browsing-history__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .profile-browsing-history__see-more-wrap {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 1100px) {
+  .profile-browsing-history {
+    .profile-browsing-history__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .profile-browsing-history {
+    .profile-browsing-history__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

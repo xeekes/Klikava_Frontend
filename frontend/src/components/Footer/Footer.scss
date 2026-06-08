@@ -1,0 +1,129 @@
+@use "../../styles/variables" as *;
+
+.footer {
+  width: 100%;
+  .container {
+    padding: 6rem 1rem 3rem 1rem;
+    background: $dark-gray;
+    border-radius: 60px 60px 0 0;
+    display: flex;
+    flex-direction: column;
+    @media (max-width: 1050px) {
+      padding: 4rem 1rem 2rem 1rem;
+    }
+    @media (max-width: 480px) {
+      padding: 40px 40px 16px 40px;
+    }
+    .footer-content {
+      max-width: 1272px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin: 0 auto;
+      align-items: start;
+      @media (max-width: 1050px) {
+        flex-direction: column;
+        gap: 2rem;
+        padding-left: 4rem;
+      }
+      @media (max-width: 480px) {
+        padding-left: 0;
+      }
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        text-decoration: none;
+
+        @media (max-width: 1050px) {
+          gap: 0.65rem;
+        }
+
+        &__icon {
+          width: 46px;
+          height: 46px;
+          color: $light-green;
+          flex-shrink: 0;
+
+          @media (max-width: 1050px) {
+            width: 27px;
+            height: 27px;
+          }
+        }
+
+        &__text {
+          color: $white;
+          font-size: 3rem;
+          line-height: 1;
+
+          @media (max-width: 1050px) {
+            font-size: 24px;
+          }
+
+          span {
+            color: $light-green;
+          }
+        }
+      }
+
+      .footer-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        .footer-heading {
+          color: $white;
+        }
+        .footer-column-links {
+          display: flex;
+          flex-direction: column;
+          gap: 1.125rem;
+          .footer-link {
+            color: $light-gray;
+            text-decoration: none;
+            transition: color 0.2s ease;
+
+            &:hover {
+              color: $light-green;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .social-icons {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+
+    .social-icon {
+      color: $light-gray;
+
+      &:hover {
+        color: $light-green;
+      }
+
+      .social-icon-glyph {
+        width: 30px;
+        height: 30px;
+
+        display: block;
+      }
+    }
+  }
+
+  .footer-copyright {
+    max-width: 1200px;
+    width: 100%;
+    margin: 24px auto 0 auto;
+    padding-top: 24px;
+    border-top: 1px solid $gray;
+    .footer-copyright-text {
+      color: $light-gray;
+      text-align: center;
+      font-size: 1rem;
+      line-height: 1.5rem;
+      font-weight: 400;
+    }
+  }
+}

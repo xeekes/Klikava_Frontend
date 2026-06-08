@@ -1,0 +1,44 @@
+@use "../../styles/variables" as *;
+
+.categories-page {
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  &__card {
+    padding: 1rem 1.1rem;
+    border-radius: 16px;
+    background: $white;
+    border: 1px solid $admin-border;
+  }
+
+  &__card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+
+    h3 {
+      margin: 0;
+      color: $dark-gray;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+  }
+
+  &__slug {
+    margin: 0.35rem 0 0.75rem;
+    color: $gray;
+    font-size: 0.82rem;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    color: $dark-gray;
+    font-size: 0.85rem;
+  }
+}
