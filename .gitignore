@@ -21,4 +21,4 @@ npm-debug.log*
 *.stackdump
 
 # Root stub (not used)
-package-lock.json
+/package-lock.json
