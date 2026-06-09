@@ -1,0 +1,7 @@
+services:
+  storefront:
+    build: .
+    container_name: klikava_storefront
+    restart: unless-stopped
+    ports:
+      - "80:80"
