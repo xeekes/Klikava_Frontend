@@ -18,6 +18,9 @@ const ProfileFeedback = () => {
     <section className="profile-page profile-feedback">
       <h1 className="profile-page__title">Your feedback</h1>
 
+      {feedback.length === 0 ? (
+        <p className="profile-page__empty">No feedback yet.</p>
+      ) : (
       <div className="profile-feedback__grid">
         {feedback.map((item) => (
           <article key={item.id} className="profile-feedback__card">
@@ -98,6 +101,7 @@ const ProfileFeedback = () => {
           </article>
         ))}
       </div>
+      )}
     </section>
   );
 };

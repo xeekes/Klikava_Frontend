@@ -1,5 +1,5 @@
 import IconMask from "./IconMask";
-import icon from "../assets/icons/clock.svg";
+import icon from "../assets/images/clock.svg";
 
 const Clock = (props) => <IconMask src={icon} {...props} />;
 

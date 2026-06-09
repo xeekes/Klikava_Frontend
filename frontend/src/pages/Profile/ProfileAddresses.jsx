@@ -45,8 +45,8 @@ const ProfileAddresses = () => {
             <ProfileAddressFormFields
               mode="create"
               submitLabel="Create delivery address"
-              onSubmit={(form) => {
-                addAddress(form);
+              onSubmit={async (form) => {
+                await addAddress(form);
                 navigate("/profile/addresses");
               }}
             />
@@ -57,12 +57,12 @@ const ProfileAddresses = () => {
               mode="edit"
               addressId={editingAddress.id}
               submitLabel="Save"
-              onSubmit={(form) => {
-                updateAddress(editingAddress.id, form);
+              onSubmit={async (form) => {
+                await updateAddress(editingAddress.id, form);
                 navigate("/profile/addresses");
               }}
-              onDelete={() => {
-                deleteAddress(editingAddress.id);
+              onDelete={async () => {
+                await deleteAddress(editingAddress.id);
                 navigate("/profile/addresses");
               }}
             />
@@ -71,6 +71,9 @@ const ProfileAddresses = () => {
       ) : (
         <>
           <div className="profile-page__body">
+            {addresses.length === 0 ? (
+              <p className="profile-page__empty">No delivery addresses yet.</p>
+            ) : (
             <div className="profile-addresses__grid">
             {addresses.map((address) => (
               <article key={address.id} className="profile-addresses__card">
@@ -99,7 +102,9 @@ const ProfileAddresses = () => {
                   <button
                     type="button"
                     className="profile-addresses__btn"
-                    onClick={() => deleteAddress(address.id)}
+                    onClick={() => {
+                      deleteAddress(address.id);
+                    }}
                   >
                     Delete
                   </button>
@@ -123,6 +128,7 @@ const ProfileAddresses = () => {
               </article>
             ))}
             </div>
+            )}
           </div>
 
           <button

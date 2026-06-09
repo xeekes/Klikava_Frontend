@@ -4,6 +4,7 @@ import CheckoutPaymentCard from "../../components/Checkout/CheckoutPaymentCard/C
 import ProfileCardModal from "../../components/Profile/ProfileCardModal/ProfileCardModal";
 import ProfileAddCardForm from "../../components/Profile/ProfileCardForm/ProfileAddCardForm";
 import ProfileEditCardForm from "../../components/Profile/ProfileCardForm/ProfileEditCardForm";
+import { cardFromForm } from "../../api/mapUserData";
 import { useUserData } from "../../context/UserDataContext";
 import "../../styles/profile-page.scss";
 import "./ProfileCards.scss";
@@ -31,6 +32,9 @@ const ProfileCards = () => {
       <h1 className="profile-page__title">Saved cards</h1>
 
       <div className="profile-page__body">
+        {cards.length === 0 ? (
+          <p className="profile-page__empty">No saved cards yet.</p>
+        ) : (
         <div className="profile-cards__grid">
           {cards.map((card) => (
             <CheckoutPaymentCard
@@ -42,6 +46,7 @@ const ProfileCards = () => {
             />
           ))}
         </div>
+        )}
       </div>
 
       <button
@@ -56,14 +61,8 @@ const ProfileCards = () => {
         <ProfileCardModal title="Add a new card" onClose={closeModal}>
           <ProfileAddCardForm
             onClose={closeModal}
-            onSubmit={() => {
-              addCard({
-                brand: "mastercard",
-                label: "Mastercard",
-                last4: "6043",
-                expiryMonth: "04",
-                expiryYear: "2028",
-              });
+            onSubmit={async (form) => {
+              await addCard(cardFromForm(form));
               closeModal();
             }}
           />

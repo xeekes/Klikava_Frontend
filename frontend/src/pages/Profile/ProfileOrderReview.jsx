@@ -2,8 +2,10 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "../../iconComponents";
 import ProfileOrderProductForm from "../../components/Profile/ProfileOrderProductForm/ProfileOrderProductForm";
+import { catalogApi } from "../../api/catalogApi";
+import { hasApiBaseUrl } from "../../api/client";
 import { useUserData } from "../../context/UserDataContext";
-import { getOrderByIdFromList, getOrderProducts } from "../../data/profile";
+import { getOrderByIdFromList, getOrderProducts } from "../../utils/orderHelpers";
 import { rules } from "../../utils/validation";
 import "../../styles/profile-page.scss";
 import "./ProfileOrderFormPage.scss";
@@ -87,7 +89,7 @@ const ProfileOrderReview = () => {
             photos={reviews[index]?.photos ?? []}
             onPhotosChange={(photos) => updateReview(index, { photos })}
             submitLabel="Publish"
-            onSubmit={() => {
+            onSubmit={async () => {
               if (!validateReview(index)) {
                 return;
               }
@@ -96,6 +98,22 @@ const ProfileOrderReview = () => {
               const attachedPhotos = review?.photos?.length
                 ? review.photos
                 : [product.image];
+
+              if (hasApiBaseUrl() && product.productId) {
+                try {
+                  const raw = await catalogApi.getProductByIdOrSlug(product.productId);
+                  const variantId = raw?.current_version?.variants?.[0]?.id;
+                  if (variantId) {
+                    await catalogApi.createReview(product.productId, {
+                      product_variant_id: variantId,
+                      rating: review?.rating ?? 0,
+                      comment: review?.text ?? "",
+                    });
+                  }
+                } catch {
+                  // keep local feedback even if API review fails
+                }
+              }
 
               addFeedback({
                 productTitle: product.title,

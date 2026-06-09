@@ -24,6 +24,35 @@ const mapAuthResponse = (payload) => ({
   user: mapMarketplaceUser(payload.user),
 });
 
+const sanitizeLogin = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_]/g, "")
+    .slice(0, 32);
+
+const resolveLogin = ({ emailOrPhone, name, login }) => {
+  if (login?.trim().length >= 2) {
+    return login.trim().slice(0, 32);
+  }
+
+  const fromEmail = emailOrPhone.includes("@")
+    ? emailOrPhone.split("@")[0].trim()
+    : emailOrPhone.trim();
+
+  if (fromEmail.length >= 2) {
+    return fromEmail.slice(0, 32);
+  }
+
+  const fromName = sanitizeLogin(name);
+  if (fromName.length >= 2) {
+    return fromName;
+  }
+
+  return `${fromEmail || "user"}${Date.now().toString(36).slice(-4)}`.slice(0, 32);
+};
+
 const unsupportedApiFlow = (feature) => {
   throw new ApiError(
     501,
@@ -142,26 +171,22 @@ const realAuthApi = {
       ? emailOrPhone.trim()
       : `${emailOrPhone.trim()}@klikava.local`;
 
-    const resolvedLogin =
-      login ||
-      (emailOrPhone.includes("@")
-        ? emailOrPhone.split("@")[0]
-        : emailOrPhone.trim());
+    const resolvedLogin = resolveLogin({ emailOrPhone, name, login });
 
     await apiRequest("/users/register", {
       method: "POST",
       body: {
-        login: resolvedLogin.slice(0, 32),
+        login: resolvedLogin,
         email,
         password,
-        name: name || resolvedLogin,
+        name: name?.trim() || resolvedLogin,
       },
     });
 
     const loginPayload = await apiRequest("/users/login", {
       method: "POST",
       body: {
-        login: resolvedLogin.slice(0, 32),
+        login: resolvedLogin,
         password,
       },
     });

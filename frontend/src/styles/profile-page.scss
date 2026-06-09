@@ -10,6 +10,13 @@
     line-height: 1.1;
   }
 
+  .profile-page__empty {
+    margin: 0;
+    color: $gray;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
   .profile-page__back {
     display: flex;
     gap: 1.25rem;

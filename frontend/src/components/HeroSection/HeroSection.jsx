@@ -15,8 +15,8 @@ const HeroSection = ({ className = "" }) => {
       <div className="container">
         <h1 className="hero-section-title">
           <span className="hero-section-title__top">
-            <span className="hero-section-title__line">
-              YOUR TERRITOR
+            <span className="hero-sections-title__line">
+              YOUR TERRITORR
               <span className="hero-section-title__y">
                 Y
                 <Sale className="hero-section-title__sale" aria-hidden="true" />

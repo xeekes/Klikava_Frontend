@@ -4,11 +4,11 @@ import CartItem from "../../components/CartItem/CartItem";
 import CheckoutAddressSection from "../../components/Checkout/CheckoutAddressSection/CheckoutAddressSection";
 import CheckoutPaymentSection from "../../components/Checkout/CheckoutPaymentSection/CheckoutPaymentSection";
 import CheckoutSummary from "../../components/Checkout/CheckoutSummary/CheckoutSummary";
+import { cardFromForm } from "../../api/mapUserData";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useUserData } from "../../context/UserDataContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { DEFAULT_BILLING_LINES } from "../../data/checkout";
 import "./Checkout.scss";
 
 const Checkout = () => {
@@ -29,12 +29,10 @@ const Checkout = () => {
     [addresses, selectedAddressId]
   );
 
-  const billingLines = useMemo(() => {
-    if (!selectedAddress) {
-      return DEFAULT_BILLING_LINES;
-    }
-    return selectedAddress.lines;
-  }, [selectedAddress]);
+  const billingLines = useMemo(
+    () => selectedAddress?.lines || [],
+    [selectedAddress],
+  );
 
   if (!isAuthLoading && !isAuthenticated) {
     return <Navigate to="/cart" replace />;
@@ -57,14 +55,8 @@ const Checkout = () => {
     setIsAddressesExpanded(false);
   };
 
-  const handleAddCard = () => {
-    const nextCard = addCard({
-      brand: "mastercard",
-      label: "mastercard",
-      last4: "6043",
-      expiryMonth: "04",
-      expiryYear: "2028",
-    });
+  const handleAddCard = async (form) => {
+    const nextCard = await addCard(cardFromForm(form));
     setSelectedCardId(nextCard.id);
     setShowAddCard(false);
     setEditingCardId(null);

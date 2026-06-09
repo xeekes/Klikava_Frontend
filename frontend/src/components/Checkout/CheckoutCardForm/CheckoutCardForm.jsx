@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { DEFAULT_BILLING_LINES } from "../../../data/checkout";
 import { useFormValidation } from "../../../hooks/useFormValidation";
 import { schemas } from "../../../utils/validation";
 import FormField from "../../FormField/FormField";
@@ -25,7 +24,7 @@ const formatCardNumber = (value) => {
 };
 
 const CheckoutCardForm = ({
-  billingLines = DEFAULT_BILLING_LINES,
+  billingLines = [],
   onAdd,
   onCancel,
   title = "Add a new card",

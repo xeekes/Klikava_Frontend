@@ -1,9 +1,4 @@
-import { getCategoryById } from "../data/categories";
-import {
-  filterProducts,
-  POPULAR_SEARCHES,
-  sortProducts,
-} from "../data/products";
+import { filterProducts, POPULAR_SEARCHES, sortProducts } from "./catalogFilters";
 
 const defaultProductDetails = {
   sold: 422,
@@ -29,7 +24,10 @@ const defaultProductDetails = {
   reviews: [],
 };
 
-export const createCatalogHelpers = (products) => {
+export const createCatalogHelpers = (products, categories = []) => {
+  const findCategory = (categoryId) =>
+    categories.find((item) => String(item.id) === String(categoryId)) || null;
+
   const findProduct = (id) =>
     products.find((item) => String(item.id) === String(id)) || null;
 
@@ -167,7 +165,13 @@ export const createCatalogHelpers = (products) => {
       sold: product.sold,
       price: product.price,
       recentLowestPrice: product.originalPrice ?? product.price,
-      category: getCategoryById(product.categoryId),
+      category: findCategory(product.categoryId),
+      description: product.description || defaultProductDetails.description || "",
+      specs: product.specs?.length ? product.specs : defaultProductDetails.specs,
+      reviews: product.reviews?.length ? product.reviews : defaultProductDetails.reviews,
+      shipping: product.shipping
+        ? { ...defaultProductDetails.shipping, ...product.shipping }
+        : defaultProductDetails.shipping,
     };
   };
 

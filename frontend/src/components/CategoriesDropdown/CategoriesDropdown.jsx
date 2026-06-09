@@ -1,19 +1,28 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CATEGORIES } from "../../data/categories";
+import { useCatalog } from "../../context/CatalogContext";
 import "./CategoriesDropdown.scss";
 
 const CategoriesDropdown = () => {
-  const [activeCategoryId, setActiveCategoryId] = useState(CATEGORIES[0].id);
+  const { categories } = useCatalog();
+  const [activeCategoryId, setActiveCategoryId] = useState(categories[0]?.id);
+
+  if (!categories.length) {
+    return (
+      <div className="categories-dropdown categories-dropdown--empty" role="menu">
+        <p>No categories</p>
+      </div>
+    );
+  }
 
   const activeCategory =
-    CATEGORIES.find((category) => category.id === activeCategoryId) ??
-    CATEGORIES[0];
+    categories.find((category) => category.id === activeCategoryId) ??
+    categories[0];
 
   return (
     <div className="categories-dropdown" role="menu" aria-label="Categories">
       <ul className="categories-dropdown__main-list">
-        {CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <li key={category.id}>
             <button
               type="button"
@@ -38,18 +47,12 @@ const CategoriesDropdown = () => {
           {activeCategory.name}
         </h3>
         <hr className="categories-dropdown__subcategories-divider" />
-        <ul className="categories-dropdown__subcategories-list">
-          {activeCategory.subcategories.map((subcategory) => (
-            <li key={subcategory}>
-              <Link
-                to={`/categories/${activeCategory.id}/${encodeURIComponent(subcategory)}`}
-                className="categories-dropdown__item"
-              >
-                {subcategory}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <Link
+          to={`/categories/${activeCategory.id}`}
+          className="categories-dropdown__view-all"
+        >
+          View all in {activeCategory.name}
+        </Link>
       </div>
     </div>
   );

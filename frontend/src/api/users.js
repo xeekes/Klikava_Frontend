@@ -1,18 +1,28 @@
 import { apiRequest, hasApiBaseUrl } from "./client";
+import { getListItems } from "./listUtils";
 
-const unsupported = (feature) => {
-  throw new Error(`${feature} is not available without API base URL`);
+const buildPaginationQuery = (params = {}) => {
+  const search = new URLSearchParams({
+    page: String(params.page || 1),
+    per_page: String(params.perPage || 50),
+  });
+  return search.toString();
 };
 
 const realUsersApi = {
-  getDeliveryAddresses: (userId, params = {}) => {
-    const search = new URLSearchParams({
-      page: String(params.page || 1),
-      per_page: String(params.perPage || 20),
-    });
-    return apiRequest(
-      `/users/${userId}/delivery_addresses?${search.toString()}`,
+  getUser: (userId) => apiRequest(`/users/${userId}`),
+
+  updateUser: (userId, body) =>
+    apiRequest(`/users/${userId}`, {
+      method: "PATCH",
+      body,
+    }),
+
+  listDeliveryAddresses: async (userId, params = {}) => {
+    const payload = await apiRequest(
+      `/users/${userId}/delivery_addresses?${buildPaginationQuery(params)}`,
     );
+    return getListItems(payload);
   },
 
   createDeliveryAddress: (userId, body) =>
@@ -21,38 +31,66 @@ const realUsersApi = {
       body,
     }),
 
-  updateUser: (userId, body) =>
-    apiRequest(`/users/${userId}`, {
+  updateDeliveryAddress: (userId, addressId, body) =>
+    apiRequest(`/users/${userId}/delivery_addresses/${addressId}`, {
       method: "PATCH",
       body,
+    }),
+
+  deleteDeliveryAddress: (userId, addressId) =>
+    apiRequest(`/users/${userId}/delivery_addresses/${addressId}`, {
+      method: "DELETE",
+    }),
+
+  listCreditCards: async (userId, params = {}) => {
+    const payload = await apiRequest(
+      `/users/${userId}/credit_cards?${buildPaginationQuery(params)}`,
+    );
+    return getListItems(payload);
+  },
+
+  createCreditCard: (userId, body) =>
+    apiRequest(`/users/${userId}/credit_cards`, {
+      method: "POST",
+      body,
+    }),
+
+  updateCreditCard: (userId, cardId, body) =>
+    apiRequest(`/users/${userId}/credit_cards/${cardId}`, {
+      method: "PATCH",
+      body,
+    }),
+
+  deleteCreditCard: (userId, cardId) =>
+    apiRequest(`/users/${userId}/credit_cards/${cardId}`, {
+      method: "DELETE",
     }),
 };
 
 const mockUsersApi = {
-  getDeliveryAddresses: async () => ({ items: [] }),
-  createDeliveryAddress: async () => ({ success: true }),
+  getUser: async () => null,
   updateUser: async () => ({ success: true }),
+  listDeliveryAddresses: async () => [],
+  createDeliveryAddress: async () => null,
+  updateDeliveryAddress: async () => null,
+  deleteDeliveryAddress: async () => ({ success: true }),
+  listCreditCards: async () => [],
+  createCreditCard: async () => null,
+  updateCreditCard: async () => null,
+  deleteCreditCard: async () => ({ success: true }),
 };
+
+const resolveApi = () => (hasApiBaseUrl() ? realUsersApi : mockUsersApi);
 
 export const usersApi = {
-  getDeliveryAddresses: (...args) =>
-    hasApiBaseUrl()
-      ? realUsersApi.getDeliveryAddresses(...args)
-      : mockUsersApi.getDeliveryAddresses(...args),
-
-  createDeliveryAddress: (...args) =>
-    hasApiBaseUrl()
-      ? realUsersApi.createDeliveryAddress(...args)
-      : mockUsersApi.createDeliveryAddress(...args),
-
-  updateUser: (...args) =>
-    hasApiBaseUrl()
-      ? realUsersApi.updateUser(...args)
-      : mockUsersApi.updateUser(...args),
-};
-
-export const ensureUsersApi = () => {
-  if (!hasApiBaseUrl()) {
-    unsupported("Users API");
-  }
+  getUser: (...args) => resolveApi().getUser(...args),
+  updateUser: (...args) => resolveApi().updateUser(...args),
+  listDeliveryAddresses: (...args) => resolveApi().listDeliveryAddresses(...args),
+  createDeliveryAddress: (...args) => resolveApi().createDeliveryAddress(...args),
+  updateDeliveryAddress: (...args) => resolveApi().updateDeliveryAddress(...args),
+  deleteDeliveryAddress: (...args) => resolveApi().deleteDeliveryAddress(...args),
+  listCreditCards: (...args) => resolveApi().listCreditCards(...args),
+  createCreditCard: (...args) => resolveApi().createCreditCard(...args),
+  updateCreditCard: (...args) => resolveApi().updateCreditCard(...args),
+  deleteCreditCard: (...args) => resolveApi().deleteCreditCard(...args),
 };

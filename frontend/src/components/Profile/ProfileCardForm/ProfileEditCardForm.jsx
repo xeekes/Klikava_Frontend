@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
 import { schemas } from "../../../utils/validation";
-import { PROFILE_BILLING_ADDRESS } from "../../../data/profile";
+import { useUserData } from "../../../context/UserDataContext";
 import "./ProfileEditCardForm.scss";
 
 const MONTHS = Array.from({ length: 12 }, (_, index) =>
@@ -16,6 +16,8 @@ const editCardSchema = {
 };
 
 const ProfileEditCardForm = ({ card, onSubmit, onClose }) => {
+  const { addresses } = useUserData();
+  const billingAddress = addresses[0];
   const [month, setMonth] = useState(card?.expiryMonth ?? "");
   const [year, setYear] = useState(card?.expiryYear ?? "");
   const { getError, validateAll, handleBlur } = useFormValidation(editCardSchema);
@@ -102,15 +104,18 @@ const ProfileEditCardForm = ({ card, onSubmit, onClose }) => {
       <div className="profile-card-form__field">
         <span className="profile-card-form__label">Billing address</span>
         <div className="profile-card-form__billing">
-          <div className="profile-card-form__billing-head">
-            <span>{PROFILE_BILLING_ADDRESS.title}</span>
-            <button type="button" className="profile-card-form__billing-edit">
-              Edit
-            </button>
-          </div>
-          <p className="profile-card-form__billing-line">
-            {PROFILE_BILLING_ADDRESS.line}
-          </p>
+          {billingAddress ? (
+            <>
+              <div className="profile-card-form__billing-head">
+                <span>{billingAddress.address}</span>
+              </div>
+              <p className="profile-card-form__billing-line">
+                {billingAddress.lines.join(" ")}
+              </p>
+            </>
+          ) : (
+            <p className="profile-card-form__billing-line">No billing address added.</p>
+          )}
         </div>
       </div>
 

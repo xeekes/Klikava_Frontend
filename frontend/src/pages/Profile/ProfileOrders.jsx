@@ -2,7 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import ProfileOrderCard from "../../components/Profile/ProfileOrderCard/ProfileOrderCard";
 import { useUserData } from "../../context/UserDataContext";
 import { ORDER_TABS } from "../../constants/profile";
-import { filterOrdersByTabFromList, getOrderActions } from "../../data/profile";
+import { filterOrdersByTabFromList, getOrderActions } from "../../utils/orderHelpers";
 import { Link } from "react-router-dom";
 import "../../styles/profile-page.scss";
 import "./ProfileOrders.scss";
@@ -31,11 +31,15 @@ const ProfileOrders = () => {
         ))}
       </ul>
 
-      <div className="profile-page__stack">
-        {visibleOrders.map((order) => (
-          <ProfileOrderCard key={order.id} order={order} actions={actions} />
-        ))}
-      </div>
+      {visibleOrders.length === 0 ? (
+        <p className="profile-page__empty">No orders yet.</p>
+      ) : (
+        <div className="profile-page__stack">
+          {visibleOrders.map((order) => (
+            <ProfileOrderCard key={order.id} order={order} actions={actions} />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

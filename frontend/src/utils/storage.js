@@ -18,6 +18,9 @@ export const writeStorage = (key, value) => {
   }
 };
 
+export const getUserStorageKey = (key, userId) =>
+  userId ? `${key}__${userId}` : key;
+
 export const STORAGE_KEYS = {
   favorites: "klikava_favorites",
   browsingHistory: "klikava_browsing_history",

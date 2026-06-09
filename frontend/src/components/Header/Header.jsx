@@ -6,7 +6,7 @@ import SiteSearch from "../SiteSearch/SiteSearch";
 import CategoriesDropdown from "../CategoriesDropdown/CategoriesDropdown";
 import HeaderUserMenu from "./HeaderUserMenu/HeaderUserMenu";
 import { useCart } from "../../context/CartContext";
-import { CATEGORIES } from "../../data/categories";
+import { useCatalog } from "../../context/CatalogContext";
 import { lockScroll, unlockScroll } from "../../utils/scrollLock";
 import { readStorage, STORAGE_KEYS, writeStorage } from "../../utils/storage";
 
@@ -28,6 +28,7 @@ const MOBILE_CURRENCIES = [
 
 const Header = () => {
   const { itemCount } = useCart();
+  const { categories } = useCatalog();
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileMenuView, setMobileMenuView] = useState("root");
@@ -65,7 +66,7 @@ const Header = () => {
   };
 
   const activeMobileCategory =
-    CATEGORIES.find((category) => category.id === activeMobileCategoryId) ??
+    categories.find((category) => category.id === activeMobileCategoryId) ??
     null;
 
   const handleLanguageSelect = (languageId) => {
@@ -215,18 +216,15 @@ const Header = () => {
               >
                 All categories
               </Link>
-              {CATEGORIES.map((category) => (
-                <button
+              {categories.map((category) => (
+                <Link
                   key={category.id}
-                  type="button"
+                  to={`/categories/${category.id}`}
                   className="header-mobile-menu__drill-item"
-                  onClick={() => {
-                    setActiveMobileCategoryId(category.id);
-                    setMobileMenuView("subcategories");
-                  }}
+                  onClick={closeMobileMenu}
                 >
                   {category.name}
-                </button>
+                </Link>
               ))}
             </nav>
           </div>

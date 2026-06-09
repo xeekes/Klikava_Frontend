@@ -13,11 +13,11 @@ import {
 import "./SearchPage.scss";
 
 const SearchPage = () => {
-  const { searchProducts, getTopProducts, POPULAR_SEARCHES } = useCatalog();
+  const { searchProducts, getTopProducts, POPULAR_SEARCHES, categories } = useCatalog();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
   const scope = useMemo(() => parseSearchScope(searchParams), [searchParams]);
-  const scopeLabel = getSearchScopeLabel(scope);
+  const scopeLabel = getSearchScopeLabel(scope, categories);
   const isScoped = hasSearchScope(scope);
 
   const products = useMemo(() => searchProducts(query, scope), [query, scope, searchProducts]);

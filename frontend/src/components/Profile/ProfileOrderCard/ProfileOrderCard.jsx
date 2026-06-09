@@ -6,7 +6,7 @@ import { useMotionPresence } from "../../../hooks/useMotionPresence";
 import "swiper/css";
 import "./ProfileOrderCard.scss";
 
-import { getBuyAgainProductId } from "../../../data/profile";
+import { getBuyAgainProductId } from "../../../utils/orderHelpers";
 
 const ACTION_LABELS = {
   track: "Track",
@@ -34,7 +34,8 @@ const ProfileOrderCard = ({ order, actions }) => {
 
     if (action === "return") return `${orderBasePath}/return`;
 
-    return `/product/${getBuyAgainProductId(order)}`;
+    const productId = getBuyAgainProductId(order);
+    return productId ? `/product/${productId}` : "/catalog";
   };
 
   return (

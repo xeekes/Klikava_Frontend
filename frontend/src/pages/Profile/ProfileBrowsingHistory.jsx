@@ -42,11 +42,15 @@ const ProfileBrowsingHistory = () => {
     <section className="profile-page profile-browsing-history">
       <h1 className="profile-page__title">Browsing history</h1>
 
-      <div className="profile-browsing-history__groups">
-        {groups.map((group) => (
-          <BrowsingHistoryGroup key={group.date} group={group} />
-        ))}
-      </div>
+      {groups.length === 0 ? (
+        <p className="profile-page__empty">No browsing history yet.</p>
+      ) : (
+        <div className="profile-browsing-history__groups">
+          {groups.map((group) => (
+            <BrowsingHistoryGroup key={group.date} group={group} />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

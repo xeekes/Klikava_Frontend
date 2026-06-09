@@ -22,7 +22,7 @@ const ProfileChatPanel = ({
   );
 
   if (!activeThread) {
-    return null;
+    return <p className="profile-page__empty">No conversations yet.</p>;
   }
 
   return (

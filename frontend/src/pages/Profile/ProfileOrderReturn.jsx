@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ArrowLeft } from "../../iconComponents";
 import ProfileOrderProductForm from "../../components/Profile/ProfileOrderProductForm/ProfileOrderProductForm";
 import { useUserData } from "../../context/UserDataContext";
-import { getOrderByIdFromList, getOrderProducts } from "../../data/profile";
+import { getOrderByIdFromList, getOrderProducts } from "../../utils/orderHelpers";
 import { rules } from "../../utils/validation";
 import "../../styles/profile-page.scss";
 import "./ProfileOrderFormPage.scss";

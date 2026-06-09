@@ -9,12 +9,17 @@ const getErrorMessage = (payload, fallback) => {
     return fallback;
   }
 
-  return (
-    payload.meta?.message ||
-    payload.message ||
-    payload.detail?.[0]?.msg ||
-    fallback
-  );
+  if (Array.isArray(payload.detail) && payload.detail.length > 0) {
+    const first = payload.detail[0];
+    const field = Array.isArray(first?.loc)
+      ? first.loc.filter((part) => part !== "body").join(".")
+      : "";
+    const message = first?.msg || fallback;
+
+    return field ? `${field}: ${message}` : message;
+  }
+
+  return payload.meta?.message || payload.message || fallback;
 };
 
 const unwrapMarketplacePayload = (payload) => {

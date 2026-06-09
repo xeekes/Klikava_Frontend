@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { ArrowForward, Clock, Star } from "../../iconComponents";
 import { useBrowsingHistory } from "../../context/BrowsingHistoryContext";
 import { useCart } from "../../context/CartContext";
@@ -12,12 +13,16 @@ const MOBILE_THUMBS_MAX = 768;
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { getProductById, getRelatedProducts } = useCatalog();
-  const product = useMemo(() => getProductById(id), [getProductById, id]);
-  const relatedProducts = useMemo(
-    () => getRelatedProducts(id, 8),
-    [getRelatedProducts, id],
-  );
+  const {
+    getProductById,
+    getRelatedProducts,
+    fetchProductDetail,
+    usesApi,
+    isLoading: isCatalogLoading,
+  } = useCatalog();
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { trackProduct } = useBrowsingHistory();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -30,6 +35,38 @@ const ProductDetail = () => {
       : false,
   );
   const { addItem } = useCart();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadProduct = async () => {
+      if (usesApi) {
+        setIsLoading(true);
+        const detailed = await fetchProductDetail(id);
+        if (cancelled) {
+          return;
+        }
+
+        setProduct(detailed);
+        setRelatedProducts(
+          detailed?.relatedFromApi?.length
+            ? detailed.relatedFromApi
+            : getRelatedProducts(id, 8),
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      setProduct(getProductById(id));
+      setRelatedProducts(getRelatedProducts(id, 8));
+    };
+
+    loadProduct();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, usesApi, fetchProductDetail, getProductById, getRelatedProducts]);
 
   useEffect(() => {
     if (product) {
@@ -51,6 +88,16 @@ const ProductDetail = () => {
 
     return () => mediaQuery.removeEventListener("change", updateThumbSlider);
   }, []);
+
+  if (isLoading || (usesApi && isCatalogLoading && !product)) {
+    return (
+      <div className="product-detail">
+        <div className="container product-detail__not-found">
+          <LoadingSpinner variant="block" label="Loading product..." />
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -304,6 +351,11 @@ const ProductDetail = () => {
 
                   <div className="product-detail__reviews-scroll">
                     <ul className="product-detail__reviews-list">
+                      {product.reviews.length === 0 ? (
+                        <li className="product-detail__review product-detail__review--empty">
+                          No reviews yet.
+                        </li>
+                      ) : null}
                       {product.reviews.map((review) => (
                         <li key={review.id} className="product-detail__review">
                           <div

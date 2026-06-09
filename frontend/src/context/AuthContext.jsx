@@ -13,9 +13,6 @@ export const AuthProvider = ({ children }) => {
 
   const persistSession = useCallback((token, nextUser) => {
     localStorage.setItem(AUTH_STORAGE_KEYS.TOKEN, token);
-    if (!hasApiBaseUrl()) {
-      sessionStorage.setItem("mock_current_user", JSON.stringify(nextUser));
-    }
     setUser(nextUser);
   }, []);
 

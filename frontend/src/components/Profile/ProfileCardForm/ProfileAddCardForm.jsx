@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
 import { schemas } from "../../../utils/validation";
-import {
-  PROFILE_BILLING_ADDRESS,
-  PROFILE_CARD_FORM_DEFAULTS,
-} from "../../../data/profile";
+import { useUserData } from "../../../context/UserDataContext";
 import "./ProfileAddCardForm.scss";
 
 const MONTHS = Array.from({ length: 12 }, (_, index) =>
@@ -20,22 +17,30 @@ const formatCardNumber = (value) => {
   return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
 };
 
-const ProfileBillingAddress = () => (
-  <div className="profile-card-form__field">
-    <span className="profile-card-form__label">Billing address</span>
-    <div className="profile-card-form__billing">
-      <div className="profile-card-form__billing-head">
-        <span>{PROFILE_BILLING_ADDRESS.title}</span>
-        <button type="button" className="profile-card-form__billing-edit">
-          Edit
-        </button>
+const ProfileBillingAddress = () => {
+  const { addresses } = useUserData();
+  const billingAddress = addresses[0];
+
+  return (
+    <div className="profile-card-form__field">
+      <span className="profile-card-form__label">Billing address</span>
+      <div className="profile-card-form__billing">
+        {billingAddress ? (
+          <>
+            <div className="profile-card-form__billing-head">
+              <span>{billingAddress.address}</span>
+            </div>
+            <p className="profile-card-form__billing-line">
+              {billingAddress.lines.join(" ")}
+            </p>
+          </>
+        ) : (
+          <p className="profile-card-form__billing-line">No billing address added.</p>
+        )}
       </div>
-      <p className="profile-card-form__billing-line">
-        {PROFILE_BILLING_ADDRESS.line}
-      </p>
     </div>
-  </div>
-);
+  );
+};
 
 const ProfileAddCardForm = ({ onSubmit, onClose }) => {
   const [cardNumber, setCardNumber] = useState("");
@@ -52,7 +57,7 @@ const ProfileAddCardForm = ({ onSubmit, onClose }) => {
       return;
     }
 
-    onSubmit?.();
+    onSubmit?.(values);
     onClose?.();
   };
 
@@ -75,7 +80,7 @@ const ProfileAddCardForm = ({ onSubmit, onClose }) => {
             value={cardNumber}
             onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
             onBlur={() => handleBlur({ cardNumber, month, year, cvv }, "cardNumber")}
-            placeholder={PROFILE_CARD_FORM_DEFAULTS.cardNumber}
+            placeholder="Card number"
             inputMode="numeric"
             autoComplete="cc-number"
           />

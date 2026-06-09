@@ -1,5 +1,7 @@
-import { getCategoryById } from "../data/categories";
 import { TOP_PRODUCT_CATEGORIES } from "../data/topCategories";
+
+const findCategory = (categories, categoryId) =>
+  categories.find((item) => String(item.id) === String(categoryId)) || null;
 
 export const buildSearchUrl = (query, scope = {}) => {
   const params = new URLSearchParams();
@@ -62,7 +64,7 @@ export const parseSearchScope = (searchParams) => {
   return {};
 };
 
-export const getSearchScopeLabel = (scope = {}) => {
+export const getSearchScopeLabel = (scope = {}, categories = []) => {
   if (scope.scope === "discounts") {
     return "discounted products";
   }
@@ -81,7 +83,7 @@ export const getSearchScopeLabel = (scope = {}) => {
   }
 
   if (scope.scope === "category") {
-    const category = getCategoryById(scope.categoryId);
+    const category = findCategory(categories, scope.categoryId);
     if (!category) {
       return "this category";
     }

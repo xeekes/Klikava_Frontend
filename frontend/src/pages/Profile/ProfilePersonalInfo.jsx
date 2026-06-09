@@ -40,7 +40,7 @@ const ProfilePersonalInfo = () => {
     setSaved(false);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!validateAll(form)) {
@@ -48,8 +48,12 @@ const ProfilePersonalInfo = () => {
       return;
     }
 
-    savePersonalInfo(form);
-    setSaved(true);
+    try {
+      await savePersonalInfo(form);
+      setSaved(true);
+    } catch {
+      setSaved(false);
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -68,11 +72,15 @@ const ProfilePersonalInfo = () => {
           <div className="profile-personal-info__grid">
           <div className="profile-personal-info__avatar-block">
             <div className="profile-personal-info__avatar-wrap">
-              <img
-                className="profile-personal-info__avatar"
-                src={form.avatar}
-                alt=""
-              />
+              {form.avatar ? (
+                <img
+                  className="profile-personal-info__avatar"
+                  src={form.avatar}
+                  alt=""
+                />
+              ) : (
+                <div className="profile-personal-info__avatar profile-personal-info__avatar--placeholder" aria-hidden="true" />
+              )}
               <button
                 type="button"
                 className="profile-personal-info__avatar-upload"

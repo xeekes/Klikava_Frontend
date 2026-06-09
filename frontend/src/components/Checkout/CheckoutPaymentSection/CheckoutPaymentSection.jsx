@@ -22,8 +22,8 @@ const CheckoutPaymentSection = ({
       >
       <CheckoutCardForm
         billingLines={billingLines}
-        onAdd={() => {
-          onAddCard?.();
+        onAdd={(form) => {
+          onAddCard?.(form);
           onHideAddForm?.();
         }}
         onCancel={onHideAddForm}

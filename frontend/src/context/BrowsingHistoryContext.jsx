@@ -6,7 +6,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { PROFILE_BROWSING_HISTORY } from "../data/profile";
 import { readStorage, STORAGE_KEYS, writeStorage } from "../utils/storage";
 
 const BrowsingHistoryContext = createContext(null);
@@ -39,17 +38,9 @@ const groupProductsByDate = (entries) => {
   return Array.from(groups.values());
 };
 
-const buildDefaultEntries = () =>
-  PROFILE_BROWSING_HISTORY.flatMap((group) =>
-    group.products.map((product) => ({
-      viewedAt: new Date().toISOString(),
-      product,
-    }))
-  );
-
 export const BrowsingHistoryProvider = ({ children }) => {
   const [entries, setEntries] = useState(() =>
-    readStorage(STORAGE_KEYS.browsingHistory, buildDefaultEntries())
+    readStorage(STORAGE_KEYS.browsingHistory, []),
   );
 
   useEffect(() => {
@@ -61,19 +52,21 @@ export const BrowsingHistoryProvider = ({ children }) => {
       return;
     }
 
-    setEntries((prev) => [
-      {
-        viewedAt: new Date().toISOString(),
-        product: {
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          image: product.image,
-          sold: product.sold ?? 422,
+    setEntries((prev) =>
+      [
+        {
+          viewedAt: new Date().toISOString(),
+          product: {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            image: product.image,
+            sold: product.sold ?? 0,
+          },
         },
-      },
-      ...prev.filter((entry) => entry.product.id !== product.id),
-    ].slice(0, 40));
+        ...prev.filter((entry) => entry.product.id !== product.id),
+      ].slice(0, 40),
+    );
   }, []);
 
   const groups = useMemo(() => groupProductsByDate(entries), [entries]);
@@ -83,7 +76,7 @@ export const BrowsingHistoryProvider = ({ children }) => {
       groups,
       trackProduct,
     }),
-    [groups, trackProduct]
+    [groups, trackProduct],
   );
 
   return (
