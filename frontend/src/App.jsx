@@ -23,76 +23,72 @@ import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
 import Home from "./pages/Home/Home";
 import { isAuthPath } from "./constants/authRoutes";
+import {
+  loadAboutPage,
+  loadBlogPage,
+  loadCalendarPage,
+  loadCart,
+  loadCatalog,
+  loadCategoriesPage,
+  loadCategoryListingPage,
+  loadCheckout,
+  loadComponentsDemo,
+  loadDiscountsPage,
+  loadNotFound,
+  loadOrderSuccess,
+  loadProductDetail,
+  loadProfileAddresses,
+  loadProfileBrowsingHistory,
+  loadProfileCards,
+  loadProfileChat,
+  loadProfileCoupons,
+  loadProfileFavorites,
+  loadProfileFeedback,
+  loadProfileLayout,
+  loadProfileOrderReturn,
+  loadProfileOrderReview,
+  loadProfileOrderTrack,
+  loadProfileOrders,
+  loadProfilePersonalInfo,
+  loadProfileSupport,
+  loadSearchPage,
+  loadSellPage,
+  loadSupportLandingPage,
+  loadTopProductsPage,
+} from "./routes/routeChunks";
 import "./App.scss";
 
-const Catalog = lazy(() => import("./pages/Catalog/Catalog"));
-const ProductDetail = lazy(() => import("./pages/ProductDetail/ProductDetail"));
-const Cart = lazy(() => import("./pages/Cart/Cart"));
-const Checkout = lazy(() => import("./pages/Checkout/Checkout"));
-const OrderSuccess = lazy(() => import("./pages/OrderSuccess/OrderSuccess"));
-const NotFound = lazy(() => import("./pages/NotFound/NotFound"));
-const ProfileLayout = lazy(() => import("./layouts/ProfileLayout"));
-const ProfileOrders = lazy(() => import("./pages/Profile/ProfileOrders"));
-const ProfileOrderTrack = lazy(
-  () => import("./pages/Profile/ProfileOrderTrack"),
-);
-const ProfileOrderReview = lazy(
-  () => import("./pages/Profile/ProfileOrderReview"),
-);
-const ProfileOrderReturn = lazy(
-  () => import("./pages/Profile/ProfileOrderReturn"),
-);
-const ProfileFavorites = lazy(() => import("./pages/Profile/ProfileFavorites"));
-const ProfileBrowsingHistory = lazy(
-  () => import("./pages/Profile/ProfileBrowsingHistory"),
-);
-const ProfileCoupons = lazy(() => import("./pages/Profile/ProfileCoupons"));
-const ProfileChat = lazy(() => import("./pages/Profile/ProfileChat"));
-const ProfileFeedback = lazy(() => import("./pages/Profile/ProfileFeedback"));
-const ProfileAddresses = lazy(() => import("./pages/Profile/ProfileAddresses"));
-const ProfileCards = lazy(() => import("./pages/Profile/ProfileCards"));
-const ProfilePersonalInfo = lazy(
-  () => import("./pages/Profile/ProfilePersonalInfo"),
-);
-const ProfileSupport = lazy(() => import("./pages/Profile/ProfileSupport"));
-const DiscountsPage = lazy(() => import("./pages/Discounts/DiscountsPage"));
-const TopProductsPage = lazy(
-  () => import("./pages/TopProducts/TopProductsPage"),
-);
-const CategoriesPage = lazy(() => import("./pages/Categories/CategoriesPage"));
-const CategoryListingPage = lazy(
-  () => import("./pages/Categories/CategoryListingPage"),
-);
-const SearchPage = lazy(() => import("./pages/Search/SearchPage"));
-const ComponentsDemo = lazy(
-  () => import("./pages/ComponentsDemo/ComponentsDemo"),
-);
-
-const AboutPage = lazy(() =>
-  import("./pages/Info/InfoPages").then((module) => ({
-    default: module.AboutPage,
-  })),
-);
-const BlogPage = lazy(() =>
-  import("./pages/Info/InfoPages").then((module) => ({
-    default: module.BlogPage,
-  })),
-);
-const CalendarPage = lazy(() =>
-  import("./pages/Info/InfoPages").then((module) => ({
-    default: module.CalendarPage,
-  })),
-);
-const SellPage = lazy(() =>
-  import("./pages/Info/InfoPages").then((module) => ({
-    default: module.SellPage,
-  })),
-);
-const SupportLandingPage = lazy(() =>
-  import("./pages/Info/InfoPages").then((module) => ({
-    default: module.SupportLandingPage,
-  })),
-);
+const Catalog = lazy(loadCatalog);
+const ProductDetail = lazy(loadProductDetail);
+const Cart = lazy(loadCart);
+const Checkout = lazy(loadCheckout);
+const OrderSuccess = lazy(loadOrderSuccess);
+const NotFound = lazy(loadNotFound);
+const ProfileLayout = lazy(loadProfileLayout);
+const ProfileOrders = lazy(loadProfileOrders);
+const ProfileOrderTrack = lazy(loadProfileOrderTrack);
+const ProfileOrderReview = lazy(loadProfileOrderReview);
+const ProfileOrderReturn = lazy(loadProfileOrderReturn);
+const ProfileFavorites = lazy(loadProfileFavorites);
+const ProfileBrowsingHistory = lazy(loadProfileBrowsingHistory);
+const ProfileCoupons = lazy(loadProfileCoupons);
+const ProfileChat = lazy(loadProfileChat);
+const ProfileFeedback = lazy(loadProfileFeedback);
+const ProfileAddresses = lazy(loadProfileAddresses);
+const ProfileCards = lazy(loadProfileCards);
+const ProfilePersonalInfo = lazy(loadProfilePersonalInfo);
+const ProfileSupport = lazy(loadProfileSupport);
+const DiscountsPage = lazy(loadDiscountsPage);
+const TopProductsPage = lazy(loadTopProductsPage);
+const CategoriesPage = lazy(loadCategoriesPage);
+const CategoryListingPage = lazy(loadCategoryListingPage);
+const SearchPage = lazy(loadSearchPage);
+const ComponentsDemo = lazy(loadComponentsDemo);
+const AboutPage = lazy(loadAboutPage);
+const BlogPage = lazy(loadBlogPage);
+const CalendarPage = lazy(loadCalendarPage);
+const SellPage = lazy(loadSellPage);
+const SupportLandingPage = lazy(loadSupportLandingPage);
 
 /**
  * Отображается во время загрузки ленивого чанка маршрута.
