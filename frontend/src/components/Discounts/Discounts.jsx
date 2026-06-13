@@ -1,3 +1,4 @@
+/* Секция главной страницы: карусель/сетка товаров со скидкой. */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Discounts.scss";
 import ProductCard from "../ProductCard/ProductCard";
@@ -8,13 +9,18 @@ import "swiper/css";
 import { useCatalog } from "../../context/CatalogContext";
 
 const DISCOUNTS_PREVIEW_COUNT = 12;
-
 const SPACE_BETWEEN = 20;
 const MIN_SLIDE_WIDTH = 280;
 
+/**
+ * Карусель товаров со скидкой на главной с адаптивными элементами постраничной навигации.
+ */
 const Discounts = ({ className = "" }) => {
   const { getDiscountProducts } = useCatalog();
-  const discountProducts = useMemo(() => getDiscountProducts(), [getDiscountProducts]);
+  const discountProducts = useMemo(
+    () => getDiscountProducts(),
+    [getDiscountProducts],
+  );
   const swiperRef = useRef(null);
   const sliderWrapRef = useRef(null);
   const [activePage, setActivePage] = useState(0);
@@ -25,83 +31,88 @@ const Discounts = ({ className = "" }) => {
     [discountProducts],
   );
   const hasMoreDiscounts = discountProducts.length > DISCOUNTS_PREVIEW_COUNT;
-
-  const getSlidesPerView = useCallback((width) => {
-    if (!width) {
-      return 1;
-    }
-
-    const fitCount = Math.floor(
-      (width + SPACE_BETWEEN) / (MIN_SLIDE_WIDTH + SPACE_BETWEEN),
-    );
-
-    return Math.max(1, Math.min(fitCount, previewProducts.length));
-  }, [previewProducts.length]);
-
-  const getPageCount = useCallback((perView) => {
-    return Math.max(1, Math.ceil(previewProducts.length / perView));
-  }, [previewProducts.length]);
-
+  /**
+   * Определяет, сколько слайдов помещается при текущей ширине viewport.
+   */
+  const getSlidesPerView = useCallback(
+    (width) => {
+      if (!width) {
+        return 1;
+      }
+      const fitCount = Math.floor(
+        (width + SPACE_BETWEEN) / (MIN_SLIDE_WIDTH + SPACE_BETWEEN),
+      );
+      return Math.max(1, Math.min(fitCount, previewProducts.length));
+    },
+    [previewProducts.length],
+  );
+  /**
+   * Вычисляет общее число точек пager из количества слайдов и видимых слайдов.
+   */
+  const getPageCount = useCallback(
+    (perView) => {
+      return Math.max(1, Math.ceil(previewProducts.length / perView));
+    },
+    [previewProducts.length],
+  );
+  /**
+   * Синхронизирует параметры Swiper, число страниц и активную точку с разметкой.
+   */
   const updateSliderState = useCallback(
     (swiper) => {
       if (!swiper) {
         return;
       }
-
       const viewportWidth = sliderWrapRef.current?.clientWidth ?? swiper.width;
       const perView = getSlidesPerView(viewportWidth);
       const pages = getPageCount(perView);
-
       if (swiper.params.slidesPerView !== perView) {
         swiper.params.slidesPerView = perView;
         swiper.params.slidesPerGroup = perView;
         swiper.update();
       }
-
       const maxSnapIndex = Math.max(0, pages - 1);
       if (swiper.snapIndex > maxSnapIndex) {
         swiper.slideTo(maxSnapIndex * perView, 0);
       }
-
       setSlidesPerView(perView);
       setPageCount(pages);
       setActivePage(Math.min(swiper.snapIndex, maxSnapIndex));
     },
     [getPageCount, getSlidesPerView],
   );
-
   useEffect(() => {
     const wrap = sliderWrapRef.current;
     if (!wrap) {
       return undefined;
     }
-
     const observer = new ResizeObserver(() => {
       if (swiperRef.current) {
         updateSliderState(swiperRef.current);
       }
     });
-
     observer.observe(wrap);
     return () => observer.disconnect();
   }, [updateSliderState]);
-
+  /**
+   * Переходит карусель к указанному индексу pager.
+   */
   const goToPage = (pageIndex) => {
     const swiper = swiperRef.current;
     if (!swiper) {
       return;
     }
-
     const perView = swiper.params.slidesPerGroup || slidesPerView;
     swiper.slideTo(pageIndex * perView);
   };
-
+  /**
+   * Переходит к предыдущей группе слайдов, с переходом на последнюю страницу в начале.
+   */
   const handlePrev = () => {
     const swiper = swiperRef.current;
     if (!swiper) {
       return;
     }
-
     if (swiper.isBeginning && pageCount > 1) {
       const lastPage = pageCount - 1;
       swiper.slideTo(
@@ -109,33 +120,29 @@ const Discounts = ({ className = "" }) => {
       );
       return;
     }
-
     swiper.slidePrev();
   };
-
+  /**
+   * Переходит к следующей группе слайдов, с переходом на первую страницу в конце.
+   */
   const handleNext = () => {
     const swiper = swiperRef.current;
     if (!swiper) {
       return;
     }
-
     const perView = swiper.params.slidesPerGroup || slidesPerView;
     const maxSnapIndex = Math.max(0, pageCount - 1);
-
     if (pageCount > 1 && (swiper.snapIndex >= maxSnapIndex || swiper.isEnd)) {
       swiper.slideTo(0);
       return;
     }
-
     swiper.slideNext();
   };
-
   return (
     <section className={`discounts ${className}`.trim()}>
       <div className="container">
         <h2 className="discounts__title">Discounts</h2>
       </div>
-
       <div className="discounts__slider-wrap" ref={sliderWrapRef}>
         <button
           type="button"
@@ -145,7 +152,6 @@ const Discounts = ({ className = "" }) => {
         >
           <SliderArrowLeft aria-hidden="true" />
         </button>
-
         <Swiper
           className="discounts__slider"
           slidesPerView={slidesPerView}
@@ -167,7 +173,6 @@ const Discounts = ({ className = "" }) => {
             </SwiperSlide>
           ))}
         </Swiper>
-
         <button
           type="button"
           className="discounts__nav discounts__nav--next"
@@ -177,7 +182,6 @@ const Discounts = ({ className = "" }) => {
           <SliderArrowRight aria-hidden="true" />
         </button>
       </div>
-
       {pageCount > 1 ? (
         <div
           className="discounts__pagination"
@@ -201,7 +205,6 @@ const Discounts = ({ className = "" }) => {
           ))}
         </div>
       ) : null}
-
       {hasMoreDiscounts ? (
         <SeeMoreButton
           to="/discounts"

@@ -1,9 +1,13 @@
+/* Лендинг: hero, популярные товары, скидки, ярлыки категорий. */
 import HeroSection from "../../components/HeroSection/HeroSection";
 import PopularProducts from "../../components/PopularProducts/PopularProducts";
 import Discounts from "../../components/Discounts/Discounts";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
 import "./Home.scss";
 
+/**
+ * Лендинговый маршрут: hero, популярные товары, акции и сетка товаров.
+ */
 const Home = () => {
   return (
     <div className="home">

@@ -1,9 +1,12 @@
-import Discounts from "../../components/Discounts/Discounts";
+/* Товары с активными скидками (требуется авторизованная загрузка каталога). */
 import CatalogListing from "../../components/CatalogListing/CatalogListing";
 import PageSearchHero from "../../components/PageSearchHero/PageSearchHero";
 import { useCatalog } from "../../context/CatalogContext";
 import "./DiscountsPage.scss";
 
+/**
+ * Все товары с активным промо-ценообразованием.
+ */
 const DiscountsPage = () => {
   const { getDiscountProducts, POPULAR_SEARCHES } = useCatalog();
   return (
@@ -16,8 +19,7 @@ const DiscountsPage = () => {
         popularTerms={POPULAR_SEARCHES}
         searchScope={{ scope: "discounts" }}
       />
-
-      {/* <Discounts /> */}
+      {/* Карусель Discounts с главной опущена — полный CatalogListing ниже покрывает страницу. */}
       <CatalogListing
         title="All discounted products"
         subtitle="Catch the best deals before they are gone."

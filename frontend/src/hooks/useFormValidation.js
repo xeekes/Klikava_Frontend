@@ -1,21 +1,40 @@
+/*
+ * Лёгкий хук валидации форм на основе схем из utils/validation.
+ * Ошибки показываются при blur или после отправки (не при каждом нажатии клавиши).
+ */
 import { useCallback, useState } from "react";
 import { hasValidationErrors, validateForm } from "../utils/validation";
 
+/**
+ * Отслеживает состояние валидации полей по карте схемы.
+ * @param {object} schema
+ * @returns {object}
+ */
 export const useFormValidation = (schema) => {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
+  /** Сбрасывает ошибки, флаги touched и флаг submitted. */
   const resetValidation = useCallback(() => {
     setErrors({});
     setTouched({});
     setSubmitted(false);
   }, []);
 
+  /**
+   * Помечает одно поле как touched для условия показа ошибок.
+   * @param {string} field
+   */
   const touch = useCallback((field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
   }, []);
 
+  /**
+   * Валидирует все поля схемы и помечает форму как отправленную.
+   * @param {object} values
+   * @returns {boolean}
+   */
   const validateAll = useCallback(
     (values) => {
       const nextErrors = validateForm(values, schema);
@@ -23,9 +42,15 @@ export const useFormValidation = (schema) => {
       setSubmitted(true);
       return !hasValidationErrors(nextErrors);
     },
-    [schema]
+    [schema],
   );
 
+  /**
+   * Валидирует только указанные поля и объединяет результат с существующими ошибками.
+   * @param {object} values
+   * @param {string[]} fields
+   * @returns {boolean}
+   */
   const validateFields = useCallback(
     (values, fields) => {
       const partialSchema = fields.reduce((acc, field) => {
@@ -34,7 +59,6 @@ export const useFormValidation = (schema) => {
         }
         return acc;
       }, {});
-
       const nextErrors = validateForm(values, partialSchema);
       setErrors((prev) => {
         const merged = { ...prev };
@@ -47,12 +71,16 @@ export const useFormValidation = (schema) => {
         });
         return merged;
       });
-
       return !hasValidationErrors(nextErrors);
     },
-    [schema]
+    [schema],
   );
 
+  /**
+   * Возвращает ошибку поля только после blur или отправки.
+   * @param {string} field
+   * @returns {string|undefined}
+   */
   const getError = useCallback(
     (field) => {
       if (!submitted && !touched[field]) {
@@ -60,15 +88,20 @@ export const useFormValidation = (schema) => {
       }
       return errors[field];
     },
-    [errors, submitted, touched]
+    [errors, submitted, touched],
   );
 
+  /**
+   * Помечает поле touched и перевалидирует его при blur.
+   * @param {object} values
+   * @param {string} field
+   */
   const handleBlur = useCallback(
     (values, field) => {
       touch(field);
       validateFields(values, [field]);
     },
-    [touch, validateFields]
+    [touch, validateFields],
   );
 
   return {

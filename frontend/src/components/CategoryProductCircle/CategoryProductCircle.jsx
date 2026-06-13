@@ -1,23 +1,24 @@
-import { Link } from 'react-router-dom'
-import './CategoryProductCircle.scss'
+/* Круглая ссылка-иконка категории для сеток главной страницы. */
+import { Link } from "react-router-dom";
+import "./CategoryProductCircle.scss";
 
+/**
+ * Круглая ссылка-иконка категории для сеток товаров на главной.
+ */
 const CategoryProductCircle = ({ product }) => {
-  const { id, image, price, title } = product
-
+  const { id, image, price, title } = product;
   return (
     <Link to={`/product/${id}`} className="category-product-circle">
       <div className="circle-image-wrapper">
-        <img 
-          src={image || '/placeholder.jpg'} 
-          alt={title} 
-          className="circle-product-image" 
+        <img
+          src={image || "/placeholder.jpg"}
+          alt={title}
+          className="circle-product-image"
         />
-        {price && (
-          <span className="price-badge">{price}$</span>
-        )}
+        {price && <span className="price-badge">{price}$</span>}
       </div>
     </Link>
-  )
-}
+  );
+};
 
-export default CategoryProductCircle
+export default CategoryProductCircle;

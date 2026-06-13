@@ -1,3 +1,7 @@
+/**
+ * Отображает SVG-ресурс как элемент img для слайдера и навигационных иконок.
+ * @param {object} props
+ */
 const IconImg = ({ src, className, alt = "", ...props }) => (
   <img
     src={src}
@@ -8,5 +12,4 @@ const IconImg = ({ src, className, alt = "", ...props }) => (
     {...props}
   />
 );
-
 export default IconImg;

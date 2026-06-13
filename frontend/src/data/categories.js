@@ -1,3 +1,4 @@
+/* Устаревшее статическое дерево категорий (runtime-каталог приходит из API). */
 export const CATEGORIES = [
   {
     id: "mobile-phones",
@@ -508,6 +509,10 @@ export const CATEGORIES = [
     ],
   },
 ];
-
+/**
+ * Находит запись категории по строковому id.
+ * @param {string} categoryId
+ * @returns {object|undefined}
+ */
 export const getCategoryById = (categoryId) =>
   CATEGORIES.find((category) => category.id === categoryId);

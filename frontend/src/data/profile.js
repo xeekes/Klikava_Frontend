@@ -1,3 +1,4 @@
+/* Устаревшие статические фикстуры профиля (не используются при активном API/local context). */
 import bagImage from "../assets/images/bag.png";
 import carImage from "../assets/images/car.png";
 import phoneImage from "../assets/images/phone.png";
@@ -17,7 +18,6 @@ export const DEFAULT_PERSONAL_INFO = {
   country: "Demo Country",
   password: "********",
 };
-
 const ORDER_PRODUCT_BY_IMAGE = {
   [ringImage]: { id: "ring", title: "Silver Ring" },
   [bearImage]: { id: "bear", title: "Cute Teddy Bear Plush" },
@@ -26,15 +26,18 @@ const ORDER_PRODUCT_BY_IMAGE = {
   [bagImage]: { id: "bag", title: "NUOYAQI Men's Corduroy Crossbody Bag" },
 };
 
+/**
+ * Преобразует URL изображений заказа в готовые к отображению позиции со стабильными id.
+ * @param {object|null} order
+ * @returns {Array<object>}
+ */
 export const getOrderProducts = (order) => {
   if (!order) return [];
-
   return order.images.map((image, index) => {
     const meta = ORDER_PRODUCT_BY_IMAGE[image] || {
       id: `product-${index}`,
       title: order.productTitle,
     };
-
     return {
       id: `${order.id}-${meta.id}-${index}`,
       title: meta.title,
@@ -99,14 +102,12 @@ export const PROFILE_ORDERS = [
     productTitle: "Pair Charming Floral Stud Earrings - Vibrant Multiple",
   },
 ];
-
 export const PROFILE_FAVORITES = ALL_PRODUCTS.slice(0, 4).map((product) => ({
   ...product,
   sold: 422,
   recentLowestPrice: 89,
   rating: 5,
 }));
-
 export const PROFILE_BROWSING_HISTORY = [
   {
     date: "Apr 4, 2025",
@@ -127,14 +128,12 @@ export const PROFILE_BROWSING_HISTORY = [
     })),
   },
 ];
-
 export const PROFILE_COUPONS = Array.from({ length: 9 }, (_, index) => ({
   id: `coupon-${index + 1}`,
   amount: index % 2 === 0 ? "-1.20 $" : "-0.40 $",
   expiry: "until 1 may",
   minOrder: index % 2 === 0 ? "11.88" : "5.00",
 }));
-
 export const PROFILE_FEEDBACK = [
   {
     id: "fb-1",
@@ -153,9 +152,7 @@ export const PROFILE_FEEDBACK = [
     photos: [bagImage, bagImage, bagImage],
   },
 ];
-
 export const PROFILE_SUPPORT_CHAT_DATE = "18.03.2025";
-
 export const PROFILE_CHAT_THREADS = [
   {
     id: "support",
@@ -176,7 +173,6 @@ export const PROFILE_CHAT_THREADS = [
     logo: carImage,
   },
 ];
-
 export const PROFILE_CHAT_MESSAGES = [
   {
     id: "m1",
@@ -207,7 +203,6 @@ export const PROFILE_CHAT_MESSAGES = [
     incoming: true,
   },
 ];
-
 export const PROFILE_TRACK_STEPS = [
   {
     id: "1",
@@ -252,7 +247,6 @@ export const PROFILE_TRACK_STEPS = [
     active: false,
   },
 ];
-
 export const PROFILE_ADDRESSES = [
   {
     id: "addr-1",
@@ -279,7 +273,6 @@ export const PROFILE_ADDRESSES = [
     lines: ["123 Market Street,", "Demo City, DC 10001,", "Demo Country"],
   },
 ];
-
 export const PROFILE_SAVED_CARDS = [
   {
     id: "card-1",
@@ -306,7 +299,6 @@ export const PROFILE_SAVED_CARDS = [
     expiryYear: "2028",
   },
 ];
-
 export const PROFILE_BILLING_ADDRESS = {
   title: "123 Market Street",
   line: "Demo City, DC 10001, Demo Country",
@@ -318,16 +310,28 @@ export const PROFILE_CARD_FORM_DEFAULTS = {
   expiryYear: "2028",
 };
 
+/**
+ * Определяет id товара каталога по первой позиции в заказе.
+ * @param {object} order
+ * @returns {string|number}
+ */
 export const getBuyAgainProductId = (order) => {
   const products = getOrderProducts(order);
   if (!products.length) {
     return ALL_PRODUCTS[0]?.id ?? 1;
   }
-
-  const match = ALL_PRODUCTS.find((product) => product.image === products[0].image);
+  const match = ALL_PRODUCTS.find(
+    (product) => product.image === products[0].image,
+  );
   return match?.id ?? ALL_PRODUCTS[0]?.id ?? 1;
 };
 
+/**
+ * Сужает список заказов до записей, соответствующих id вкладки статуса.
+ * @param {Array<object>} orders
+ * @param {string} tab
+ * @returns {Array<object>}
+ */
 export const filterOrdersByTabFromList = (orders, tab) => {
   if (!tab || tab === "all") {
     return orders;
@@ -335,14 +339,36 @@ export const filterOrdersByTabFromList = (orders, tab) => {
   return orders.filter((order) => order.status === tab);
 };
 
+/**
+ * Находит один заказ в переданном списке по id.
+ * @param {Array<object>} orders
+ * @param {string} orderId
+ * @returns {object|undefined}
+ */
 export const getOrderByIdFromList = (orders, orderId) =>
   orders.find((order) => order.id === orderId);
 
+/**
+ * Находит один mock-заказ в статическом seed-списке профиля.
+ * @param {string} orderId
+ * @returns {object|undefined}
+ */
 export const getOrderById = (orderId) =>
   PROFILE_ORDERS.find((order) => order.id === orderId);
 
-export const filterOrdersByTab = (tab) => filterOrdersByTabFromList(PROFILE_ORDERS, tab);
+/**
+ * Фильтрует статический список заказов профиля по id вкладки статуса.
+ * @param {string} tab
+ * @returns {Array<object>}
+ */
+export const filterOrdersByTab = (tab) =>
+  filterOrdersByTabFromList(PROFILE_ORDERS, tab);
 
+/**
+ * Возвращает ключи действий, доступных для заказов на вкладке с данным статусом.
+ * @param {string} tab
+ * @returns {Array<string>}
+ */
 export const getOrderActions = (tab) => {
   if (tab === "processing" || tab === "sent") {
     return ["track", "buy-again"];

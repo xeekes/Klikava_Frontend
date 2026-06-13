@@ -1,6 +1,10 @@
+/* Переиспользуемая обёртка поля с меткой и слотом ошибки для форм профиля. */
 import { useId } from "react";
 import "./FormField.scss";
 
+/**
+ * Переиспользуемая обёртка поля с меткой и слотом ошибки для форм профиля.
+ */
 const FormField = ({
   label,
   id,
@@ -24,13 +28,13 @@ const FormField = ({
   ]
     .filter(Boolean)
     .join(" ");
-
   let control = children;
-
   if (!control) {
     if (readOnly) {
       control = (
-        <div className={`${controlClasses} form-field__control--readonly`.trim()}>
+        <div
+          className={`${controlClasses} form-field__control--readonly`.trim()}
+        >
           {readOnlyValue ?? controlProps.value ?? ""}
         </div>
       );
@@ -46,7 +50,6 @@ const FormField = ({
       );
     }
   }
-
   return (
     <div
       className={`form-field form-field--${variant} ${
@@ -54,7 +57,10 @@ const FormField = ({
       } ${className}`.trim()}
     >
       {label ? (
-        <label className="form-field__label" htmlFor={readOnly ? undefined : fieldId}>
+        <label
+          className="form-field__label"
+          htmlFor={readOnly ? undefined : fieldId}
+        >
           {label}
         </label>
       ) : null}

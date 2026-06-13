@@ -1,5 +1,17 @@
 @use "../../styles/variables" as *;
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .auth-form__field--invalid {
   .auth-form__input,
   .auth-form__code-input {

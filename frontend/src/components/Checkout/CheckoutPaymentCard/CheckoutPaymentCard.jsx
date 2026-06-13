@@ -1,8 +1,17 @@
+/* Строка сохранённой карты с состоянием выбора при оформлении заказа. */
 import "./CheckoutPaymentCard.scss";
 
-const CheckoutPaymentCard = ({ card, isSelected, onSelect, onEdit, onDelete }) => {
+/**
+ * Строка сохранённой карты с состоянием выбора при оформлении заказа или в профиле.
+ */
+const CheckoutPaymentCard = ({
+  card,
+  isSelected,
+  onSelect,
+  onEdit,
+  onDelete,
+}) => {
   const isProfileMode = Boolean(onDelete);
-
   return (
     <article
       className={`checkout-payment-card ${
@@ -33,7 +42,6 @@ const CheckoutPaymentCard = ({ card, isSelected, onSelect, onEdit, onDelete }) =
           <span className="checkout-payment-card__last4">..{card.last4}</span>
         </div>
       </div>
-
       <div className="checkout-payment-card__actions">
         {isProfileMode ? (
           <button

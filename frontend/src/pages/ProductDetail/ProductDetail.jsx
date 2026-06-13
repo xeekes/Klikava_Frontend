@@ -1,3 +1,7 @@
+/*
+ * Страница товара: загружает обогащённые данные через fetchProductDetail при включённом API,
+ * записывает просмотр в историю, обрабатывает добавление в корзину и похожие товары.
+ */
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
@@ -8,9 +12,11 @@ import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../context/CatalogContext";
 import ProductDetailThumbsSlider from "./ProductDetailThumbsSlider";
 import "./ProductDetail.scss";
-
 const MOBILE_THUMBS_MAX = 768;
 
+/**
+ * Страница одного товара с галереей, характеристиками, отзывами и похожими позициями.
+ */
 const ProductDetail = () => {
   const { id } = useParams();
   const {
@@ -24,7 +30,6 @@ const ProductDetail = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { trackProduct } = useBrowsingHistory();
-
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("details");
@@ -35,10 +40,13 @@ const ProductDetail = () => {
       : false,
   );
   const { addItem } = useCart();
-
   useEffect(() => {
+    /* Защита от обновления state после отмены запроса деталей товара. */
     let cancelled = false;
 
+    /**
+     * Загружает обогащённые данные товара из API или статического каталога.
+     */
     const loadProduct = async () => {
       if (usesApi) {
         setIsLoading(true);
@@ -46,7 +54,6 @@ const ProductDetail = () => {
         if (cancelled) {
           return;
         }
-
         setProduct(detailed);
         setRelatedProducts(
           detailed?.relatedFromApi?.length
@@ -56,39 +63,32 @@ const ProductDetail = () => {
         setIsLoading(false);
         return;
       }
-
       setProduct(getProductById(id));
       setRelatedProducts(getRelatedProducts(id, 8));
     };
-
     loadProduct();
-
     return () => {
       cancelled = true;
     };
   }, [id, usesApi, fetchProductDetail, getProductById, getRelatedProducts]);
-
   useEffect(() => {
     if (product) {
       trackProduct(product);
     }
   }, [product, trackProduct]);
-
   useEffect(() => {
     setActiveImageIndex(0);
     setSelectedColorIndex(0);
   }, [id]);
-
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_THUMBS_MAX}px)`);
-    const updateThumbSlider = () => setUseThumbSlider(mediaQuery.matches);
 
+    /** Синхронизирует режим карусели миниатюр с шириной viewport. */
+    const updateThumbSlider = () => setUseThumbSlider(mediaQuery.matches);
     updateThumbSlider();
     mediaQuery.addEventListener("change", updateThumbSlider);
-
     return () => mediaQuery.removeEventListener("change", updateThumbSlider);
   }, []);
-
   if (isLoading || (usesApi && isCatalogLoading && !product)) {
     return (
       <div className="product-detail">
@@ -98,7 +98,6 @@ const ProductDetail = () => {
       </div>
     );
   }
-
   if (!product) {
     return (
       <div className="product-detail">
@@ -109,12 +108,15 @@ const ProductDetail = () => {
       </div>
     );
   }
-
   const maxDeliveryPercent = Math.max(
     ...product.shipping.stats.map((item) => item.percent),
     1,
   );
 
+  /**
+   * Синхронизирует активный индекс галереи и выбранный swatch при выборе миниатюры.
+   * @param {number} index
+   */
   const handleThumbSelect = (index) => {
     setActiveImageIndex(index);
     if (index < product.colors.length) {
@@ -122,6 +124,9 @@ const ProductDetail = () => {
     }
   };
 
+  /**
+   * Добавляет текущий вариант в корзину и показывает краткое подтверждение.
+   */
   const handleAddToBag = async () => {
     await addItem(
       {
@@ -138,7 +143,6 @@ const ProductDetail = () => {
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
-
   return (
     <div className="product-detail">
       <div className="container">
@@ -175,7 +179,6 @@ const ProductDetail = () => {
                   ))}
                 </ul>
               )}
-
               <div className="product-detail__main-image-wrap">
                 <img
                   src={product.images[activeImageIndex]}
@@ -185,11 +188,9 @@ const ProductDetail = () => {
               </div>
             </div>
           </article>
-
           <article className="product-detail__info-card">
             <div className="product-detail__info-main">
               <h3 className="product-detail__title">{product.title}</h3>
-
               <div className="product-detail__pricing">
                 <div className="product-detail__pricing-top">
                   <div className="product-detail__price-line">
@@ -213,7 +214,6 @@ const ProductDetail = () => {
                   </div>
                 </div>
               </div>
-
               <div className="product-detail__colors">
                 <div className="product-detail__colors-label-wrap">
                   <p className="product-detail__colors-label">COLOR: select</p>
@@ -238,7 +238,6 @@ const ProductDetail = () => {
                   ))}
                 </div>
               </div>
-
               <nav
                 className="product-detail__tabs"
                 aria-label="Product sections"
@@ -257,7 +256,6 @@ const ProductDetail = () => {
                   </button>
                 ))}
               </nav>
-
               <button
                 type="button"
                 className={`product-detail__add-btn ${
@@ -268,143 +266,137 @@ const ProductDetail = () => {
                 {isAdded ? "ADDED TO BAG" : "ADD TO BAG"}
               </button>
             </div>
-
             <aside className="product-detail__panel">
               <div key={activeTab} className="motion-content-swap">
-              {activeTab === "details" && (
-                <div className="product-detail__panel-section">
-                  <h4 className="product-detail__panel-title">
-                    Product Details
-                  </h4>
-                  <ul className="product-detail__specs-list">
-                    {product.specs.map((spec) => (
-                      <li
-                        key={spec.label}
-                        className="product-detail__spec-item"
-                      >
-                        <span className="product-detail__spec-label">
-                          {spec.label}:
-                        </span>{" "}
-                        <span className="product-detail__spec-value">
-                          {spec.value}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {activeTab === "shipping" && (
-                <div className="product-detail__panel-section">
-                  <h4 className="product-detail__panel-title">Shipping</h4>
-
-                  <div className="product-detail__shipping-table">
-                    <span className="product-detail__shipping-label">
-                      Company
-                    </span>
-                    <span className="product-detail__shipping-value">
-                      {product.shipping.company}
-                    </span>
-                    <span className="product-detail__shipping-label">
-                      Delivery time
-                    </span>
-                    <span className="product-detail__shipping-value">
-                      {product.shipping.deliveryTime}
-                    </span>
-                    <span className="product-detail__shipping-label">
-                      Costs
-                    </span>
-                    <span className="product-detail__shipping-value">
-                      {product.shipping.costs}
-                    </span>
-                  </div>
-
-                  <ul className="product-detail__delivery-stats">
-                    {product.shipping.stats.map((stat) => (
-                      <li
-                        key={stat.label}
-                        className="product-detail__delivery-stat"
-                      >
-                        <span className="product-detail__delivery-stat-label">
-                          {stat.label}
-                        </span>
-                        <div className="product-detail__delivery-stat-bar-wrap">
-                          <div
-                            className="product-detail__delivery-stat-bar"
-                            style={{
-                              width: `${(stat.percent / maxDeliveryPercent) * 100}%`,
-                            }}
-                          />
-                        </div>
-                        <span className="product-detail__delivery-stat-value">
-                          {stat.percent}%
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {activeTab === "reviews" && (
-                <div className="product-detail__panel-section product-detail__panel-section--reviews">
-                  <h4 className="product-detail__panel-title">Reviews</h4>
-
-                  <div className="product-detail__reviews-scroll">
-                    <ul className="product-detail__reviews-list">
-                      {product.reviews.length === 0 ? (
-                        <li className="product-detail__review product-detail__review--empty">
-                          No reviews yet.
-                        </li>
-                      ) : null}
-                      {product.reviews.map((review) => (
-                        <li key={review.id} className="product-detail__review">
-                          <div
-                            className="product-detail__review-avatar"
-                            aria-hidden="true"
-                          >
-                            {review.author.charAt(0)}
-                          </div>
-
-                          <div className="product-detail__review-body">
-                            <div className="product-detail__review-top">
-                              <p className="product-detail__review-author">
-                                {review.author}
-                              </p>
-                              <div
-                                className="product-detail__review-rating"
-                                aria-label={`${review.rating} out of 5 stars`}
-                              >
-                                {Array.from({ length: 5 }).map((_, index) => (
-                                  <Star
-                                    key={index}
-                                    className={`product-detail__icon product-detail__icon--star ${
-                                      index < review.rating
-                                        ? ""
-                                        : "product-detail__icon--star-empty"
-                                    }`.trim()}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-
-                            <p className="product-detail__review-text">
-                              {review.text}
-                            </p>
-
-                            {review.image ? (
-                              <img
-                                src={review.image}
-                                alt=""
-                                className="product-detail__review-image"
-                              />
-                            ) : null}
-                          </div>
+                {activeTab === "details" && (
+                  <div className="product-detail__panel-section">
+                    <h4 className="product-detail__panel-title">
+                      Product Details
+                    </h4>
+                    <ul className="product-detail__specs-list">
+                      {product.specs.map((spec) => (
+                        <li
+                          key={spec.label}
+                          className="product-detail__spec-item"
+                        >
+                          <span className="product-detail__spec-label">
+                            {spec.label}:
+                          </span>{" "}
+                          <span className="product-detail__spec-value">
+                            {spec.value}
+                          </span>
                         </li>
                       ))}
                     </ul>
                   </div>
-                </div>
-              )}
+                )}
+                {activeTab === "shipping" && (
+                  <div className="product-detail__panel-section">
+                    <h4 className="product-detail__panel-title">Shipping</h4>
+                    <div className="product-detail__shipping-table">
+                      <span className="product-detail__shipping-label">
+                        Company
+                      </span>
+                      <span className="product-detail__shipping-value">
+                        {product.shipping.company}
+                      </span>
+                      <span className="product-detail__shipping-label">
+                        Delivery time
+                      </span>
+                      <span className="product-detail__shipping-value">
+                        {product.shipping.deliveryTime}
+                      </span>
+                      <span className="product-detail__shipping-label">
+                        Costs
+                      </span>
+                      <span className="product-detail__shipping-value">
+                        {product.shipping.costs}
+                      </span>
+                    </div>
+                    <ul className="product-detail__delivery-stats">
+                      {product.shipping.stats.map((stat) => (
+                        <li
+                          key={stat.label}
+                          className="product-detail__delivery-stat"
+                        >
+                          <span className="product-detail__delivery-stat-label">
+                            {stat.label}
+                          </span>
+                          <div className="product-detail__delivery-stat-bar-wrap">
+                            <div
+                              className="product-detail__delivery-stat-bar"
+                              style={{
+                                width: `${(stat.percent / maxDeliveryPercent) * 100}%`,
+                              }}
+                            />
+                          </div>
+                          <span className="product-detail__delivery-stat-value">
+                            {stat.percent}%
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {activeTab === "reviews" && (
+                  <div className="product-detail__panel-section product-detail__panel-section--reviews">
+                    <h4 className="product-detail__panel-title">Reviews</h4>
+                    <div className="product-detail__reviews-scroll">
+                      <ul className="product-detail__reviews-list">
+                        {product.reviews.length === 0 ? (
+                          <li className="product-detail__review product-detail__review--empty">
+                            No reviews yet.
+                          </li>
+                        ) : null}
+                        {product.reviews.map((review) => (
+                          <li
+                            key={review.id}
+                            className="product-detail__review"
+                          >
+                            <div
+                              className="product-detail__review-avatar"
+                              aria-hidden="true"
+                            >
+                              {review.author.charAt(0)}
+                            </div>
+                            <div className="product-detail__review-body">
+                              <div className="product-detail__review-top">
+                                <p className="product-detail__review-author">
+                                  {review.author}
+                                </p>
+                                <div
+                                  className="product-detail__review-rating"
+                                  aria-label={`${review.rating} out of 5 stars`}
+                                >
+                                  {Array.from({ length: 5 }).map((_, index) => (
+                                    <Star
+                                      key={index}
+                                      className={`product-detail__icon product-detail__icon--star ${
+                                        index < review.rating
+                                          ? ""
+                                          : "product-detail__icon--star-empty"
+                                      }`.trim()}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                              <p className="product-detail__review-text">
+                                {review.text}
+                              </p>
+                              {review.image ? (
+                                <img
+                                  src={review.image}
+                                  alt=""
+                                  className="product-detail__review-image"
+                                />
+                              ) : null}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
             </aside>
           </article>

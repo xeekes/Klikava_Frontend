@@ -1,3 +1,4 @@
+/* Страница результатов поиска; парсит q и scope из query-параметров URL. */
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import CatalogListing from "../../components/CatalogListing/CatalogListing";
@@ -12,32 +13,35 @@ import {
 } from "../../utils/searchScope";
 import "./SearchPage.scss";
 
+/**
+ * Результаты полнотекстового поиска с необязательными фильтрами из URL.
+ */
 const SearchPage = () => {
-  const { searchProducts, getTopProducts, POPULAR_SEARCHES, categories } = useCatalog();
+  const { searchProducts, getTopProducts, POPULAR_SEARCHES, categories } =
+    useCatalog();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
   const scope = useMemo(() => parseSearchScope(searchParams), [searchParams]);
   const scopeLabel = getSearchScopeLabel(scope, categories);
   const isScoped = hasSearchScope(scope);
-
-  const products = useMemo(() => searchProducts(query, scope), [query, scope, searchProducts]);
+  const products = useMemo(
+    () => searchProducts(query, scope),
+    [query, scope, searchProducts],
+  );
   const trendingProducts = useMemo(
     () => getTopProducts("all").slice(0, 4),
     [getTopProducts],
   );
-
   const resultsTitle = query
     ? isScoped
       ? `Results for “${query}” in ${scopeLabel}`
       : `Results for “${query}”`
     : "";
-
   const resultsSubtitle = query
     ? `Found ${products.length} matching product${
         products.length === 1 ? "" : "s"
       }${isScoped ? ` among ${scopeLabel}` : ""}.`
     : "";
-
   return (
     <div className="search-page">
       <PageSearchHero
@@ -55,7 +59,6 @@ const SearchPage = () => {
         autoFocus={!query}
         searchScope={scope}
       />
-
       {query ? (
         <>
           <CatalogListing
@@ -65,7 +68,10 @@ const SearchPage = () => {
             showDiscountFilter={scope.scope === "discounts"}
             emptyMessage={
               <div className="search-page__empty-state">
-                <p>No products matched your search{isScoped ? ` in ${scopeLabel}` : ""}.</p>
+                <p>
+                  No products matched your search
+                  {isScoped ? ` in ${scopeLabel}` : ""}.
+                </p>
                 <p>Try another keyword or broaden your search.</p>
                 <div className="search-page__empty-actions">
                   {isScoped ? (

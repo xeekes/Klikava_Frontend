@@ -1,3 +1,4 @@
+/* Отправка отзыва о товаре из доставленного заказа. */
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "../../iconComponents";
@@ -5,11 +6,19 @@ import ProfileOrderProductForm from "../../components/Profile/ProfileOrderProduc
 import { catalogApi } from "../../api/catalogApi";
 import { hasApiBaseUrl } from "../../api/client";
 import { useUserData } from "../../context/UserDataContext";
-import { getOrderByIdFromList, getOrderProducts } from "../../utils/orderHelpers";
+import {
+  getOrderByIdFromList,
+  getOrderProducts,
+} from "../../utils/orderHelpers";
 import { rules } from "../../utils/validation";
 import "../../styles/profile-page.scss";
 import "./ProfileOrderFormPage.scss";
 
+/**
+ * Создаёт пустые черновики отзывов для каждой позиции заказа.
+ * @param {Array<object>} products
+ * @returns {Array<object>}
+ */
 const createInitialReviews = (products) =>
   products.map(() => ({
     rating: 0,
@@ -17,6 +26,9 @@ const createInitialReviews = (products) =>
     photos: [],
   }));
 
+/**
+ * Поток отправки отзывов для каждого товара в доставленном заказе.
+ */
 const ProfileOrderReview = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
@@ -26,13 +38,17 @@ const ProfileOrderReview = () => {
   const [reviews, setReviews] = useState(() => createInitialReviews(products));
   const [reviewErrors, setReviewErrors] = useState({});
 
+  /**
+   * Объединяет частичные данные отзыва для одного товара и сбрасывает ошибки полей.
+   * @param {number} index
+   * @param {object} patch
+   */
   const updateReview = (index, patch) => {
     setReviews((prev) =>
       prev.map((review, reviewIndex) =>
-        reviewIndex === index ? { ...review, ...patch } : review
-      )
+        reviewIndex === index ? { ...review, ...patch } : review,
+      ),
     );
-
     if (reviewErrors[index]) {
       setReviewErrors((prev) => {
         const next = { ...prev };
@@ -42,21 +58,23 @@ const ProfileOrderReview = () => {
     }
   };
 
+  /**
+   * Проверяет рейтинг и текст черновика отзыва для одного товара.
+   * @param {number} index
+   * @returns {boolean}
+   */
   const validateReview = (index) => {
     const review = reviews[index] ?? { text: "", rating: 0, photos: [] };
     const errors = {
       text: rules.reviewText()(review.text),
       rating: rules.rating()(review.rating),
     };
-
     const hasErrors = Boolean(errors.text || errors.rating);
     if (hasErrors) {
       setReviewErrors((prev) => ({ ...prev, [index]: errors }));
     }
-
     return !hasErrors;
   };
-
   if (!order) {
     return (
       <section className="profile-page">
@@ -68,14 +86,12 @@ const ProfileOrderReview = () => {
       </section>
     );
   }
-
   return (
     <section className="profile-page profile-order-form-page">
       <Link to="/profile/orders" className="profile-page__back">
         <ArrowLeft className="profile-page__back-icon" aria-hidden="true" />
         Leave a review
       </Link>
-
       <div className="profile-order-form-page__list">
         {products.map((product, index) => (
           <ProfileOrderProductForm
@@ -93,15 +109,15 @@ const ProfileOrderReview = () => {
               if (!validateReview(index)) {
                 return;
               }
-
               const review = reviews[index];
               const attachedPhotos = review?.photos?.length
                 ? review.photos
                 : [product.image];
-
               if (hasApiBaseUrl() && product.productId) {
                 try {
-                  const raw = await catalogApi.getProductByIdOrSlug(product.productId);
+                  const raw = await catalogApi.getProductByIdOrSlug(
+                    product.productId,
+                  );
                   const variantId = raw?.current_version?.variants?.[0]?.id;
                   if (variantId) {
                     await catalogApi.createReview(product.productId, {
@@ -111,10 +127,9 @@ const ProfileOrderReview = () => {
                     });
                   }
                 } catch {
-                  // keep local feedback even if API review fails
+                  /* Сохраняем локальный отзыв, даже если отправка через API не удалась. */
                 }
               }
-
               addFeedback({
                 productTitle: product.title,
                 image: product.image,

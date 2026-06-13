@@ -1,7 +1,11 @@
+/* Выбор сохранённой карты и форма новой карты при оформлении заказа. */
 import CheckoutPaymentCard from "../CheckoutPaymentCard/CheckoutPaymentCard";
 import CheckoutCardForm from "../CheckoutCardForm/CheckoutCardForm";
 import "./CheckoutPaymentSection.scss";
 
+/**
+ * Секция выбора сохранённой карты и формы новой карты при оформлении заказа.
+ */
 const CheckoutPaymentSection = ({
   cards,
   selectedCardId,
@@ -20,20 +24,19 @@ const CheckoutPaymentSection = ({
         key={editingCardId ?? "new"}
         className="checkout-payment-section__swap motion-content-swap"
       >
-      <CheckoutCardForm
-        billingLines={billingLines}
-        onAdd={(form) => {
-          onAddCard?.(form);
-          onHideAddForm?.();
-        }}
-        onCancel={onHideAddForm}
-        title={editingCardId ? "Edit your card" : "Add a new card"}
-        submitLabel={editingCardId ? "Save card" : "Add your card"}
-      />
+        <CheckoutCardForm
+          billingLines={billingLines}
+          onAdd={(form) => {
+            onAddCard?.(form);
+            onHideAddForm?.();
+          }}
+          onCancel={onHideAddForm}
+          title={editingCardId ? "Edit your card" : "Add a new card"}
+          submitLabel={editingCardId ? "Save card" : "Add your card"}
+        />
       </div>
     );
   }
-
   return (
     <section className="checkout-payment-section checkout-card motion-content-swap">
       <div className="checkout-payment-section__cards">
@@ -47,7 +50,6 @@ const CheckoutPaymentSection = ({
           />
         ))}
       </div>
-
       <button
         type="button"
         className="checkout-card-footer-link"

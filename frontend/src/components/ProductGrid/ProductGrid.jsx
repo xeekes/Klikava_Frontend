@@ -1,3 +1,4 @@
+/* Адаптивная сетка карточек товаров с хуком пагинации. */
 import ProductCard from "../ProductCard/ProductCard";
 import SeeMoreButton from "../SeeMoreButton/SeeMoreButton";
 import useProductGridColumns from "../../hooks/useProductGridColumns";
@@ -7,12 +8,14 @@ import {
   PRODUCTS_LOAD_MORE_SIZE,
 } from "../../constants/productListing";
 import "./ProductGrid.scss";
-
 import { useCatalog } from "../../context/CatalogContext";
 
 const ROWS_PER_COLUMN = 10;
 const MAX_RESPONSIVE_PRODUCTS = 40;
 
+/**
+ * Адаптивная сетка карточек товаров с режимами пагинации «загрузить ещё» или по ссылке.
+ */
 const ProductGrid = ({
   columns = 5,
   products: productsProp,
@@ -33,7 +36,6 @@ const ProductGrid = ({
     responsiveLimit && isLinkMode
       ? Math.min(effectiveColumns * ROWS_PER_COLUMN, MAX_RESPONSIVE_PRODUCTS)
       : pageSize;
-
   const paginationKey = products.map((product) => product.id).join(",");
   const { visibleItems, hasMore, loadMore } = useProductPagination(
     products,
@@ -44,11 +46,9 @@ const ProductGrid = ({
       loadMoreSize,
     },
   );
-
   const shouldShowLoadMore = isLoadMode && hasMore;
   const shouldShowLink =
     isLinkMode && seeMoreLink && products.length > initialPageSize;
-
   return (
     <section className="product-grid">
       <div className="product-grid__list" style={{ "--grid-columns": columns }}>
@@ -56,11 +56,12 @@ const ProductGrid = ({
           <ProductCard key={product.id} product={product} rounded={rounded} />
         ))}
       </div>
-
       {shouldShowLoadMore ? (
-        <SeeMoreButton onClick={loadMore} wrapClassName="product-grid__actions" />
+        <SeeMoreButton
+          onClick={loadMore}
+          wrapClassName="product-grid__actions"
+        />
       ) : null}
-
       {shouldShowLink && seeMoreLink ? (
         <SeeMoreButton to={seeMoreLink} wrapClassName="product-grid__actions" />
       ) : null}

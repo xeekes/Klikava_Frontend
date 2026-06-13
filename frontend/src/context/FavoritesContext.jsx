@@ -1,3 +1,6 @@
+/*
+ * Список желаний: id товаров в localStorage, разрешаются через товары CatalogContext.
+ */
 import {
   createContext,
   useCallback,
@@ -10,34 +13,51 @@ import {
 import { useCatalog } from "./CatalogContext";
 import { readStorage, STORAGE_KEYS, writeStorage } from "../utils/storage";
 
+/**
+ * Находит товар в списке по числовому или строковому id.
+ * @param {object[]} products
+ * @param {string|number} productId
+ * @returns {object|null}
+ */
 const findProductById = (products, productId) =>
   products.find((item) => String(item.id) === String(productId)) || null;
 
+/** React-контекст для сохранённых id товаров и обработчиков списка желаний. */
 const FavoritesContext = createContext(null);
-
 const FEEDBACK_DURATION_MS = 5500;
 
+/**
+ * Предоставляет состояние списка желаний, сохранение и toast-уведомления дереву компонентов.
+ * @param {{ children: import("react").ReactNode }} props
+ */
 export const FavoritesProvider = ({ children }) => {
   const { products } = useCatalog();
   const [favoriteIds, setFavoriteIds] = useState(() =>
-    readStorage(STORAGE_KEYS.favorites, [])
+    readStorage(STORAGE_KEYS.favorites, []),
   );
   const [wishlistFeedback, setWishlistFeedback] = useState(null);
   const feedbackTimerRef = useRef(null);
 
+  /**
+   * Синхронизирует id избранного с хранилищем при изменении списка в памяти.
+   */
   useEffect(() => {
     writeStorage(STORAGE_KEYS.favorites, favoriteIds);
   }, [favoriteIds]);
 
+  /**
+   * Очищает таймер скрытия уведомления при размонтировании провайдера.
+   */
   useEffect(
     () => () => {
       if (feedbackTimerRef.current) {
         clearTimeout(feedbackTimerRef.current);
       }
     },
-    []
+    [],
   );
 
+  /** Сбрасывает отложенный таймер toast и скрывает активное уведомление списка желаний. */
   const dismissWishlistFeedback = useCallback(() => {
     if (feedbackTimerRef.current) {
       clearTimeout(feedbackTimerRef.current);
@@ -46,6 +66,10 @@ export const FavoritesProvider = ({ children }) => {
     setWishlistFeedback(null);
   }, []);
 
+  /**
+   * Показывает кратковременный toast после добавления или удаления.
+   * @param {object} payload
+   */
   const showWishlistFeedback = useCallback(
     (payload) => {
       dismissWishlistFeedback();
@@ -59,15 +83,20 @@ export const FavoritesProvider = ({ children }) => {
         feedbackTimerRef.current = null;
       }, FEEDBACK_DURATION_MS);
     },
-    [dismissWishlistFeedback]
+    [dismissWishlistFeedback],
   );
 
+  /**
+   * Формирует payload toast из снимка товара и итогового количества.
+   * @param {object|null} product
+   * @param {string} action
+   * @param {number} favoritesCount
+   */
   const notifyWishlistChange = useCallback(
     (product, action, favoritesCount) => {
       if (!product) {
         return;
       }
-
       showWishlistFeedback({
         action,
         product: {
@@ -79,9 +108,13 @@ export const FavoritesProvider = ({ children }) => {
         favoritesCount,
       });
     },
-    [showWishlistFeedback]
+    [showWishlistFeedback],
   );
 
+  /**
+   * Добавляет или удаляет id товара и показывает соответствующий toast.
+   * @param {string|number} productId
+   */
   const toggleFavorite = useCallback(
     (productId) => {
       const id = Number(productId);
@@ -90,36 +123,42 @@ export const FavoritesProvider = ({ children }) => {
       const nextIds = isRemoving
         ? favoriteIds.filter((item) => item !== id)
         : [...favoriteIds, id];
-
       setFavoriteIds(nextIds);
       notifyWishlistChange(
         product,
         isRemoving ? "removed" : "added",
-        nextIds.length
+        nextIds.length,
       );
     },
-    [favoriteIds, notifyWishlistChange, products]
+    [favoriteIds, notifyWishlistChange, products],
   );
 
+  /**
+   * Удаляет id товара, если он есть, и показывает уведомление об удалении.
+   * @param {string|number} productId
+   */
   const removeFavorite = useCallback(
     (productId) => {
       const id = Number(productId);
       const product = findProductById(products, productId);
-
       if (!favoriteIds.includes(id)) {
         return;
       }
-
       const nextIds = favoriteIds.filter((item) => item !== id);
       setFavoriteIds(nextIds);
       notifyWishlistChange(product, "removed", nextIds.length);
     },
-    [favoriteIds, notifyWishlistChange, products]
+    [favoriteIds, notifyWishlistChange, products],
   );
 
+  /**
+   * Проверяет, сохранён ли id товара в списке желаний.
+   * @param {string|number} productId
+   * @returns {boolean}
+   */
   const isFavorite = useCallback(
     (productId) => favoriteIds.includes(Number(productId)),
-    [favoriteIds]
+    [favoriteIds],
   );
 
   const favorites = useMemo(
@@ -133,7 +172,7 @@ export const FavoritesProvider = ({ children }) => {
           recentLowestPrice: product.recentLowestPrice ?? product.price,
           rating: Math.round(product.rating ?? 5),
         })),
-    [favoriteIds, products]
+    [favoriteIds, products],
   );
 
   const value = useMemo(
@@ -154,14 +193,20 @@ export const FavoritesProvider = ({ children }) => {
       isFavorite,
       wishlistFeedback,
       dismissWishlistFeedback,
-    ]
+    ],
   );
 
   return (
-    <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>
+    <FavoritesContext.Provider value={value}>
+      {children}
+    </FavoritesContext.Provider>
   );
 };
 
+/**
+ * Читает состояние списка желаний и действия из ближайшего провайдера.
+ * @returns {object}
+ */
 export const useFavorites = () => {
   const context = useContext(FavoritesContext);
   if (!context) {

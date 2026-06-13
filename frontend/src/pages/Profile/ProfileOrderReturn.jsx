@@ -1,18 +1,30 @@
+/* Форма заявки на возврат заказа. */
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "../../iconComponents";
 import ProfileOrderProductForm from "../../components/Profile/ProfileOrderProductForm/ProfileOrderProductForm";
 import { useUserData } from "../../context/UserDataContext";
-import { getOrderByIdFromList, getOrderProducts } from "../../utils/orderHelpers";
+import {
+  getOrderByIdFromList,
+  getOrderProducts,
+} from "../../utils/orderHelpers";
 import { rules } from "../../utils/validation";
 import "../../styles/profile-page.scss";
 import "./ProfileOrderFormPage.scss";
 
+/**
+ * Создаёт пустые черновики причин возврата для каждой позиции заказа.
+ * @param {Array<object>} products
+ * @returns {Array<object>}
+ */
 const createInitialReturns = (products) =>
   products.map(() => ({
     reason: "",
   }));
 
+/**
+ * Поток оформления возврата для каждого товара в заказе.
+ */
 const ProfileOrderReturn = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
@@ -23,13 +35,17 @@ const ProfileOrderReturn = () => {
   const [returnErrors, setReturnErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
+  /**
+   * Обновляет причину возврата для одного товара и сбрасывает ошибку валидации.
+   * @param {number} index
+   * @param {string} value
+   */
   const updateReturn = (index, value) => {
     setReturns((prev) =>
       prev.map((item, itemIndex) =>
-        itemIndex === index ? { ...item, reason: value } : item
-      )
+        itemIndex === index ? { ...item, reason: value } : item,
+      ),
     );
-
     if (returnErrors[index]) {
       setReturnErrors((prev) => {
         const next = { ...prev };
@@ -38,7 +54,6 @@ const ProfileOrderReturn = () => {
       });
     }
   };
-
   if (!order) {
     return (
       <section className="profile-page">
@@ -50,20 +65,17 @@ const ProfileOrderReturn = () => {
       </section>
     );
   }
-
   return (
     <section className="profile-page profile-order-form-page">
       <Link to="/profile/orders" className="profile-page__back">
         <ArrowLeft className="profile-page__back-icon" aria-hidden="true" />
         Return/Refund
       </Link>
-
       {submitted ? (
         <p className="profile-order-form-page__success">
           Return request submitted. Support will contact you soon.
         </p>
       ) : null}
-
       <div className="profile-order-form-page__list">
         {products.map((product, index) => (
           <ProfileOrderProductForm
@@ -75,14 +87,18 @@ const ProfileOrderReturn = () => {
             textError={returnErrors[index]}
             submitLabel="Return/Refund"
             onSubmit={() => {
-              const reasonError = rules.returnReason()(returns[index]?.reason ?? "");
+              const reasonError = rules.returnReason()(
+                returns[index]?.reason ?? "",
+              );
               if (reasonError) {
                 setReturnErrors((prev) => ({ ...prev, [index]: reasonError }));
                 return;
               }
-
               setSubmitted(true);
-              window.setTimeout(() => navigate("/profile/orders?tab=return"), 1200);
+              window.setTimeout(
+                () => navigate("/profile/orders?tab=return"),
+                1200,
+              );
             }}
           />
         ))}

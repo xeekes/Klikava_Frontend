@@ -1,9 +1,13 @@
+/* Hero-блок страницы со встроенным SiteSearch (скидки, топ-товары и т.д.). */
 import { useNavigate } from "react-router-dom";
 import SiteSearch from "../SiteSearch/SiteSearch";
 import TagSlider from "../TagSlider/TagSlider";
 import { buildSearchUrl } from "../../utils/searchScope";
 import "./PageSearchHero.scss";
 
+/**
+ * Hero-блок страницы со встроенным поиском в области и необязательными популярными терминами.
+ */
 const PageSearchHero = ({
   eyebrow,
   title,
@@ -18,18 +22,22 @@ const PageSearchHero = ({
 }) => {
   const navigate = useNavigate();
   const scope = searchScope || {};
-
+  /**
+   * Переходит к результатам поиска по популярному термину в текущей области.
+   */
   const handlePopularClick = (term) => {
     navigate(buildSearchUrl(term, scope));
   };
-
   return (
     <section className="page-search-hero">
       <div className="container">
-        {eyebrow ? <p className="page-search-hero__eyebrow">{eyebrow}</p> : null}
+        {eyebrow ? (
+          <p className="page-search-hero__eyebrow">{eyebrow}</p>
+        ) : null}
         <h1 className="page-search-hero__title">{title}</h1>
-        {subtitle ? <p className="page-search-hero__subtitle">{subtitle}</p> : null}
-
+        {subtitle ? (
+          <p className="page-search-hero__subtitle">{subtitle}</p>
+        ) : null}
         <SiteSearch
           variant="hero"
           initialQuery={initialQuery}
@@ -37,7 +45,6 @@ const PageSearchHero = ({
           placeholder={placeholder}
           searchScope={searchScope}
         />
-
         {showPopular && popularTerms.length > 0 ? (
           <div className="page-search-hero__popular">
             <span>Popular:</span>
@@ -58,8 +65,9 @@ const PageSearchHero = ({
             </TagSlider>
           </div>
         ) : null}
-
-        {children ? <div className="page-search-hero__extra">{children}</div> : null}
+        {children ? (
+          <div className="page-search-hero__extra">{children}</div>
+        ) : null}
       </div>
     </section>
   );

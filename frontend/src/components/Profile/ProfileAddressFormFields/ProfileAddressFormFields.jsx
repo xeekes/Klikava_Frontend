@@ -1,10 +1,10 @@
+/* Общая группа полей адреса для форм профиля и оформления заказа. */
 import { useMemo, useState } from "react";
 import { useUserData } from "../../../context/UserDataContext";
 import { useFormValidation } from "../../../hooks/useFormValidation";
 import { schemas } from "../../../utils/validation";
 import FormField from "../../FormField/FormField";
 import "./ProfileAddressFormFields.scss";
-
 const EMPTY_FORM = {
   firstName: "",
   lastName: "",
@@ -14,7 +14,6 @@ const EMPTY_FORM = {
   city: "",
   postalCode: "",
 };
-
 const FIELDS = [
   ["firstName", "First Name", "text"],
   ["lastName", "Last Name", "text"],
@@ -25,6 +24,9 @@ const FIELDS = [
   ["postalCode", "Postal Code", "text"],
 ];
 
+/**
+ * Общая группа полей адреса для режимов создания и редактирования в профиле.
+ */
 const ProfileAddressFormFields = ({
   addressId,
   onSubmit,
@@ -35,9 +37,8 @@ const ProfileAddressFormFields = ({
   const { addresses } = useUserData();
   const existing = useMemo(
     () => addresses.find((item) => item.id === addressId),
-    [addresses, addressId]
+    [addresses, addressId],
   );
-
   const [form, setForm] = useState(
     existing
       ? {
@@ -49,25 +50,27 @@ const ProfileAddressFormFields = ({
           city: existing.city,
           postalCode: existing.postalCode,
         }
-      : EMPTY_FORM
+      : EMPTY_FORM,
   );
-
-  const { getError, validateAll, handleBlur } = useFormValidation(schemas.address);
-
+  const { getError, validateAll, handleBlur } = useFormValidation(
+    schemas.address,
+  );
+  /**
+   * Возвращает обработчик изменения одного поля формы адреса.
+   */
   const handleChange = (field) => (event) => {
     setForm((prev) => ({ ...prev, [field]: event.target.value }));
   };
-
+  /**
+   * Проверяет форму и передаёт значения в родительский callback отправки.
+   */
   const handleSubmit = (event) => {
     event.preventDefault();
-
     if (!validateAll(form)) {
       return;
     }
-
     onSubmit?.(form);
   };
-
   return (
     <form
       className={`profile-address-form-fields profile-address-form-fields--${mode}`.trim()}
@@ -87,12 +90,13 @@ const ProfileAddressFormFields = ({
             onBlur={() => handleBlur(form, field)}
             error={getError(field)}
             className={
-              field === "postalCode" ? "profile-address-form-fields__field--postal" : ""
+              field === "postalCode"
+                ? "profile-address-form-fields__field--postal"
+                : ""
             }
           />
         ))}
       </div>
-
       <div className="profile-address-form-fields__actions">
         {onDelete ? (
           <button

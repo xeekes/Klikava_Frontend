@@ -1,3 +1,4 @@
+/* Секция главной страницы: сетка товаров каталога. */
 import { Link } from "react-router-dom";
 import OfferBubble from "../OfferBubble/OfferBubble";
 import TagSlider from "../TagSlider/TagSlider";
@@ -5,12 +6,14 @@ import { useCatalog } from "../../context/CatalogContext";
 import { TOP_PRODUCT_CATEGORIES } from "../../data/topCategories";
 import "./PopularProducts.scss";
 
+/**
+ * Секция главной страницы с пузырьками популярных товаров и чипами категорий.
+ */
 const PopularProducts = ({ className = "" }) => {
   const { getTopProducts } = useCatalog();
   const products = getTopProducts("all");
   const smallProducts = products.slice(0, 4);
   const largeProducts = products.slice(4, 6);
-
   return (
     <section className={`popular-products ${className}`.trim()}>
       <div className="container">
@@ -41,7 +44,6 @@ const PopularProducts = ({ className = "" }) => {
             ))}
           </TagSlider>
         </div>
-
         <div className="products">
           <div className="products-left">
             {smallProducts.map((product) => (
@@ -57,7 +59,6 @@ const PopularProducts = ({ className = "" }) => {
               />
             ))}
           </div>
-
           {largeProducts.map((product) => (
             <OfferBubble
               key={product.id}

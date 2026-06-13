@@ -32,6 +32,12 @@
     background: none;
     display: grid;
     place-items: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0.5rem;
+    border: 0;
+    cursor: pointer;
+
     .site-search__icon {
       width: 18px;
       height: 18px;

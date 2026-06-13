@@ -1,15 +1,16 @@
-export const POPULAR_SEARCHES = [
-  "phone",
-  "bag",
-  "ring",
-  "lamp",
-  "bear",
-  "car",
-];
+/* Утилиты сортировки и фильтрации для страниц каталога. */
 
+/** Популярные быстрые поисковые запросы при пустом поле ввода. */
+export const POPULAR_SEARCHES = ["phone", "bag", "ring", "lamp", "bear", "car"];
+
+/**
+ * Возвращает новый массив, отсортированный по выбранному ключу каталога.
+ * @param {Array<{ price: number, rating: number, sold: number }>} products
+ * @param {string} sortBy
+ * @returns {Array<object>}
+ */
 export const sortProducts = (products, sortBy) => {
   const sorted = [...products];
-
   switch (sortBy) {
     case "price-low":
       return sorted.sort((a, b) => a.price - b.price);
@@ -25,6 +26,12 @@ export const sortProducts = (products, sortBy) => {
   }
 };
 
+/**
+ * Фильтрует товары по диапазону цены, минимальному рейтингу и флагу «только со скидкой».
+ * @param {Array<{ price: number, rating: number, discountPercent?: number }>} products
+ * @param {{ minPrice?: string|number, maxPrice?: string|number, minRating?: string|number, discountedOnly?: boolean }} [options]
+ * @returns {Array<object>}
+ */
 export const filterProducts = (
   products,
   { minPrice, maxPrice, minRating, discountedOnly } = {},
@@ -33,18 +40,26 @@ export const filterProducts = (
     if (discountedOnly && !product.discountPercent) {
       return false;
     }
-
-    if (minPrice !== undefined && minPrice !== "" && product.price < Number(minPrice)) {
+    if (
+      minPrice !== undefined &&
+      minPrice !== "" &&
+      product.price < Number(minPrice)
+    ) {
       return false;
     }
-
-    if (maxPrice !== undefined && maxPrice !== "" && product.price > Number(maxPrice)) {
+    if (
+      maxPrice !== undefined &&
+      maxPrice !== "" &&
+      product.price > Number(maxPrice)
+    ) {
       return false;
     }
-
-    if (minRating !== undefined && minRating !== "" && product.rating < Number(minRating)) {
+    if (
+      minRating !== undefined &&
+      minRating !== "" &&
+      product.rating < Number(minRating)
+    ) {
       return false;
     }
-
     return true;
   });

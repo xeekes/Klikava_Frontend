@@ -1,7 +1,11 @@
+/* Список сообщений чата и поле ввода, привязанные к UserDataContext. */
 import { useMemo, useState } from "react";
 import { useUserData } from "../../../context/UserDataContext";
 import "./ProfileChatPanel.scss";
 
+/**
+ * Список сообщений чата и поле ввода, привязанные к UserDataContext.
+ */
 const ProfileChatPanel = ({
   threads,
   defaultThreadId,
@@ -12,19 +16,15 @@ const ProfileChatPanel = ({
   const initialThreadId = defaultThreadId ?? threads[0]?.id;
   const [activeThreadId, setActiveThreadId] = useState(initialThreadId);
   const [message, setMessage] = useState("");
-
   const activeThread =
     threads.find((thread) => thread.id === activeThreadId) || threads[0];
-
   const visibleMessages = useMemo(
     () => chatMessages.filter((item) => item.id.startsWith("m-")),
-    [chatMessages]
+    [chatMessages],
   );
-
   if (!activeThread) {
     return <p className="profile-page__empty">No conversations yet.</p>;
   }
-
   return (
     <div className="profile-chat__panel">
       <div className="profile-chat__threads">
@@ -35,13 +35,19 @@ const ProfileChatPanel = ({
             className={[
               "profile-chat__thread",
               compactThreads ? "profile-chat__thread--compact" : "",
-              thread.id === activeThreadId ? "profile-chat__thread--active" : "",
+              thread.id === activeThreadId
+                ? "profile-chat__thread--active"
+                : "",
             ]
               .filter(Boolean)
               .join(" ")}
             onClick={() => setActiveThreadId(thread.id)}
           >
-            <img className="profile-chat__thread-avatar" src={thread.logo} alt="" />
+            <img
+              className="profile-chat__thread-avatar"
+              src={thread.logo}
+              alt=""
+            />
             <div className="profile-chat__thread-body">
               <div className="profile-chat__thread-top">
                 <p>
@@ -67,7 +73,6 @@ const ProfileChatPanel = ({
           </button>
         ))}
       </div>
-
       <div className="profile-chat__conversation">
         <div className="profile-chat__conversation-header">
           <img
@@ -84,7 +89,6 @@ const ProfileChatPanel = ({
             </p>
           </div>
         </div>
-
         <div className="profile-chat__messages">
           {dateSeparator ? (
             <div className="profile-chat__date-separator">
@@ -93,7 +97,6 @@ const ProfileChatPanel = ({
               </p>
             </div>
           ) : null}
-
           {visibleMessages.map((item) => (
             <div
               key={item.id}
@@ -128,7 +131,6 @@ const ProfileChatPanel = ({
             </div>
           ))}
         </div>
-
         <form
           className="profile-chat__composer"
           onSubmit={(event) => {
@@ -137,7 +139,11 @@ const ProfileChatPanel = ({
             setMessage("");
           }}
         >
-          <button type="button" className="profile-chat__attach" aria-label="Attach file">
+          <button
+            type="button"
+            className="profile-chat__attach"
+            aria-label="Attach file"
+          >
             <svg
               className="profile-chat__attach-icon"
               width="20"

@@ -1,3 +1,4 @@
+/* Недавно просмотренные товары, сгруппированные по дате. */
 import ProductCard from "../../components/ProductCard/ProductCard";
 import SeeMoreButton from "../../components/SeeMoreButton/SeeMoreButton";
 import { useBrowsingHistory } from "../../context/BrowsingHistoryContext";
@@ -5,12 +6,15 @@ import useProductPagination from "../../hooks/useProductPagination";
 import "../../styles/profile-page.scss";
 import "./ProfileBrowsingHistory.scss";
 
+/**
+ * Рендерит одну группу недавно просмотренных товаров по дате с пагинацией.
+ * @param {{ group: { date: string, products: Array<object> } }} props
+ */
 const BrowsingHistoryGroup = ({ group }) => {
   const { visibleItems, hasMore, loadMore } = useProductPagination(
     group.products,
     group.date,
   );
-
   return (
     <section className="profile-browsing-history__group">
       <h2 className="profile-browsing-history__date">{group.date}</h2>
@@ -24,7 +28,6 @@ const BrowsingHistoryGroup = ({ group }) => {
           />
         ))}
       </div>
-
       {hasMore ? (
         <SeeMoreButton
           onClick={loadMore}
@@ -35,13 +38,14 @@ const BrowsingHistoryGroup = ({ group }) => {
   );
 };
 
+/**
+ * Недавно просмотренные товары, сгруппированные по дате посещения.
+ */
 const ProfileBrowsingHistory = () => {
   const { groups } = useBrowsingHistory();
-
   return (
     <section className="profile-page profile-browsing-history">
       <h1 className="profile-page__title">Browsing history</h1>
-
       {groups.length === 0 ? (
         <p className="profile-page__empty">No browsing history yet.</p>
       ) : (

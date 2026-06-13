@@ -1,3 +1,7 @@
+/*
+ * Плавающий toast для действий с корзиной/избранным; одновременно виден только один.
+ * Рендерится один раз в MainLayout, читает данные из CartContext и FavoritesContext.
+ */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -5,67 +9,60 @@ import { useCart } from "../../context/CartContext";
 import { useFavorites } from "../../context/FavoritesContext";
 import { Heart } from "../../iconComponents";
 import "./ShoppingFeedback.scss";
-
 const CLOSE_MS = 280;
 
+/**
+ * Плавающий toast для действий с корзиной и избранным; одновременно виден только один.
+ */
 const ShoppingFeedback = () => {
   const { isAuthenticated } = useAuth();
   const { cartFeedback, dismissCartFeedback } = useCart();
   const { wishlistFeedback, dismissWishlistFeedback } = useFavorites();
-
   const activeFeedback = cartFeedback ?? wishlistFeedback;
   const dismissActive = cartFeedback
     ? dismissCartFeedback
     : dismissWishlistFeedback;
-
   const [visible, setVisible] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
-
   useEffect(() => {
     if (cartFeedback) {
       dismissWishlistFeedback();
     }
   }, [cartFeedback, dismissWishlistFeedback]);
-
   useEffect(() => {
     if (wishlistFeedback) {
       dismissCartFeedback();
     }
   }, [wishlistFeedback, dismissCartFeedback]);
-
   useEffect(() => {
     if (activeFeedback) {
       setVisible(activeFeedback);
       setIsClosing(false);
     }
   }, [activeFeedback]);
-
   useEffect(() => {
     if (activeFeedback || !visible) {
       return undefined;
     }
-
     setIsClosing(true);
     const timer = window.setTimeout(() => {
       setVisible(null);
       setIsClosing(false);
     }, CLOSE_MS);
-
     return () => window.clearTimeout(timer);
   }, [activeFeedback, visible]);
-
   if (!visible) {
     return null;
   }
-
+  /**
+   * Закрывает активный toast обратной связи и проигрывает анимацию выхода.
+   */
   const handleContinue = () => {
     dismissActive();
   };
-
   if (visible.type === "cart") {
     const { product, action, itemCount, total } = visible;
     const checkoutPath = isAuthenticated ? "/checkout" : "/cart";
-
     return (
       <div
         className={`shopping-feedback shopping-feedback--cart ${
@@ -102,7 +99,6 @@ const ShoppingFeedback = () => {
               </p>
             </div>
           </div>
-
           <div className="shopping-feedback__actions">
             <button
               type="button"
@@ -126,7 +122,6 @@ const ShoppingFeedback = () => {
               Checkout
             </Link>
           </div>
-
           <button
             type="button"
             className="shopping-feedback__close"
@@ -139,10 +134,8 @@ const ShoppingFeedback = () => {
       </div>
     );
   }
-
   const { product, action, favoritesCount } = visible;
   const isAdded = action === "added";
-
   return (
     <div
       className={`shopping-feedback shopping-feedback--wishlist ${
@@ -178,7 +171,6 @@ const ShoppingFeedback = () => {
             ) : null}
           </div>
         </div>
-
         <div className="shopping-feedback__actions">
           <button
             type="button"
@@ -197,7 +189,6 @@ const ShoppingFeedback = () => {
             </Link>
           ) : null}
         </div>
-
         <button
           type="button"
           className="shopping-feedback__close"

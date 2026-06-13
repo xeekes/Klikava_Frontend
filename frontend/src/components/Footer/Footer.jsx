@@ -1,3 +1,4 @@
+/* Подвал сайта со ссылками и заглушкой подписки на рассылку. */
 import { Link } from "react-router-dom";
 import "./Footer.scss";
 import {
@@ -8,6 +9,9 @@ import {
   YouTube,
 } from "../../iconComponents";
 
+/**
+ * Подвал сайта с навигационными ссылками и заглушками соцсетей.
+ */
 const Footer = () => {
   return (
     <footer className="footer">
@@ -19,7 +23,6 @@ const Footer = () => {
               KLIK<span>AVA</span>
             </span>
           </Link>
-
           <div className="footer-column">
             <h3 className="footer-heading">Company info</h3>
             <div className="footer-column-links">
@@ -28,7 +31,6 @@ const Footer = () => {
               </Link>
             </div>
           </div>
-
           <div className="footer-column">
             <h3 className="footer-heading">Collaborate with us</h3>
             <div className="footer-column-links">
@@ -40,7 +42,6 @@ const Footer = () => {
               </Link>
             </div>
           </div>
-
           <div className="footer-column">
             <h3 className="footer-heading">Support service</h3>
             <div className="footer-column-links">
@@ -52,7 +53,6 @@ const Footer = () => {
               </Link>
             </div>
           </div>
-
           <div className="footer-column">
             <h3 className="footer-heading">Connect with BuyWay</h3>
             <div className="social-icons">
@@ -95,7 +95,6 @@ const Footer = () => {
             </div>
           </div>
         </div>
-
         <div className="footer-copyright">
           <p className="footer-copyright-text">© 2025 KlikAVA Inc.</p>
         </div>

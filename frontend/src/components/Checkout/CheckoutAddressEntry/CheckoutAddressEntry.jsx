@@ -1,17 +1,23 @@
+/* Строка адреса только для чтения с действиями выбора/редактирования. */
 import FormField from "../../FormField/FormField";
 import "./CheckoutAddressEntry.scss";
 
+/**
+ * Разделяет строки адреса на улицу и остаток для отображения.
+ */
 const getAddressDisplay = (lines) => {
   if (!lines?.length) {
     return { street: "", rest: "" };
   }
-
   return {
     street: lines[0],
     rest: lines.slice(1).join(" "),
   };
 };
 
+/**
+ * Строка адреса только для чтения с действиями выбора и редактирования при оформлении заказа.
+ */
 const CheckoutAddressEntry = ({
   address,
   isSelected,
@@ -21,7 +27,6 @@ const CheckoutAddressEntry = ({
   onMore,
 }) => {
   const { street, rest } = getAddressDisplay(address.lines);
-
   return (
     <div
       className={`checkout-address-entry ${
@@ -34,7 +39,6 @@ const CheckoutAddressEntry = ({
           <FormField variant="gray" readOnly readOnlyValue={address.phone} />
         </div>
       </div>
-
       <div className="checkout-address-entry__address-box">
         {street ? (
           <p className="checkout-address-entry__address-line">{street}</p>
@@ -43,7 +47,6 @@ const CheckoutAddressEntry = ({
           <p className="checkout-address-entry__address-line">{rest}</p>
         ) : null}
       </div>
-
       <div className="checkout-address-entry__actions">
         <div className="checkout-address-entry__action-group">
           <button
@@ -55,11 +58,14 @@ const CheckoutAddressEntry = ({
           >
             Select this
           </button>
-          <button type="button" className="checkout-outline-btn" onClick={onEdit}>
+          <button
+            type="button"
+            className="checkout-outline-btn"
+            onClick={onEdit}
+          >
             Edit
           </button>
         </div>
-
         {showMore ? (
           <button type="button" className="checkout-text-btn" onClick={onMore}>
             More...

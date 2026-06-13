@@ -1,3 +1,4 @@
+/* Меню пользователя с учётом авторизации: ссылка входа или выпадающий профиль. */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -11,91 +12,96 @@ import { useAuth } from "../../../context/AuthContext";
 import { useUserData } from "../../../context/UserDataContext";
 import { useAuthModal } from "../../../hooks/useAuthModal";
 import { useMotionPresence } from "../../../hooks/useMotionPresence";
-import { readStorage, STORAGE_KEYS, writeStorage } from "../../../utils/storage";
+import {
+  readStorage,
+  STORAGE_KEYS,
+  writeStorage,
+} from "../../../utils/storage";
 import "./HeaderUserMenu.scss";
-
 const LANGUAGES = [
   { id: "en", label: "English" },
   { id: "ru", label: "Russian" },
   { id: "uk", label: "Ukrainian" },
 ];
 
+/**
+ * Меню пользователя с учётом авторизации: ссылка входа или выпадающий профиль.
+ */
 const HeaderUserMenu = () => {
   const navigate = useNavigate();
   const { openAuth } = useAuthModal();
   const { isAuthenticated, logout, user } = useAuth();
   const { personalInfo } = useUserData();
   const rootRef = useRef(null);
-
   const [isOpen, setIsOpen] = useState(false);
   const [isLanguagesOpen, setIsLanguagesOpen] = useState(false);
   const menuMotion = useMotionPresence(isAuthenticated && isOpen);
   const languagesMotion = useMotionPresence(isLanguagesOpen);
-  const [activeLanguage, setActiveLanguage] = useState(
-    () => readStorage(STORAGE_KEYS.language, "en")
+  const [activeLanguage, setActiveLanguage] = useState(() =>
+    readStorage(STORAGE_KEYS.language, "en"),
   );
-
   const userName = useMemo(() => {
     if (user?.displayName) {
       return user.displayName;
     }
-
     if (user?.emailOrPhone) {
       return user.emailOrPhone;
     }
-
-    const fullName = `${personalInfo.firstName} ${personalInfo.lastName}`.trim();
+    const fullName =
+      `${personalInfo.firstName} ${personalInfo.lastName}`.trim();
     return fullName || "User Name";
   }, [user, personalInfo.firstName, personalInfo.lastName]);
-
+  /**
+   * Сворачивает выпадающий список и вложенное подменю языка.
+   */
   const closeMenu = () => {
     setIsOpen(false);
     setIsLanguagesOpen(false);
   };
-
+  /**
+   * Открывает модальное окно авторизации для гостей или переключает выпадающий профиль.
+   */
   const handleToggle = () => {
     if (!isAuthenticated) {
       openAuth("/login");
       return;
     }
-
     setIsOpen((prev) => !prev);
     setIsLanguagesOpen(false);
   };
-
+  /**
+   * Выходит из аккаунта и возвращает на главную страницу.
+   */
   const handleLogout = async () => {
     closeMenu();
     await logout();
     navigate("/");
   };
-
+  /**
+   * Сохраняет выбранный язык интерфейса и закрывает подменю.
+   */
   const handleLanguageSelect = (languageId) => {
     setActiveLanguage(languageId);
     writeStorage(STORAGE_KEYS.language, languageId);
     setIsLanguagesOpen(false);
   };
-
   useEffect(() => {
     if (!isOpen) {
       return undefined;
     }
-
     const handlePointerDown = (event) => {
       if (!rootRef.current?.contains(event.target)) {
         closeMenu();
       }
     };
-
     document.addEventListener("mousedown", handlePointerDown);
     return () => document.removeEventListener("mousedown", handlePointerDown);
   }, [isOpen]);
-
   useEffect(() => {
     if (!isAuthenticated) {
       closeMenu();
     }
   }, [isAuthenticated]);
-
   return (
     <div
       ref={rootRef}
@@ -113,7 +119,6 @@ const HeaderUserMenu = () => {
           aria-hidden="true"
         />
       </button>
-
       {menuMotion.rendered ? (
         <div
           className={`header-user-menu__dropdown ${menuMotion.className}`.trim()}
@@ -121,10 +126,12 @@ const HeaderUserMenu = () => {
           <div className="header-user-menu__head">
             <p className="header-user-menu__name">{userName}</p>
             <span className="header-user-menu__avatar">
-              <User className="header-user-menu__avatar-icon" aria-hidden="true" />
+              <User
+                className="header-user-menu__avatar-icon"
+                aria-hidden="true"
+              />
             </span>
           </div>
-
           <ul className="header-user-menu__list">
             <li className="header-user-menu__item-row">
               <Link
@@ -132,7 +139,10 @@ const HeaderUserMenu = () => {
                 className="header-user-menu__item"
                 onClick={closeMenu}
               >
-                <Filter className="header-user-menu__item-icon" aria-hidden="true" />
+                <Filter
+                  className="header-user-menu__item-icon"
+                  aria-hidden="true"
+                />
                 <span className="header-user-menu__item-label">Settings</span>
                 <MenuArrowRight
                   className="header-user-menu__item-arrow"
@@ -140,7 +150,6 @@ const HeaderUserMenu = () => {
                 />
               </Link>
             </li>
-
             <li
               className={`header-user-menu__item-row header-user-menu__item-row--languages ${
                 isLanguagesOpen ? "header-user-menu__item-row--active" : ""
@@ -164,7 +173,6 @@ const HeaderUserMenu = () => {
                   aria-hidden="true"
                 />
               </button>
-
               {languagesMotion.rendered ? (
                 <div
                   className={`header-user-menu__submenu ${languagesMotion.className}`.trim()}
@@ -186,14 +194,16 @@ const HeaderUserMenu = () => {
                 </div>
               ) : null}
             </li>
-
             <li className="header-user-menu__item-row">
               <button
                 type="button"
                 className="header-user-menu__item"
                 onClick={handleLogout}
               >
-                <Logout className="header-user-menu__item-icon" aria-hidden="true" />
+                <Logout
+                  className="header-user-menu__item-icon"
+                  aria-hidden="true"
+                />
                 <span className="header-user-menu__item-label">Log out</span>
                 <MenuArrowRight
                   className="header-user-menu__item-arrow"

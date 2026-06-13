@@ -1,3 +1,7 @@
+/**
+ * Логотип Google для входа через соцсети на форме авторизации.
+ * @param {object} props
+ */
 const Google = (props) => (
   <svg
     width="18"
@@ -26,5 +30,4 @@ const Google = (props) => (
     />
   </svg>
 );
-
 export default Google;

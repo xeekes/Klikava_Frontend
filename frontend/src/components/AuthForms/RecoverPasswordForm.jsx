@@ -1,3 +1,4 @@
+/* Точка входа восстановления пароля (только mock-поток верификации). */
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { AUTH_FLOW } from "../../constants/auth";
@@ -9,20 +10,25 @@ import AuthCard from "./AuthCard";
 import AuthFormMessage from "./AuthFormMessage";
 import "./AuthForms.scss";
 
+/**
+ * Точка входа восстановления пароля, запускающая только mock-поток верификации.
+ */
 const RecoverPasswordForm = () => {
   const { openAuth } = useAuthModal();
   const { sendVerificationCode, isSubmitting, error, clearError } = useAuth();
   const [emailOrPhone, setEmailOrPhone] = useState("");
-  const { getError, validateAll, handleBlur } = useFormValidation(schemas.emailOrPhone);
-
+  const { getError, validateAll, handleBlur } = useFormValidation(
+    schemas.emailOrPhone,
+  );
+  /**
+   * Отправляет код верификации для восстановления и открывает шаг OTP.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     clearError();
-
     if (!validateAll({ emailOrPhone })) {
       return;
     }
-
     try {
       await sendVerificationCode({
         emailOrPhone,
@@ -32,16 +38,14 @@ const RecoverPasswordForm = () => {
         state: { flow: AUTH_FLOW.RECOVER, emailOrPhone },
       });
     } catch {
-      // error is shown via context
+      // ошибка отображается через контекст
     }
   };
-
   return (
     <AuthCard title="Recover password">
       <AuthFormMessage error={error} />
-
       <form className="auth-form__body" onSubmit={handleSubmit} noValidate>
-        <AuthFormField error={getError("emailOrPhone")}>
+        <AuthFormField label="Email or phone" error={getError("emailOrPhone")}>
           <input
             type="text"
             className="auth-form__input"
@@ -53,8 +57,11 @@ const RecoverPasswordForm = () => {
             disabled={isSubmitting}
           />
         </AuthFormField>
-
-        <button type="submit" className="auth-form__submit" disabled={isSubmitting}>
+        <button
+          type="submit"
+          className="auth-form__submit"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? "Sending..." : "Continue"}
         </button>
       </form>

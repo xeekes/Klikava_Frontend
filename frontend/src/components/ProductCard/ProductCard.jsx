@@ -1,9 +1,13 @@
+/* Плитка одного товара: цена, переключатель избранного, ссылка на детали. */
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useFavorites } from "../../context/FavoritesContext";
 import "./ProductCard.scss";
 import { Cart, Clock, Heart, Star } from "../../iconComponents";
 
+/**
+ * Плитка одного товара с ценой, переключателем избранного и ссылкой на детали.
+ */
 const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
   const { addItem } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -14,7 +18,6 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
     typeof discountPercent === "number" &&
     discountPercent > 0 &&
     typeof originalPrice === "number";
-
   const cardClassName = [
     "product-card",
     rounded ? "product-card--rounded" : "",
@@ -22,25 +25,30 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
   ]
     .filter(Boolean)
     .join(" ");
-
+  /**
+   * Добавляет товар в корзину из варианта разметки с корзиной.
+   */
   const handleAddToBasket = (event) => {
     event.preventDefault();
     event.stopPropagation();
     addItem(product);
   };
-
+  /**
+   * Переключает членство в избранном без перехода по ссылке карточки.
+   */
   const handleToggleFavorite = (event) => {
     event.preventDefault();
     event.stopPropagation();
     toggleFavorite(id);
   };
-
+  /**
+   * Добавляет товар в корзину из компактной строки действий.
+   */
   const handleQuickAdd = (event) => {
     event.preventDefault();
     event.stopPropagation();
     addItem(product);
   };
-
   const summary = (
     <div className="product-card__summary">
       <div className="product-card__summary-main">
@@ -55,7 +63,6 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
           <p className="product-card__sold-count">{sold} sold</p>
         ) : null}
       </div>
-
       <span className="product-card__rating">
         <Star className="product-card__icon product-card__icon--star" />
         <Star className="product-card__icon product-card__icon--star" />
@@ -65,21 +72,17 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
       </span>
     </div>
   );
-
   if (showAddToBasket) {
     return (
       <article className={cardClassName}>
         <Link to={`/product/${id}`} className="product-card__image-link">
           <img src={image} alt={title} className="product-card__image" />
         </Link>
-
         <div className="product-card__content">
           <Link to={`/product/${id}`} className="product-card__title">
             {title}
           </Link>
-
           {summary}
-
           <button
             type="button"
             className="product-card__add-to-basket"
@@ -91,20 +94,19 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
       </article>
     );
   }
-
   return (
     <Link to={`/product/${id}`} className={cardClassName}>
       <div className="product-card__image-wrap">
         <img src={image} alt={title} className="product-card__image" />
         {hasDiscount ? (
-          <span className="product-card__discount-badge">-{discountPercent}%</span>
+          <span className="product-card__discount-badge">
+            -{discountPercent}%
+          </span>
         ) : null}
       </div>
       <div className="product-card__content">
         <h3 className="product-card__title">{title}</h3>
-
         {summary}
-
         <div className="product-card__actions-row">
           <p className="product-card__sold-count">{sold} sold</p>
           <div className="product-card__add-to-cart">

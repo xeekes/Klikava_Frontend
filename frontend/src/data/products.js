@@ -1,3 +1,4 @@
+/* Устаревшие статические seed-данные товаров (не используются при заданном VITE_API_BASE_URL). */
 import bagImage from "../assets/images/bag.png";
 import carImage from "../assets/images/car.png";
 import phoneImage from "../assets/images/phone.png";
@@ -24,7 +25,6 @@ const PRODUCT_IMAGES = [
   socksImage,
   bearImage,
 ];
-
 const BRANDS = [
   "Aurora",
   "Velora",
@@ -57,7 +57,6 @@ const BRANDS = [
   "Northline",
   "Southgate",
 ];
-
 const GENERIC_LINES = [
   "Essential",
   "Premium",
@@ -68,7 +67,6 @@ const GENERIC_LINES = [
   "Everyday",
   "Signature",
 ];
-
 const CATEGORY_LINES = {
   "mobile-phones": [
     "5G Handset",
@@ -311,9 +309,7 @@ const CATEGORY_LINES = {
     "Garment Bag",
   ],
 };
-
 const DISCOUNT_PERCENTS = [8, 10, 12, 15, 18, 20, 22, 25, 28, 30, 35, 40];
-
 const CATEGORY_TOP_MAP = {
   "mobile-phones": "office",
   computers: "office",
@@ -340,21 +336,39 @@ const CATEGORY_TOP_MAP = {
   "wedding-events": "home",
   "travel-luggage": "office",
 };
-
+/**
+ * Ограничивает число генерируемых товаров на категорию в зависимости от количества подкатегорий.
+ * @param {object} category
+ * @returns {number}
+ */
 const getSlotsForCategory = (category) =>
   Math.max(4, Math.min(category.subcategories.length, 8));
 
+/**
+ * Вычисляет цену со скидкой, исходную цену и процент скидки из базовой суммы.
+ * @param {number} basePrice
+ * @param {number} discountPercent
+ * @returns {{ price: number, originalPrice: number, discountPercent: number }}
+ */
 const applyDiscount = (basePrice, discountPercent) => {
   const originalPrice = basePrice;
-  const price = Math.max(1, Math.round(originalPrice * (1 - discountPercent / 100)));
-
+  const price = Math.max(
+    1,
+    Math.round(originalPrice * (1 - discountPercent / 100)),
+  );
   return {
     price,
     originalPrice,
     discountPercent,
   };
 };
-
+/**
+ * Формирует детерминированное уникальное название товара из индексов категории и слота.
+ * @param {number} id
+ * @param {number} categoryIndex
+ * @param {string} categoryId
+ * @returns {string}
+ */
 const buildUniqueTitle = (id, categoryIndex, categoryId) => {
   const brand = BRANDS[(id * 3 + categoryIndex * 7) % BRANDS.length];
   const lines = CATEGORY_LINES[categoryId] || GENERIC_LINES;
@@ -362,49 +376,54 @@ const buildUniqueTitle = (id, categoryIndex, categoryId) => {
   const model = 1000 + ((id * 37 + categoryIndex * 13) % 9000);
   return `${brand} ${line} ${model}`;
 };
-
+/**
+ * Вычисляет псевдослучайную базовую цену из индексов товара и слота.
+ * @param {number} id
+ * @param {number} categoryIndex
+ * @param {number} slotIndex
+ * @returns {number}
+ */
 const buildBasePrice = (id, categoryIndex, slotIndex) =>
   19 + ((id * 47 + categoryIndex * 19 + slotIndex * 31) % 880);
 
+/**
+ * Генерирует полный статический каталог товаров из метаданных категорий.
+ * @returns {Array<object>}
+ */
 const buildCatalog = () => {
   const products = [];
   const usedTitles = new Set();
   let id = 1;
-
   CATEGORIES.forEach((category, categoryIndex) => {
     const slotCount = getSlotsForCategory(category);
     const topCategoryId = CATEGORY_TOP_MAP[category.id] || "home";
-
     for (let slotIndex = 0; slotIndex < slotCount; slotIndex += 1) {
-      const subcategory = category.subcategories[slotIndex % category.subcategories.length];
+      const subcategory =
+        category.subcategories[slotIndex % category.subcategories.length];
       let title = buildUniqueTitle(id, categoryIndex, category.id);
-
       while (usedTitles.has(title)) {
         title = `${title} Mk.${slotIndex + 1}`;
       }
-
       usedTitles.add(title);
-
       const basePrice = buildBasePrice(id, categoryIndex, slotIndex);
       const hasDiscount = (id + categoryIndex) % 3 !== 1;
       const pricing = hasDiscount
         ? applyDiscount(
             basePrice,
-            DISCOUNT_PERCENTS[(id + slotIndex) % DISCOUNT_PERCENTS.length]
+            DISCOUNT_PERCENTS[(id + slotIndex) % DISCOUNT_PERCENTS.length],
           )
         : {
             price: basePrice,
             originalPrice: undefined,
             discountPercent: undefined,
           };
-
       const isTop = slotIndex < 2;
-      const image = PRODUCT_IMAGES[(id + categoryIndex + slotIndex) % PRODUCT_IMAGES.length];
+      const image =
+        PRODUCT_IMAGES[
+          (id + categoryIndex + slotIndex) % PRODUCT_IMAGES.length
+        ];
       const isScaleModel =
-        category.id === "automobiles" &&
-        slotIndex === 0 &&
-        image === carImage;
-
+        category.id === "automobiles" && slotIndex === 0 && image === carImage;
       products.push({
         id,
         title,
@@ -421,68 +440,75 @@ const buildCatalog = () => {
         rating: Number((3.4 + ((id * 17 + slotIndex) % 16) / 10).toFixed(1)),
         ...(isScaleModel ? { reviewsPreset: "car" } : {}),
       });
-
       id += 1;
     }
   });
-
   return products;
 };
 
 export const ALL_PRODUCTS = buildCatalog();
 
+/**
+ * Возвращает товары с положительным процентом скидки.
+ * @returns {Array<object>}
+ */
 export const getDiscountProducts = () =>
   ALL_PRODUCTS.filter(
     (product) =>
-      typeof product.discountPercent === "number" && product.discountPercent > 0
+      typeof product.discountPercent === "number" &&
+      product.discountPercent > 0,
   );
-
 export const DISCOUNT_PRODUCTS = getDiscountProducts();
-
 const MIN_TOP_PRODUCTS = 6;
 
+/**
+ * Возвращает помеченные топ-продавцы, опционально фильтруя по id топ-категории с добором.
+ * @param {string} [topCategoryId]
+ * @returns {Array<object>}
+ */
 export const getTopProducts = (topCategoryId = "all") => {
   const topProducts = ALL_PRODUCTS.filter((product) => product.isTop);
-
   if (topCategoryId === "all") {
     return topProducts;
   }
-
   const filtered = topProducts.filter(
-    (product) => product.topCategoryId === topCategoryId
+    (product) => product.topCategoryId === topCategoryId,
   );
-
   if (filtered.length >= MIN_TOP_PRODUCTS) {
     return filtered;
   }
-
   const usedIds = new Set(filtered.map((product) => product.id));
-
   return [
     ...filtered,
     ...topProducts.filter((product) => !usedIds.has(product.id)),
   ].slice(0, MIN_TOP_PRODUCTS);
 };
 
+/**
+ * Возвращает товары категории, опционально сужая по названию подкатегории.
+ * @param {string} categoryId
+ * @param {string} [subcategory]
+ * @returns {Array<object>}
+ */
 export const getProductsByCategory = (categoryId, subcategory) => {
-  let products = ALL_PRODUCTS.filter((product) => product.categoryId === categoryId);
-
+  let products = ALL_PRODUCTS.filter(
+    (product) => product.categoryId === categoryId,
+  );
   if (subcategory) {
-    products = products.filter((product) => product.subcategory === subcategory);
+    products = products.filter(
+      (product) => product.subcategory === subcategory,
+    );
   }
-
   return products;
 };
 
-export const POPULAR_SEARCHES = [
-  "phone",
-  "bag",
-  "ring",
-  "lamp",
-  "bear",
-  "car",
-];
+export const POPULAR_SEARCHES = ["phone", "bag", "ring", "lamp", "bear", "car"];
 
+/**
+ * Определяет пул товаров для дескриптора scope поиска или листинга.
+ * @param {object} [scope]
+ * @returns {Array<object>}
+ */
 export const getProductsForScope = (scope = {}) => {
   switch (scope.scope) {
     case "discounts":
@@ -498,43 +524,48 @@ export const getProductsForScope = (scope = {}) => {
       return ALL_PRODUCTS;
   }
 };
-
+/**
+ * Фильтрует список товаров по токенам запроса, разделённым пробелами.
+ * @param {Array<object>} products
+ * @param {string} query
+ * @returns {Array<object>}
+ */
 const filterProductsByQuery = (products, query) => {
   const normalizedQuery = query.trim().toLowerCase();
-
   if (!normalizedQuery) {
     return products;
   }
-
   const tokens = normalizedQuery.split(/\s+/).filter(Boolean);
-
   return products.filter((product) => {
-    const haystack = [
-      product.title,
-      product.categoryName,
-      product.subcategory,
-    ]
+    const haystack = [product.title, product.categoryName, product.subcategory]
       .join(" ")
       .toLowerCase();
-
     return tokens.every((token) => haystack.includes(token));
   });
 };
 
+/**
+ * Ищет в scoped-пуле товаров по произвольному текстовому запросу.
+ * @param {string} query
+ * @param {object} [scope]
+ * @returns {Array<object>}
+ */
 export const searchProducts = (query, scope = {}) => {
   const pool = getProductsForScope(scope);
   return filterProductsByQuery(pool, query);
 };
 
+/**
+ * Сопоставляет названия категорий и подкатегорий с поисковым запросом.
+ * @param {string} query
+ * @returns {Array<object>}
+ */
 export const searchCategories = (query) => {
   const normalizedQuery = query.trim().toLowerCase();
-
   if (!normalizedQuery) {
     return [];
   }
-
   const results = [];
-
   CATEGORIES.forEach((category) => {
     if (category.name.toLowerCase().includes(normalizedQuery)) {
       results.push({
@@ -543,7 +574,6 @@ export const searchCategories = (query) => {
         subcategory: null,
       });
     }
-
     category.subcategories.forEach((subcategory) => {
       if (subcategory.toLowerCase().includes(normalizedQuery)) {
         results.push({
@@ -555,17 +585,21 @@ export const searchCategories = (query) => {
       }
     });
   });
-
   return results;
 };
 
+/**
+ * Формирует подсказки автодополнения из товаров, категорий и популярных запросов.
+ * @param {string} query
+ * @param {object} [options]
+ * @returns {{ products: Array<object>, categories: Array<object>, popular: Array<string> }}
+ */
 export const getSearchSuggestions = (
   query,
-  { productLimit = 5, categoryLimit = 4, ...scope } = {}
+  { productLimit = 5, categoryLimit = 4, ...scope } = {},
 ) => {
   const normalizedQuery = query.trim();
   const showCategories = !scope.scope || scope.scope === "category";
-
   if (!normalizedQuery) {
     return {
       products: [],
@@ -573,7 +607,6 @@ export const getSearchSuggestions = (
       popular: POPULAR_SEARCHES,
     };
   }
-
   return {
     products: searchProducts(normalizedQuery, scope).slice(0, productLimit),
     categories: showCategories
@@ -583,9 +616,14 @@ export const getSearchSuggestions = (
   };
 };
 
+/**
+ * Возвращает отсортированную копию товаров по выбранному ключу сортировки.
+ * @param {Array<object>} products
+ * @param {string} sortBy
+ * @returns {Array<object>}
+ */
 export const sortProducts = (products, sortBy) => {
   const sorted = [...products];
-
   switch (sortBy) {
     case "price-low":
       return sorted.sort((a, b) => a.price - b.price);
@@ -601,30 +639,43 @@ export const sortProducts = (products, sortBy) => {
   }
 };
 
+/**
+ * Применяет фильтры цены, рейтинга и скидки к списку товаров.
+ * @param {Array<object>} products
+ * @param {object} [filters]
+ * @returns {Array<object>}
+ */
 export const filterProducts = (
   products,
-  { minPrice, maxPrice, minRating, discountedOnly } = {}
+  { minPrice, maxPrice, minRating, discountedOnly } = {},
 ) =>
   products.filter((product) => {
     if (discountedOnly && !product.discountPercent) {
       return false;
     }
-
-    if (minPrice !== undefined && minPrice !== "" && product.price < Number(minPrice)) {
+    if (
+      minPrice !== undefined &&
+      minPrice !== "" &&
+      product.price < Number(minPrice)
+    ) {
       return false;
     }
-
-    if (maxPrice !== undefined && maxPrice !== "" && product.price > Number(maxPrice)) {
+    if (
+      maxPrice !== undefined &&
+      maxPrice !== "" &&
+      product.price > Number(maxPrice)
+    ) {
       return false;
     }
-
-    if (minRating !== undefined && minRating !== "" && product.rating < Number(minRating)) {
+    if (
+      minRating !== undefined &&
+      minRating !== "" &&
+      product.rating < Number(minRating)
+    ) {
       return false;
     }
-
     return true;
   });
-
 const defaultProductDetails = {
   sold: 422,
   recentLowestPrice: 80,
@@ -688,7 +739,6 @@ const defaultProductDetails = {
     },
   ],
 };
-
 const CITY_SPORT_CAR_REVIEWS = [
   {
     id: 1,
@@ -756,16 +806,18 @@ const CITY_SPORT_CAR_REVIEWS = [
     image: carImage,
   },
 ];
-
+/**
+ * Обогащает товар каталога галереей, характеристиками, доставкой и фикстурами отзывов.
+ * @param {string|number} id
+ * @returns {object|null}
+ */
 export const getProductById = (id) => {
   const product = ALL_PRODUCTS.find((item) => item.id === Number(id));
   if (!product) return null;
-
   const images = Array.from(
     { length: defaultProductDetails.imagesCount },
-    () => product.image
+    () => product.image,
   );
-
   return {
     ...product,
     ...defaultProductDetails,
@@ -781,21 +833,26 @@ export const getProductById = (id) => {
   };
 };
 
+/**
+ * Возвращает альтернативы из той же категории с запасным вариантом из широкого каталога.
+ * @param {string|number} id
+ * @param {number} [limit]
+ * @returns {Array<object>}
+ */
 export const getRelatedProducts = (id, limit = 8) => {
   const product = ALL_PRODUCTS.find((item) => item.id === Number(id));
-
   if (!product) {
-    return ALL_PRODUCTS.filter((item) => item.id !== Number(id)).slice(0, limit);
+    return ALL_PRODUCTS.filter((item) => item.id !== Number(id)).slice(
+      0,
+      limit,
+    );
   }
-
   const sameCategory = ALL_PRODUCTS.filter(
-    (item) => item.id !== Number(id) && item.categoryId === product.categoryId
+    (item) => item.id !== Number(id) && item.categoryId === product.categoryId,
   );
-
   if (sameCategory.length >= limit) {
     return sameCategory.slice(0, limit);
   }
-
   const fallback = ALL_PRODUCTS.filter((item) => item.id !== Number(id));
   return [...sameCategory, ...fallback].slice(0, limit);
 };

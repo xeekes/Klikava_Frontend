@@ -1,6 +1,11 @@
+/* Переиспользуемый макет для статических информационных/маркетинговых страниц. */
 import { Link } from "react-router-dom";
 import "./InfoPage.scss";
 
+/**
+ * Общая обёртка макета для статического маркетингового и информационного контента.
+ * @param {{ eyebrow?: string, title: string, children: import("react").ReactNode, actions?: Array<{ to: string, label: string }> }} props
+ */
 const InfoPage = ({ eyebrow, title, children, actions = [] }) => {
   return (
     <section className="info-page">
@@ -11,7 +16,11 @@ const InfoPage = ({ eyebrow, title, children, actions = [] }) => {
         {actions.length ? (
           <div className="info-page__actions">
             {actions.map((action) => (
-              <Link key={action.to} to={action.to} className="info-page__action">
+              <Link
+                key={action.to}
+                to={action.to}
+                className="info-page__action"
+              >
                 {action.label}
               </Link>
             ))}

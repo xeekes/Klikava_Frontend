@@ -1,48 +1,54 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Cart, Heart, Star } from '../../iconComponents'
-import './ProductCardDetailed.scss'
+/* Расширенный вариант карточки товара с дополнительной строкой метаданных. */
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Cart, Heart, Star } from "../../iconComponents";
+import "./ProductCardDetailed.scss";
 
+/**
+ * Расширенный вариант карточки товара с дополнительными метаданными и строкой действий.
+ */
 const ProductCardDetailed = ({ product }) => {
-  const { id, title, price, lowestPrice, images, rating, sold } = product
-  const [isLiked, setIsLiked] = useState(false)
-  
-  const productImages = images || [product.image || '/placeholder.jpg']
-
+  const { id, title, price, lowestPrice, images, rating, sold } = product;
+  const [isLiked, setIsLiked] = useState(false);
+  const productImages = images || [product.image || "/placeholder.jpg"];
+  /**
+   * Формирует иконки заполненных и пустых звёзд для заданного числового рейтинга.
+   */
   const renderStars = (rating) => {
-    const fullStars = Math.floor(rating)
-    const stars = []
-    
+    const fullStars = Math.floor(rating);
+    const stars = [];
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<Star key={i} className="star-filled" />)
+      stars.push(<Star key={i} className="star-filled" />);
     }
-    const emptyStars = 5 - fullStars
+    const emptyStars = 5 - fullStars;
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<Star key={`empty-${i}`} className="star-empty" />)
+      stars.push(<Star key={`empty-${i}`} className="star-empty" />);
     }
-    
-    return stars
-  }
-
+    return stars;
+  };
+  /**
+   * Переключает локальное состояние «понравилось» без перехода на страницу товара.
+   */
   const handleLike = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsLiked(!isLiked)
-  }
-
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLiked(!isLiked);
+  };
+  /**
+   * Заглушка действия корзины, пока логирующая id товара.
+   */
   const handleAddToCart = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    console.log('Добавить в корзину:', id)
-  }
-
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Добавить в корзину:", id);
+  };
   return (
     <Link to={`/product/${id}`} className="product-card-detailed">
       <div className="product-image-detailed">
-        <img 
-          src={productImages[0]} 
-          alt={title} 
-          className="product-detailed-img" 
+        <img
+          src={productImages[0]}
+          alt={title}
+          className="product-detailed-img"
         />
       </div>
       <div className="product-info-detailed">
@@ -55,22 +61,18 @@ const ProductCardDetailed = ({ product }) => {
             Lowest recent price: {lowestPrice}$
           </div>
         )}
-        {sold && (
-          <div className="sold-info">{sold} sold</div>
-        )}
+        {sold && <div className="sold-info">{sold} sold</div>}
         <div className="product-rating-detailed">
-          <div className="stars-container">
-            {renderStars(rating || 5)}
-          </div>
+          <div className="stars-container">{renderStars(rating || 5)}</div>
           <div className="product-actions-detailed">
-            <button 
-              className={`action-button like-button ${isLiked ? 'liked' : ''}`}
+            <button
+              className={`action-button like-button ${isLiked ? "liked" : ""}`}
               onClick={handleLike}
               aria-label="Добавить в избранное"
             >
               <Heart className={isLiked ? "liked" : ""} />
             </button>
-            <button 
+            <button
               className="action-button cart-button"
               onClick={handleAddToCart}
               aria-label="Добавить в корзину"
@@ -81,7 +83,7 @@ const ProductCardDetailed = ({ product }) => {
         </div>
       </div>
     </Link>
-  )
-}
+  );
+};
 
-export default ProductCardDetailed
+export default ProductCardDetailed;

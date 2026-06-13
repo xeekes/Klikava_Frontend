@@ -1,9 +1,9 @@
+/* Форма адреса при оформлении заказа со схемой валидации. */
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
 import { schemas } from "../../../utils/validation";
 import FormField from "../../FormField/FormField";
 import "./CheckoutAddressForm.scss";
-
 const EMPTY_FORM = {
   firstName: "",
   lastName: "",
@@ -13,7 +13,6 @@ const EMPTY_FORM = {
   city: "",
   postalCode: "",
 };
-
 const FIELDS = [
   ["firstName", "First Name", "text"],
   ["lastName", "Last Name", "text"],
@@ -24,11 +23,13 @@ const FIELDS = [
   ["postalCode", "Postal Code", "text"],
 ];
 
+/**
+ * Преобразует сущность сохранённого адреса в плоские значения полей формы.
+ */
 const addressToFormValues = (address) => {
   if (!address) {
     return EMPTY_FORM;
   }
-
   return {
     firstName: address.firstName ?? "",
     lastName: address.lastName ?? "",
@@ -40,6 +41,9 @@ const addressToFormValues = (address) => {
   };
 };
 
+/**
+ * Форма адреса с валидацией для добавления или редактирования при оформлении заказа.
+ */
 const CheckoutAddressForm = ({
   initialAddress = null,
   onSave,
@@ -48,27 +52,33 @@ const CheckoutAddressForm = ({
   submitLabel = "Add",
 }) => {
   const [form, setForm] = useState(() => addressToFormValues(initialAddress));
-  const { getError, validateAll, handleBlur } = useFormValidation(schemas.address);
-
+  const { getError, validateAll, handleBlur } = useFormValidation(
+    schemas.address,
+  );
+  /**
+   * Возвращает обработчик изменения одного поля формы адреса.
+   */
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
   };
-
+  /**
+   * Проверяет форму и передаёт значения в родительский callback сохранения.
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!validateAll(form)) {
       return;
     }
-
     onSave?.(form);
     setForm(EMPTY_FORM);
   };
-
   return (
-    <form className="checkout-address-form checkout-card" onSubmit={handleSubmit} noValidate>
+    <form
+      className="checkout-address-form checkout-card"
+      onSubmit={handleSubmit}
+      noValidate
+    >
       <h2 className="checkout-address-form__title">{title}</h2>
-
       <div className="checkout-address-form__grid">
         {FIELDS.map(([field, label, type]) => (
           <FormField
@@ -87,13 +97,16 @@ const CheckoutAddressForm = ({
           />
         ))}
       </div>
-
       <div className="checkout-form-actions">
         <button type="submit" className="checkout-form-submit">
           {submitLabel}
         </button>
         {onCancel ? (
-          <button type="button" className="checkout-form-cancel" onClick={onCancel}>
+          <button
+            type="button"
+            className="checkout-form-cancel"
+            onClick={onCancel}
+          >
             Cancel
           </button>
         ) : null}

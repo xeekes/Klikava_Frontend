@@ -1,3 +1,4 @@
+/* Hero-баннер главной страницы со ссылками CTA. */
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -6,17 +7,19 @@ import { ArrowRight, Sale } from "../../iconComponents";
 import OfferBubble from "../OfferBubble/OfferBubble";
 import { useCatalog } from "../../context/CatalogContext";
 
+/**
+ * Hero-баннер главной страницы со ссылками CTA и каруселью недельных предложений.
+ */
 const HeroSection = ({ className = "" }) => {
   const { getDiscountProducts } = useCatalog();
   const offers = getDiscountProducts().slice(0, 5);
-
   return (
     <section className={`hero-section ${className}`.trim()}>
       <div className="container">
         <h1 className="hero-section-title">
           <span className="hero-section-title__top">
-            <span className="hero-sections-title__line">
-              YOUR TERRITORR
+            <span className="hero-section-title__line">
+              YOUR TERRITOR
               <span className="hero-section-title__y">
                 Y
                 <Sale className="hero-section-title__sale" aria-hidden="true" />
@@ -28,13 +31,11 @@ const HeroSection = ({ className = "" }) => {
             BENEFITABLE SHOPPING
           </span>
         </h1>
-
         <div className="top-offers">
           <Link to="/discounts" className="top-offers-title">
             <span>TOP OFFER OF THE WEEK</span>
             <ArrowRight className="arrow-right" />
           </Link>
-
           <Swiper
             className="offers offers--slider"
             slidesPerView={1}

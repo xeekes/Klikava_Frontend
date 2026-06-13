@@ -1,30 +1,42 @@
+/*
+ * Антикоррупционный слой: преобразует вложенные структуры product/category FastAPI
+ * в плоскую модель товара, используемую в UI каталога.
+ */
 import bagImage from "../assets/images/bag.png";
 import phoneImage from "../assets/images/phone.png";
 import carImage from "../assets/images/car.png";
 
 const FALLBACK_IMAGES = [bagImage, phoneImage, carImage];
 
+/**
+ * Определяет URL изображения товара из вложенных полей picture или локальных заглушек.
+ * @param {object} item
+ * @param {number} index
+ * @returns {string}
+ */
 const pickImage = (item, index) => {
   const pictures =
     item?.pictures ||
     item?.current_version?.pictures ||
     item?.versions?.[0]?.pictures ||
     [];
-
   const url =
     pictures[0]?.url ||
     pictures[0]?.image_url ||
     pictures[0]?.path ||
     item?.image_url ||
     item?.image;
-
   if (typeof url === "string" && url.length > 0) {
     return url.startsWith("http") ? url : url;
   }
-
   return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
 };
 
+/**
+ * Извлекает отображаемое название из вложенных полей version или name.
+ * @param {object} item
+ * @returns {string}
+ */
 const pickTitle = (item) =>
   item?.title ||
   item?.current_version?.title ||
@@ -32,31 +44,38 @@ const pickTitle = (item) =>
   item?.name ||
   `Product ${item?.id ?? "?"}`;
 
+/**
+ * Читает актуальную цену продажи из первого доступного варианта или полей price верхнего уровня.
+ * @param {object} item
+ * @returns {number}
+ */
 const pickPrice = (item) => {
   const variant =
     item?.variants?.[0] ||
     item?.current_version?.variants?.[0] ||
     item?.versions?.[0]?.variants?.[0];
-
   const raw =
     variant?.final_price ??
     variant?.price ??
     item?.price ??
     item?.current_version?.price ??
     item?.min_price;
-
   const price = Number(raw);
   return Number.isFinite(price) ? price : 0;
 };
 
+/**
+ * Вычисляет цену со скидкой, зачёркнутую оригинальную и процент скидки из данных варианта.
+ * @param {object} item
+ * @param {number} price
+ * @returns {{ price: number, originalPrice?: number, discountPercent?: number }}
+ */
 const pickDiscount = (item, price) => {
   const variant =
     item?.variants?.[0] ||
     item?.current_version?.variants?.[0] ||
     item?.versions?.[0]?.variants?.[0];
-
   const discount = Number(variant?.discount ?? item?.discount ?? 0);
-
   if (!discount || discount <= 0 || price <= 0) {
     return {
       price,
@@ -64,9 +83,8 @@ const pickDiscount = (item, price) => {
       discountPercent: undefined,
     };
   }
-
+  /* Бэкенд отдаёт финальную цену и % скидки; выводим зачёркнутую оригинальную для UI. */
   const originalPrice = Number((price / (1 - discount / 100)).toFixed(2));
-
   return {
     price,
     originalPrice,
@@ -74,12 +92,22 @@ const pickDiscount = (item, price) => {
   };
 };
 
+/**
+ * Преобразует произвольный текст в URL-safe slug для маршрутов товара.
+ * @param {string} value
+ * @returns {string}
+ */
 const slugify = (value) =>
   String(value || "item")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
+/**
+ * Преобразует запись категории бэкенда в плоскую модель для навигации и фильтров.
+ * @param {object} category
+ * @returns {object}
+ */
 export const mapBackendCategory = (category) => ({
   id: String(category.id),
   backendId: category.id,
@@ -89,7 +117,18 @@ export const mapBackendCategory = (category) => ({
   subcategories: category.subcategories || [],
 });
 
-export const mapBackendProduct = (item, index = 0, categoryLookup = new Map()) => {
+/**
+ * Преобразует вложенный товар бэкенда в форму карточки каталога с ценой и категорией.
+ * @param {object} item
+ * @param {number} [index]
+ * @param {Map<number|string, object>} [categoryLookup]
+ * @returns {object}
+ */
+export const mapBackendProduct = (
+  item,
+  index = 0,
+  categoryLookup = new Map(),
+) => {
   const title = pickTitle(item);
   const basePrice = pickPrice(item);
   const pricing = pickDiscount(item, basePrice);
@@ -101,7 +140,6 @@ export const mapBackendProduct = (item, index = 0, categoryLookup = new Map()) =
   const category =
     categoryLookup.get(categoryId) ||
     (embeddedCategory ? mapBackendCategory(embeddedCategory) : null);
-
   return {
     id: item?.id ?? item?.product_id ?? `api-${index}`,
     slug: item?.slug || item?.current_version?.slug || slugify(title),
@@ -119,9 +157,20 @@ export const mapBackendProduct = (item, index = 0, categoryLookup = new Map()) =
   };
 };
 
+/**
+ * Преобразует массив товаров бэкенда с общим lookup категорий и индексами списка.
+ * @param {Array<object>} [items]
+ * @param {Map<number|string, object>} [categoryLookup]
+ * @returns {Array<object>}
+ */
 export const mapBackendProductList = (items = [], categoryLookup = new Map()) =>
   items.map((item, index) => mapBackendProduct(item, index, categoryLookup));
 
+/**
+ * Преобразует запись отзыва бэкенда в формат страницы товара.
+ * @param {object} review
+ * @returns {object}
+ */
 export const mapBackendReview = (review) => ({
   id: review.id,
   author: `User ${review.user_id ?? ""}`.trim(),
@@ -130,30 +179,37 @@ export const mapBackendReview = (review) => ({
   date: review.created_at,
 });
 
+/**
+ * Разворачивает features варианта в строки характеристик label/value для страницы товара.
+ * @param {object|null|undefined} variant
+ * @returns {Array<{ label: string, value: string }>}
+ */
 export const mapVariantFeaturesToSpecs = (variant) =>
   (variant?.features || []).map((entry) => ({
     label: entry.feature?.title || "Feature",
     value: entry.value || "",
   }));
 
+/**
+ * Применяет отдельные правила скидок (категория, продавец, товар) к ценам товаров.
+ * @param {Array<object>} products
+ * @param {Array<object>} [discounts]
+ * @returns {Array<object>}
+ */
 export const applyCatalogDiscounts = (products, discounts = []) => {
   if (!discounts.length) {
     return products;
   }
-
   const activeDiscounts = discounts.filter((item) => item.is_active !== false);
-
   return products.map((product) => {
     const sellerId = product.backendRaw?.seller_id;
     const categoryId = Number(product.categoryId);
     let bestPercent = Number(product.discountPercent) || 0;
-
     activeDiscounts.forEach((discount) => {
       const value = Number(discount.value);
       if (!Number.isFinite(value) || value <= 0) {
         return;
       }
-
       const matchesCategory =
         discount.target_type === "CATEGORY" &&
         Number(discount.target_id) === categoryId;
@@ -163,23 +219,18 @@ export const applyCatalogDiscounts = (products, discounts = []) => {
       const matchesProduct =
         discount.target_type === "PRODUCT" &&
         Number(discount.target_id) === Number(product.id);
-
       if (matchesCategory || matchesSeller || matchesProduct) {
         bestPercent = Math.max(bestPercent, value);
       }
     });
-
     if (bestPercent <= 0) {
       return product;
     }
-
     const basePrice = Number(product.originalPrice ?? product.price) || 0;
     if (basePrice <= 0) {
       return { ...product, discountPercent: bestPercent };
     }
-
     const price = Number((basePrice * (1 - bestPercent / 100)).toFixed(2));
-
     return {
       ...product,
       price,

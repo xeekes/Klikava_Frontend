@@ -1,20 +1,23 @@
+/* Товары, отфильтрованные по :categoryId и необязательному параметру маршрута :subcategory. */
 import { Link, Navigate, useParams } from "react-router-dom";
 import CatalogListing from "../../components/CatalogListing/CatalogListing";
 import PageSearchHero from "../../components/PageSearchHero/PageSearchHero";
 import { useCatalog } from "../../context/CatalogContext";
 import "./CategoryListingPage.scss";
 
+/**
+ * Листинг товаров одной категории из параметров маршрута.
+ */
 const CategoryListingPage = () => {
   const { categories, getProductsByCategory } = useCatalog();
   const { categoryId } = useParams();
-  const category = categories.find((item) => String(item.id) === String(categoryId));
-
+  const category = categories.find(
+    (item) => String(item.id) === String(categoryId),
+  );
   if (!category) {
     return <Navigate to="/categories" replace />;
   }
-
   const products = getProductsByCategory(category.id);
-
   return (
     <div className="category-listing-page">
       <PageSearchHero
@@ -28,13 +31,11 @@ const CategoryListingPage = () => {
           categoryId: category.id,
         }}
       />
-
       <div className="container category-listing-page__nav">
         <Link to="/categories" className="category-listing-page__back">
           All categories
         </Link>
       </div>
-
       <CatalogListing
         title={category.name}
         subtitle={category.description || `Products in ${category.name}.`}

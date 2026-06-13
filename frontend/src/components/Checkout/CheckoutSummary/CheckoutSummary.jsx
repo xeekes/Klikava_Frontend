@@ -1,18 +1,26 @@
+/*
+ * Боковая панель итогов заказа: применяет стоимость доставки и активный купон, сохраняет заказ
+ * в UserDataContext (localStorage) и очищает корзину при оформлении заказа.
+ */
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../../context/CartContext";
 import { useUserData } from "../../../context/UserDataContext";
 import { DELIVERY_FEE } from "../../../constants/delivery";
 import "./CheckoutSummary.scss";
 
+/**
+ * Боковая панель итогов заказа, сохраняющая заказ и очищающая корзину при оформлении.
+ */
 const CheckoutSummary = () => {
   const navigate = useNavigate();
   const { items, total, itemCount, isEmpty, clearCart } = useCart();
   const { addOrder, activeCoupon, clearCoupon } = useUserData();
-
   const deliveryTotal = isEmpty ? 0 : DELIVERY_FEE;
   const couponDiscount = activeCoupon ? 1.2 : 0;
   const orderTotal = Math.max(total + deliveryTotal - couponDiscount, 0);
-
+  /**
+   * Сохраняет заказ в данные пользователя, очищает корзину и купон, затем выполняет навигацию.
+   */
   const handlePlaceOrder = async () => {
     const orderId = `PO-${Date.now()}`;
     addOrder({
@@ -32,11 +40,9 @@ const CheckoutSummary = () => {
     clearCoupon();
     navigate("/order-success", { state: { orderId } });
   };
-
   if (isEmpty) {
     return null;
   }
-
   return (
     <aside className="checkout-summary">
       <div className="checkout-summary__thumbs">
@@ -49,7 +55,6 @@ const CheckoutSummary = () => {
           />
         ))}
       </div>
-
       <div className="checkout-summary__rows">
         <div className="checkout-summary__row">
           <span>{itemCount} item</span>
@@ -66,7 +71,6 @@ const CheckoutSummary = () => {
           </div>
         ) : null}
       </div>
-
       <button
         type="button"
         className="checkout-summary__place-order"

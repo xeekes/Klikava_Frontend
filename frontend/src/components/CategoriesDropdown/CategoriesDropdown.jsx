@@ -1,24 +1,28 @@
+/* Мега-меню категорий в шапке из CatalogContext. */
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCatalog } from "../../context/CatalogContext";
 import "./CategoriesDropdown.scss";
 
+/**
+ * Мега-меню категорий в шапке, заполняемое из CatalogContext.
+ */
 const CategoriesDropdown = () => {
   const { categories } = useCatalog();
   const [activeCategoryId, setActiveCategoryId] = useState(categories[0]?.id);
-
   if (!categories.length) {
     return (
-      <div className="categories-dropdown categories-dropdown--empty" role="menu">
+      <div
+        className="categories-dropdown categories-dropdown--empty"
+        role="menu"
+      >
         <p>No categories</p>
       </div>
     );
   }
-
   const activeCategory =
     categories.find((category) => category.id === activeCategoryId) ??
     categories[0];
-
   return (
     <div className="categories-dropdown" role="menu" aria-label="Categories">
       <ul className="categories-dropdown__main-list">
@@ -38,7 +42,6 @@ const CategoriesDropdown = () => {
           </li>
         ))}
       </ul>
-
       <div
         key={activeCategoryId}
         className="categories-dropdown__subcategories motion-content-swap"

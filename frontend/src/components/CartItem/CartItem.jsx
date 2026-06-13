@@ -1,7 +1,11 @@
+/* Позиция корзины со степпером количества и действием удаления. */
 import { Link } from "react-router-dom";
 import { Clock, Star } from "../../iconComponents";
 import "./CartItem.scss";
 
+/**
+ * Позиция корзины со степпером количества и действием удаления.
+ */
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   const rating = item.rating ?? 5;
   const sold = item.sold ?? 422;
@@ -9,18 +13,15 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     typeof item.discountPercent === "number" &&
     item.discountPercent > 0 &&
     typeof item.originalPrice === "number";
-
   return (
     <article className="cart-item">
       <Link to={`/product/${item.productId}`} className="cart-item__image-wrap">
         <img src={item.image} alt={item.title} />
       </Link>
-
       <div className="cart-item__body">
         <Link to={`/product/${item.productId}`} className="cart-item__title">
           {item.title}
         </Link>
-
         <div className="cart-item__summary">
           <div className="cart-item__price-line">
             <Clock className="cart-item__icon cart-item__icon--clock" />
@@ -30,7 +31,6 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
             ) : null}
           </div>
         </div>
-
         <div className="cart-item__meta">
           <p className="cart-item__sold">{sold} sold</p>
           <div className="cart-item__rating" aria-label={`${rating} stars`}>
@@ -44,7 +44,6 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
             ))}
           </div>
         </div>
-
         <div className="cart-item__footer">
           <div className="cart-item__controls">
             <a
@@ -53,7 +52,6 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
             >
               Delete item
             </a>
-
             <div className="cart-item__quantity">
               <a
                 onClick={() =>
@@ -74,7 +72,6 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
               </a>
             </div>
           </div>
-
           <div className="cart-item__delivery">
             <p>Delivery $ {item.deliveryPrice ?? item.price}</p>
             <p>{item.deliveryDates ?? "23 - 25 May"}</p>

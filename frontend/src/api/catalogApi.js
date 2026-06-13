@@ -1,3 +1,7 @@
+/*
+ * HTTP-клиент каталога: категории, товары, скидки, отзывы.
+ * Сырые ответы преобразуются в модели UI через хелперы mapCatalogItem.
+ */
 import { apiRequest } from "./client";
 import { getListItems } from "./listUtils";
 import {
@@ -8,9 +12,15 @@ import {
   mapVariantFeaturesToSpecs,
 } from "./mapCatalogItem";
 
+/* Ограничение клиентской пагинации при загрузке полного каталога. */
 const MAX_PRODUCT_PAGES = 20;
 
 export const catalogApi = {
+  /**
+   * Загружает страницу категорий и преобразует каждую запись в модель UI.
+   * @param {{ page?: number, perPage?: number }} [params]
+   * @returns {Promise<Array<object>>}
+   */
   async listCategories({ page = 1, perPage = 100 } = {}) {
     const payload = await apiRequest(
       `/categories?per_page=${perPage}&page=${page}`,
@@ -18,6 +28,11 @@ export const catalogApi = {
     return getListItems(payload).map(mapBackendCategory);
   },
 
+  /**
+   * Загружает одну страницу сырых товаров и метаданные пагинации сервера.
+   * @param {{ page?: number, perPage?: number }} [params]
+   * @returns {Promise<{ items: Array<object>, pagination: object|null }>}
+   */
   async listProductsPage({ page = 1, perPage = 100 } = {}) {
     const payload = await apiRequest(
       `/products?per_page=${perPage}&page=${page}`,
@@ -28,33 +43,37 @@ export const catalogApi = {
     };
   },
 
+  /**
+   * Загружает все страницы товаров до MAX_PRODUCT_PAGES, следуя подсказкам пагинации.
+   * @returns {Promise<Array<object>>}
+   */
   async listAllProducts() {
     const allItems = [];
-
     for (let page = 1; page <= MAX_PRODUCT_PAGES; page += 1) {
       const { items, pagination } = await this.listProductsPage({
         page,
         perPage: 100,
       });
-
       allItems.push(...items);
-
       if (!items.length) {
         break;
       }
-
       if (pagination && pagination.has_next === false) {
         break;
       }
-
       if (items.length < 100) {
         break;
       }
     }
-
     return allItems;
   },
 
+  /**
+   * Ищет товары по строке запроса с опциональной пагинацией.
+   * @param {string} query
+   * @param {{ page?: number, perPage?: number }} [params]
+   * @returns {Promise<Array<object>>}
+   */
   async searchProducts(query, { page = 1, perPage = 100 } = {}) {
     const params = new URLSearchParams({
       q: query,
@@ -65,10 +84,20 @@ export const catalogApi = {
     return getListItems(payload);
   },
 
+  /**
+   * Получает один товар по числовому id или URL-slug (сырая форма бэкенда).
+   * @param {string|number} idOrSlug
+   * @returns {Promise<object>}
+   */
   async getProductByIdOrSlug(idOrSlug) {
     return apiRequest(`/products/${idOrSlug}`);
   },
 
+  /**
+   * Загружает страницу правил скидок с бэкенда.
+   * @param {{ page?: number, perPage?: number }} [params]
+   * @returns {Promise<Array<object>>}
+   */
   async listDiscounts({ page = 1, perPage = 100 } = {}) {
     const payload = await apiRequest(
       `/discounts?per_page=${perPage}&page=${page}`,
@@ -76,26 +105,38 @@ export const catalogApi = {
     return getListItems(payload);
   },
 
+  /**
+   * Собирает страницы скидок, пока не вернётся короткая или пустая страница.
+   * @returns {Promise<Array<object>>}
+   */
   async listAllDiscounts() {
     const allItems = [];
-
     for (let page = 1; page <= MAX_PRODUCT_PAGES; page += 1) {
       const items = await this.listDiscounts({ page, perPage: 100 });
       allItems.push(...items);
-
       if (!items.length || items.length < 100) {
         break;
       }
     }
-
     return allItems;
   },
 
+  /**
+   * Загружает и преобразует все отзывы для указанного id товара.
+   * @param {string|number} productId
+   * @returns {Promise<Array<object>>}
+   */
   async listProductReviews(productId) {
     const payload = await apiRequest(`/products/${productId}/reviews`);
     return getListItems(payload).map(mapBackendReview);
   },
 
+  /**
+   * Отправляет новый отзыв для указанного товара.
+   * @param {string|number} productId
+   * @param {object} body
+   * @returns {Promise<object>}
+   */
   async createReview(productId, body) {
     return apiRequest(`/products/${productId}/reviews`, {
       method: "POST",
@@ -103,6 +144,13 @@ export const catalogApi = {
     });
   },
 
+  /**
+   * Собирает полное представление товара из сырых данных API, категорий и вложенных отзывов.
+   * @param {object} raw
+   * @param {Array<object>} [categories]
+   * @param {number} [index]
+   * @returns {object}
+   */
   buildProductDetail(raw, categories = [], index = 0) {
     const lookup = this.buildCategoryLookup(categories);
     const mapped = mapBackendProduct(raw, index, lookup);
@@ -111,7 +159,6 @@ export const catalogApi = {
     const specs = mapVariantFeaturesToSpecs(variant);
     const description = raw?.current_version?.description || "";
     const deliveryInfo = raw?.current_version?.delivery_info || "";
-
     return {
       ...mapped,
       description,
@@ -134,17 +181,35 @@ export const catalogApi = {
     };
   },
 
+  /**
+   * Строит Map id категории бэкенда → преобразованная категория для быстрого поиска товаров.
+   * @param {Array<object>} categories
+   * @returns {Map<number|string, object>}
+   */
   buildCategoryLookup(categories) {
     return new Map(
       categories.map((category) => [category.backendId, category]),
     );
   },
 
+  /**
+   * Преобразует список сырых товаров с использованием переданного lookup категорий.
+   * @param {Array<object>} items
+   * @param {Array<object>} [categories]
+   * @returns {Array<object>}
+   */
   mapProducts(items, categories = []) {
     const lookup = this.buildCategoryLookup(categories);
     return mapBackendProductList(items, lookup);
   },
 
+  /**
+   * Преобразует одну сырую запись товара с опциональным контекстом категорий и индексом списка.
+   * @param {object} item
+   * @param {Array<object>} [categories]
+   * @param {number} [index]
+   * @returns {object}
+   */
   mapProduct(item, categories = [], index = 0) {
     const lookup = this.buildCategoryLookup(categories);
     return mapBackendProduct(item, index, lookup);

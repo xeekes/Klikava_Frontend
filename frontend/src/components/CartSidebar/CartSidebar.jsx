@@ -1,26 +1,30 @@
+/* Боковая панель итогов корзины; оформление для гостя через модальное окно авторизации. */
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useAuthModal } from "../../hooks/useAuthModal";
 import "./CartSidebar.scss";
-
 import { DELIVERY_FEE } from "../../constants/delivery";
 
+/**
+ * Боковая панель итогов корзины, ограничивающая оформление модальным окном авторизации для гостей.
+ */
 const CartSidebar = ({ className = "" }) => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { openAuth } = useAuthModal();
   const { items, isEmpty, total, itemCount } = useCart();
   const isFixedBar = className.includes("cart-sidebar--fixed");
-
   const deliveryTotal = isEmpty ? 0 : DELIVERY_FEE;
   const checkoutTotal = total + deliveryTotal;
-
   const content = (
     <>
       {!isEmpty ? (
         <div key="filled" className="cart-sidebar__filled motion-content-swap">
-          <div className="cart-sidebar__thumbs" aria-hidden={items.length === 0}>
+          <div
+            className="cart-sidebar__thumbs"
+            aria-hidden={items.length === 0}
+          >
             {items.map((item) => (
               <img
                 key={item.productId}
@@ -30,7 +34,6 @@ const CartSidebar = ({ className = "" }) => {
               />
             ))}
           </div>
-
           <div className="cart-sidebar__rows">
             <div className="cart-sidebar__row">
               <span>{itemCount} item</span>
@@ -41,7 +44,6 @@ const CartSidebar = ({ className = "" }) => {
               <span>{deliveryTotal} $</span>
             </div>
           </div>
-
           {isAuthenticated ? (
             <button
               type="button"
@@ -60,7 +62,6 @@ const CartSidebar = ({ className = "" }) => {
               >
                 Log In
               </button>
-
               <Link
                 to="/"
                 className="cart-sidebar__btn cart-sidebar__btn--secondary"
@@ -71,7 +72,6 @@ const CartSidebar = ({ className = "" }) => {
           )}
         </div>
       ) : null}
-
       {isEmpty ? (
         <div key="empty" className="cart-sidebar__actions motion-content-swap">
           {!isAuthenticated ? (
@@ -83,15 +83,16 @@ const CartSidebar = ({ className = "" }) => {
               Log In
             </button>
           ) : null}
-
-          <Link to="/" className="cart-sidebar__btn cart-sidebar__btn--secondary">
+          <Link
+            to="/"
+            className="cart-sidebar__btn cart-sidebar__btn--secondary"
+          >
             To the main
           </Link>
         </div>
       ) : null}
     </>
   );
-
   return (
     <aside className={`cart-sidebar ${className}`.trim()}>
       {isFixedBar ? <div className="container">{content}</div> : content}

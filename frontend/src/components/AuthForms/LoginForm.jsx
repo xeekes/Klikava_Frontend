@@ -1,3 +1,4 @@
+/* Форма входа; отправка через AuthContext.login. */
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -10,6 +11,9 @@ import AuthFormMessage from "./AuthFormMessage";
 import { Google } from "../../iconComponents";
 import "./AuthForms.scss";
 
+/**
+ * Форма учётных данных с отправкой через AuthContext login и Google OAuth.
+ */
 const LoginForm = () => {
   const location = useLocation();
   const { openAuth, closeAuth } = useAuthModal();
@@ -17,53 +21,59 @@ const LoginForm = () => {
   const successMessage = location.state?.message || "";
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
-  const { getError, validateAll, handleBlur } = useFormValidation(schemas.login);
-
+  const { getError, validateAll, handleBlur } = useFormValidation(
+    schemas.login,
+  );
+  /**
+   * Проверяет поля, вызывает login и закрывает модальное окно при успехе.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     clearError();
-
     if (!validateAll({ emailOrPhone, password })) {
       return;
     }
-
     try {
       await login({ emailOrPhone, password });
       closeAuth();
     } catch {
-      // error is shown via context
+      // ошибка отображается через контекст
     }
   };
-
+  /**
+   * Запускает поток Google OAuth и закрывает модальное окно при успехе.
+   */
   const handleGoogleLogin = async () => {
     clearError();
     try {
       await loginWithGoogle();
       closeAuth();
     } catch {
-      // error is shown via context
+      // ошибка отображается через контекст
     }
   };
-
   return (
     <AuthCard title="LOG IN" titleUppercase>
       <AuthFormMessage error={error} success={successMessage} />
-
       <form className="auth-form__body" onSubmit={handleSubmit} noValidate>
-        <AuthFormField error={getError("emailOrPhone")}>
+        <AuthFormField
+          label="Username, email or phone"
+          error={getError("emailOrPhone")}
+        >
           <input
             type="text"
             className="auth-form__input"
             placeholder="Username, email or phone"
             value={emailOrPhone}
             onChange={(e) => setEmailOrPhone(e.target.value)}
-            onBlur={() => handleBlur({ emailOrPhone, password }, "emailOrPhone")}
+            onBlur={() =>
+              handleBlur({ emailOrPhone, password }, "emailOrPhone")
+            }
             autoComplete="username"
             disabled={isSubmitting}
           />
         </AuthFormField>
-
-        <AuthFormField error={getError("password")}>
+        <AuthFormField label="Password" error={getError("password")}>
           <input
             type="password"
             className="auth-form__input"
@@ -75,11 +85,13 @@ const LoginForm = () => {
             disabled={isSubmitting}
           />
         </AuthFormField>
-
-        <button type="submit" className="auth-form__submit" disabled={isSubmitting}>
+        <button
+          type="submit"
+          className="auth-form__submit"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? "Logging in..." : "Log In"}
         </button>
-
         <div className="auth-form__links">
           <button
             type="button"
@@ -96,7 +108,6 @@ const LoginForm = () => {
             Forgot password?
           </button>
         </div>
-
         <button
           type="button"
           className="auth-form__google"

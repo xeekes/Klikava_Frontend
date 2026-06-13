@@ -1,3 +1,7 @@
+/*
+ * Переиспользуемая сетка каталога с боковой панелью сортировки/фильтров (desktop) или модальным окном (mobile).
+ * Используется страницами Catalog, Search, Discounts, TopProducts и CategoryListing.
+ */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Filter, MenuArrowRight, Star } from "../../iconComponents";
 import { useMotionPresence } from "../../hooks/useMotionPresence";
@@ -8,9 +12,7 @@ import ProductCard from "../ProductCard/ProductCard";
 import SeeMoreButton from "../SeeMoreButton/SeeMoreButton";
 import TagSlider from "../TagSlider/TagSlider";
 import "./CatalogListing.scss";
-
 const FILTER_SIDEBAR_MAX = 968;
-
 const SORT_OPTIONS = [
   { value: "popular", label: "Most popular" },
   { value: "price-low", label: "Price: low to high" },
@@ -18,13 +20,15 @@ const SORT_OPTIONS = [
   { value: "rating", label: "Top rated" },
   { value: "sold", label: "Best sellers" },
 ];
-
 const RATING_OPTIONS = [
   { value: "", label: "Any" },
   { value: "4", label: "4+ stars" },
   { value: "3", label: "3+ stars" },
 ];
 
+/**
+ * Панель мобильных фильтров, рендерящаяся внутри модального окна листинга каталога.
+ */
 const CatalogListingFiltersModalPanel = ({
   activeFilterCount,
   hasActiveFilters,
@@ -32,7 +36,6 @@ const CatalogListingFiltersModalPanel = ({
   children,
 }) => {
   const close = useModalClose();
-
   return (
     <aside className="catalog-listing__filters catalog-listing__filters--modal">
       <div className="catalog-listing__filters-head">
@@ -48,7 +51,6 @@ const CatalogListingFiltersModalPanel = ({
             </span>
           ) : null}
         </div>
-
         <div className="catalog-listing__filters-head-actions">
           {hasActiveFilters ? (
             <button
@@ -69,12 +71,14 @@ const CatalogListingFiltersModalPanel = ({
           </button>
         </div>
       </div>
-
       {children}
     </aside>
   );
 };
 
+/**
+ * Переиспользуемая сетка каталога с боковой панелью сортировки или модальным окном фильтров.
+ */
 const CatalogListing = ({
   title,
   subtitle,
@@ -98,99 +102,89 @@ const CatalogListing = ({
       ? window.matchMedia(`(max-width: ${FILTER_SIDEBAR_MAX}px)`).matches
       : false,
   );
-
   const priceBounds = useMemo(() => {
     if (!products.length) {
       return { min: 0, max: 500 };
     }
-
     const prices = products.map((product) => Number(product.price) || 0);
     let min = Math.floor(Math.min(...prices));
     let max = Math.ceil(Math.max(...prices));
-
     if (min === max) {
       max = min + 10;
     }
-
     return { min, max };
   }, [products]);
-
-  const committedMin =
-    minPrice === "" ? priceBounds.min : Number(minPrice);
-  const committedMax =
-    maxPrice === "" ? priceBounds.max : Number(maxPrice);
-
+  const committedMin = minPrice === "" ? priceBounds.min : Number(minPrice);
+  const committedMax = maxPrice === "" ? priceBounds.max : Number(maxPrice);
   const [sliderRange, setSliderRange] = useState({
     min: committedMin,
     max: committedMax,
   });
   const sliderRangeRef = useRef(sliderRange);
   const isPriceDraggingRef = useRef(false);
-
   useEffect(() => {
     sliderRangeRef.current = sliderRange;
   }, [sliderRange]);
-
   useEffect(() => {
     if (isPriceDraggingRef.current) {
       return;
     }
-
     setSliderRange({
       min: committedMin,
       max: committedMax,
     });
   }, [committedMin, committedMax]);
-
   const { min: sliderMin, max: sliderMax } = sliderRange;
-
   const rangeSpan = priceBounds.max - priceBounds.min || 1;
-  const rangeFillLeft =
-    ((sliderMin - priceBounds.min) / rangeSpan) * 100;
+  const rangeFillLeft = ((sliderMin - priceBounds.min) / rangeSpan) * 100;
   const rangeFillRight =
     100 - ((sliderMax - priceBounds.min) / rangeSpan) * 100;
-
+  /**
+   * Синхронизирует текстовые поля цены со значениями двойного range-слайдера.
+   */
   const setPriceFromSliders = (nextMinValue, nextMaxValue) => {
-    const nextMin =
-      nextMinValue <= priceBounds.min ? "" : String(nextMinValue);
-    const nextMax =
-      nextMaxValue >= priceBounds.max ? "" : String(nextMaxValue);
-
+    const nextMin = nextMinValue <= priceBounds.min ? "" : String(nextMinValue);
+    const nextMax = nextMaxValue >= priceBounds.max ? "" : String(nextMaxValue);
     setMinPrice(nextMin);
     setMaxPrice(nextMax);
     setFilterErrors(validatePriceRange(nextMin, nextMax));
   };
-
+  /**
+   * Применяет диапазон слайдера к зафиксированному состоянию фильтра после окончания перетаскивания.
+   */
   const commitPriceRange = () => {
     if (!isPriceDraggingRef.current) {
       return;
     }
-
     isPriceDraggingRef.current = false;
     const { min, max } = sliderRangeRef.current;
     setPriceFromSliders(min, max);
   };
-
+  /**
+   * Обновляет нижнюю границу при перетаскивании нижнего ползунка диапазона.
+   */
   const handleMinSliderChange = (event) => {
     isPriceDraggingRef.current = true;
     const nextMin = Number(event.target.value);
-
     setSliderRange((prev) => ({
       min: Math.min(nextMin, prev.max),
       max: prev.max,
     }));
   };
-
+  /**
+   * Обновляет верхнюю границу при перетаскивании верхнего ползунка диапазона.
+   */
   const handleMaxSliderChange = (event) => {
     isPriceDraggingRef.current = true;
     const nextMax = Number(event.target.value);
-
     setSliderRange((prev) => ({
       min: prev.min,
       max: Math.max(nextMax, prev.min),
     }));
   };
-
+  /**
+   * Сбрасывает все активные фильтры цены, рейтинга и скидки.
+   */
   const clearFilters = () => {
     isPriceDraggingRef.current = false;
     setMinPrice("");
@@ -199,34 +193,27 @@ const CatalogListing = ({
     setDiscountedOnly(false);
     setFilterErrors({});
   };
-
   const hasActiveFilters =
     Boolean(minPrice) ||
     Boolean(maxPrice) ||
     Boolean(minRating) ||
     (showDiscountFilter && discountedOnly);
-
   const activeFilterTags = useMemo(() => {
     const tags = [];
-
     if (minPrice && !filterErrors.minPrice) {
       tags.push({ id: "minPrice", label: `From $${minPrice}` });
     }
-
     if (maxPrice && !filterErrors.maxPrice) {
       tags.push({ id: "maxPrice", label: `Up to $${maxPrice}` });
     }
-
     if (minRating === "4") {
       tags.push({ id: "rating", label: "4+ stars" });
     } else if (minRating === "3") {
       tags.push({ id: "rating", label: "3+ stars" });
     }
-
     if (showDiscountFilter && discountedOnly) {
       tags.push({ id: "discount", label: "On sale" });
     }
-
     return tags;
   }, [
     minPrice,
@@ -236,9 +223,10 @@ const CatalogListing = ({
     showDiscountFilter,
     filterErrors,
   ]);
-
   const activeFilterCount = activeFilterTags.length;
-
+  /**
+   * Удаляет один активный чип фильтра по его идентификатору.
+   */
   const removeFilterTag = (id) => {
     if (id === "minPrice") {
       setMinPrice("");
@@ -249,32 +237,27 @@ const CatalogListing = ({
     } else if (id === "discount") {
       setDiscountedOnly(false);
     }
-
-    setFilterErrors(validatePriceRange(
-      id === "minPrice" ? "" : minPrice,
-      id === "maxPrice" ? "" : maxPrice
-    ));
+    setFilterErrors(
+      validatePriceRange(
+        id === "minPrice" ? "" : minPrice,
+        id === "maxPrice" ? "" : maxPrice,
+      ),
+    );
   };
-
   const visibleProducts = useMemo(() => {
     let result = [...products];
-
     if (showDiscountFilter && discountedOnly) {
       result = result.filter((product) => product.discountPercent);
     }
-
     if (minPrice !== "" && !filterErrors.minPrice) {
       result = result.filter((product) => product.price >= Number(minPrice));
     }
-
     if (maxPrice !== "" && !filterErrors.maxPrice) {
       result = result.filter((product) => product.price <= Number(maxPrice));
     }
-
     if (minRating !== "") {
       result = result.filter((product) => product.rating >= Number(minRating));
     }
-
     switch (sortBy) {
       case "price-low":
         return result.sort((a, b) => a.price - b.price);
@@ -298,7 +281,6 @@ const CatalogListing = ({
     showDiscountFilter,
     filterErrors,
   ]);
-
   const listingKey = [
     sortBy,
     discountedOnly,
@@ -307,73 +289,60 @@ const CatalogListing = ({
     minRating,
     visibleProducts.map((product) => product.id).join(","),
   ].join("-");
-
   const {
     visibleItems: paginatedProducts,
     hasMore: hasMoreProducts,
     loadMore: loadMoreProducts,
   } = useProductPagination(visibleProducts, listingKey);
-
   const selectedSortLabel =
     SORT_OPTIONS.find((option) => option.value === sortBy)?.label ??
     "Most popular";
-
   useEffect(() => {
     const mediaQuery = window.matchMedia(
       `(max-width: ${FILTER_SIDEBAR_MAX}px)`,
     );
     const updateFilterLayout = () => setUseFilterModal(mediaQuery.matches);
-
     updateFilterLayout();
     mediaQuery.addEventListener("change", updateFilterLayout);
-
     return () => mediaQuery.removeEventListener("change", updateFilterLayout);
   }, []);
-
   useEffect(() => {
     if (!useFilterModal) {
       setIsFiltersModalOpen(false);
     }
   }, [useFilterModal]);
-
   useEffect(() => {
     if (!isSortOpen) {
       return undefined;
     }
-
     const handlePointerDown = (event) => {
       if (!sortRef.current?.contains(event.target)) {
         setIsSortOpen(false);
       }
     };
-
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         setIsSortOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handlePointerDown);
     document.addEventListener("keydown", handleKeyDown);
-
     return () => {
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isSortOpen]);
-
+  /**
+   * Применяет выбранный вариант сортировки и закрывает выпадающий список.
+   */
   const handleSortSelect = (value) => {
     setSortBy(value);
     setIsSortOpen(false);
   };
-
   const sidebarFiltersHead = (
     <div className="catalog-listing__filters-head">
       <div className="catalog-listing__filters-title">
-        <Filter
-          className="catalog-listing__filters-icon"
-          aria-hidden="true"
-        />
+        <Filter className="catalog-listing__filters-icon" aria-hidden="true" />
         <h2>Filters</h2>
         {activeFilterCount > 0 ? (
           <span className="catalog-listing__filters-badge">
@@ -392,7 +361,6 @@ const CatalogListing = ({
       ) : null}
     </div>
   );
-
   const filterGroups = (
     <>
       <div className="catalog-listing__filter-group">
@@ -447,7 +415,6 @@ const CatalogListing = ({
           </div>
         </div>
       </div>
-
       <div className="catalog-listing__filter-group">
         <h3 className="catalog-listing__filter-label">Customer rating</h3>
         <div
@@ -477,7 +444,6 @@ const CatalogListing = ({
           ))}
         </div>
       </div>
-
       {showDiscountFilter ? (
         <div className="catalog-listing__filter-group catalog-listing__filter-group--offers">
           <h3 className="catalog-listing__filter-label">Special offers</h3>
@@ -487,7 +453,10 @@ const CatalogListing = ({
               checked={discountedOnly}
               onChange={(event) => setDiscountedOnly(event.target.checked)}
             />
-            <span className="catalog-listing__toggle-track" aria-hidden="true" />
+            <span
+              className="catalog-listing__toggle-track"
+              aria-hidden="true"
+            />
             <span className="catalog-listing__toggle-text">
               Show discounted items only
             </span>
@@ -496,18 +465,21 @@ const CatalogListing = ({
       ) : null}
     </>
   );
-
   return (
     <section className="catalog-listing">
       <div className="container">
         <header className="catalog-listing__header">
           <div className="catalog-listing__heading">
             {title ? <h1 className="catalog-listing__title">{title}</h1> : null}
-            {subtitle ? <p className="catalog-listing__subtitle">{subtitle}</p> : null}
+            {subtitle ? (
+              <p className="catalog-listing__subtitle">{subtitle}</p>
+            ) : null}
           </div>
-
           <div className="catalog-listing__sort" ref={sortRef}>
-            <span className="catalog-listing__sort-label" id="catalog-sort-label">
+            <span
+              className="catalog-listing__sort-label"
+              id="catalog-sort-label"
+            >
               Sort by
             </span>
             <div className="catalog-listing__sort-control">
@@ -529,7 +501,6 @@ const CatalogListing = ({
                   aria-hidden="true"
                 />
               </button>
-
               {sortMenuMotion.rendered ? (
                 <ul
                   className={`catalog-listing__sort-menu ${sortMenuMotion.className}`.trim()}
@@ -564,7 +535,6 @@ const CatalogListing = ({
             </div>
           </div>
         </header>
-
         <div className="catalog-listing__layout">
           {showFilters && !useFilterModal ? (
             <aside className="catalog-listing__filters">
@@ -572,7 +542,6 @@ const CatalogListing = ({
               {filterGroups}
             </aside>
           ) : null}
-
           <div
             key={listingKey}
             className="catalog-listing__content motion-content-swap"
@@ -597,14 +566,12 @@ const CatalogListing = ({
                   ) : null}
                 </button>
               ) : null}
-
               <p className="catalog-listing__count">
                 <span className="catalog-listing__count-value">
                   {visibleProducts.length}
                 </span>{" "}
                 {visibleProducts.length === 1 ? "product" : "products"} found
               </p>
-
               {activeFilterTags.length ? (
                 <TagSlider
                   className="catalog-listing__active-tags"
@@ -624,7 +591,6 @@ const CatalogListing = ({
                 </TagSlider>
               ) : null}
             </div>
-
             {visibleProducts.length ? (
               <>
                 <div className="catalog-listing__grid">
@@ -632,7 +598,6 @@ const CatalogListing = ({
                     <ProductCard key={product.id} product={product} rounded />
                   ))}
                 </div>
-
                 {hasMoreProducts ? (
                   <SeeMoreButton
                     onClick={loadMoreProducts}
@@ -658,7 +623,6 @@ const CatalogListing = ({
           </div>
         </div>
       </div>
-
       {showFilters && useFilterModal && isFiltersModalOpen ? (
         <Modal
           ariaLabel="Filters"

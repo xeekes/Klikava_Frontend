@@ -1,6 +1,8 @@
+/* Статические информационные/маркетинговые страницы (о нас, блог, продажа, поддержка, календарь). */
 import InfoPage from "./InfoPage";
 import "./InfoPage.scss";
 
+/** Обзор компании и позиционирование маркетплейса. */
 export const AboutPage = () => (
   <InfoPage
     eyebrow="Company"
@@ -22,6 +24,7 @@ export const AboutPage = () => (
   </InfoPage>
 );
 
+/** Подключение продавцов и обзор партнёрской программы. */
 export const SellPage = () => (
   <InfoPage
     eyebrow="Partners"
@@ -43,6 +46,7 @@ export const SellPage = () => (
   </InfoPage>
 );
 
+/** Руководства и советы для продавцов маркетплейса. */
 export const BlogPage = () => (
   <InfoPage eyebrow="Blog" title="Blog for sellers">
     <p>
@@ -56,6 +60,7 @@ export const BlogPage = () => (
   </InfoPage>
 );
 
+/** Точка входа для обращений в поддержку и чата в профиле. */
 export const SupportLandingPage = () => (
   <InfoPage
     eyebrow="Help"
@@ -72,6 +77,7 @@ export const SupportLandingPage = () => (
   </InfoPage>
 );
 
+/** Предстоящие промо-события и расписание сезонных распродаж. */
 export const CalendarPage = () => (
   <InfoPage
     eyebrow="Promotions"

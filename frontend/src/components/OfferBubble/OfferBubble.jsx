@@ -1,9 +1,13 @@
+/* Промо-пузырёк поверх карточек товаров. */
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../context/CatalogContext";
 import { Cart } from "../../iconComponents";
 import "./OfferBubble.scss";
 
+/**
+ * Промо-пузырёк поверх карточек товаров с необязательным действием корзины.
+ */
 const OfferBubble = ({
   image,
   price = "20$",
@@ -17,21 +21,20 @@ const OfferBubble = ({
   const { addItem } = useCart();
   const backgroundClass =
     background === "white" ? "offer-bubble--white" : "offer-bubble--gray";
-
+  /**
+   * Добавляет связанный товар каталога в корзину без перехода со страницы.
+   */
   const handleAddToCart = (event) => {
     event.preventDefault();
     event.stopPropagation();
-
     if (!productId) {
       return;
     }
-
     const product = getProductById(productId);
     if (product) {
       addItem(product);
     }
   };
-
   const content = (
     <>
       <img src={image} alt={alt} />
@@ -50,7 +53,6 @@ const OfferBubble = ({
       </div>
     </>
   );
-
   if (to) {
     return (
       <Link
@@ -61,7 +63,6 @@ const OfferBubble = ({
       </Link>
     );
   }
-
   return (
     <div className={`offer-bubble ${backgroundClass} ${className}`.trim()}>
       {content}

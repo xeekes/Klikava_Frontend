@@ -1,9 +1,13 @@
+/* Горизонтальный скроллер чипов/тегов для фильтров и подсказок. */
 import { Children } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper/modules";
 import "swiper/css";
 import "./TagSlider.scss";
 
+/**
+ * Горизонтальный скроллер чипов или тегов для фильтров и подсказок.
+ */
 const TagSlider = ({
   children,
   className = "",
@@ -11,11 +15,9 @@ const TagSlider = ({
   ariaLabel,
 }) => {
   const items = Children.toArray(children).filter(Boolean);
-
   if (!items.length) {
     return null;
   }
-
   return (
     <div
       className={`tag-slider ${className}`.trim()}

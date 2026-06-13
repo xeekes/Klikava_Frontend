@@ -1,3 +1,8 @@
+/* Оболочка карточной разметки, общая для форм модального окна авторизации. */
+
+/**
+ * Общая оболочка карточной разметки для форм модального окна авторизации.
+ */
 const AuthCard = ({ title, titleUppercase = false, children }) => (
   <div className="auth-form">
     <h1
@@ -10,5 +15,4 @@ const AuthCard = ({ title, titleUppercase = false, children }) => (
     {children}
   </div>
 );
-
 export default AuthCard;

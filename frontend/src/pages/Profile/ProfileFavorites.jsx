@@ -1,3 +1,4 @@
+/* Страница списка желаний на базе FavoritesContext. */
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
@@ -6,27 +7,32 @@ import { Clock, Star } from "../../iconComponents";
 import "../../styles/profile-page.scss";
 import "./ProfileFavorites.scss";
 
+/**
+ * Страница избранного на базе контекста favorites с действиями «добавить в корзину».
+ */
 const ProfileFavorites = () => {
   const { favorites, removeFavorite } = useFavorites();
   const { addItem } = useCart();
-
   return (
     <section className="profile-page profile-favorites">
       <h1 className="profile-page__title">Favorites</h1>
-
       <div className="profile-favorites__list">
         {favorites.length ? (
           favorites.map((item) => (
             <article key={item.id} className="profile-favorites__card">
-              <Link to={`/product/${item.id}`} className="profile-favorites__image-wrap">
+              <Link
+                to={`/product/${item.id}`}
+                className="profile-favorites__image-wrap"
+              >
                 <img src={item.image} alt={item.title} />
               </Link>
-
               <div className="profile-favorites__body">
-                <Link to={`/product/${item.id}`} className="profile-favorites__title">
+                <Link
+                  to={`/product/${item.id}`}
+                  className="profile-favorites__title"
+                >
                   {item.title}
                 </Link>
-
                 <div className="profile-favorites__summary">
                   <div className="profile-favorites__price-line">
                     <Clock className="profile-favorites__icon profile-favorites__icon--clock" />
@@ -37,25 +43,24 @@ const ProfileFavorites = () => {
                       <span>{item.sold} sold</span>
                     </p>
                   </div>
-
                   <div className="profile-favorites__rating">
                     {Array.from({ length: 5 }).map((_, index) => (
                       <Star
                         key={index}
                         className={`profile-favorites__icon profile-favorites__icon--star ${
-                          index < item.rating ? "profile-favorites__icon--star-filled" : ""
+                          index < item.rating
+                            ? "profile-favorites__icon--star-filled"
+                            : ""
                         }`.trim()}
                       />
                     ))}
                   </div>
                 </div>
-
                 <div className="profile-favorites__recent">
                   <p>
                     <span>Lowest recent price: {item.recentLowestPrice}$</span>
                   </p>
                 </div>
-
                 <div className="profile-favorites__actions">
                   <button
                     type="button"

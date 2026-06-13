@@ -1,3 +1,4 @@
+/* Форма ввода карты со схемой useFormValidation. */
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
@@ -5,24 +6,36 @@ import { schemas } from "../../../utils/validation";
 import FormField from "../../FormField/FormField";
 import "./CheckoutCardForm.scss";
 
+/**
+ * Разделяет строки платёжного адреса на улицу и остаток для отображения.
+ */
 const getBillingDisplay = (lines) => {
   if (!lines?.length) {
     return { street: "", rest: "" };
   }
-
   return {
     street: lines[0].replace(/,\s*$/, ""),
     rest: lines.slice(1).join(" "),
   };
 };
 
-const digitsOnly = (value, maxLength) => value.replace(/\D/g, "").slice(0, maxLength);
+/**
+ * Удаляет нецифровые символы и ограничивает длину ввода для полей карты.
+ */
+const digitsOnly = (value, maxLength) =>
+  value.replace(/\D/g, "").slice(0, maxLength);
 
+/**
+ * Группирует цифры карты в четверки с пробелами для отображения в поле ввода.
+ */
 const formatCardNumber = (value) => {
   const digits = digitsOnly(value, 19);
   return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
 };
 
+/**
+ * Форма ввода карты с валидацией и предпросмотром связанного платёжного адреса.
+ */
 const CheckoutCardForm = ({
   billingLines = [],
   onAdd,
@@ -36,22 +49,24 @@ const CheckoutCardForm = ({
   const [cvv, setCvv] = useState("");
   const { street, rest } = getBillingDisplay(billingLines);
   const { getError, validateAll, handleBlur } = useFormValidation(schemas.card);
-
+  /**
+   * Проверяет поля карты и передаёт значения в родительский callback добавления.
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const values = { cardNumber, month, year, cvv };
     if (!validateAll(values)) {
       return;
     }
-
     onAdd?.(values);
   };
-
   return (
-    <form className="checkout-card-form checkout-card" onSubmit={handleSubmit} noValidate>
+    <form
+      className="checkout-card-form checkout-card"
+      onSubmit={handleSubmit}
+      noValidate
+    >
       <h2 className="checkout-card-form__title">{title}</h2>
-
       <FormField
         label="Card number"
         id="checkout-card-number"
@@ -68,14 +83,15 @@ const CheckoutCardForm = ({
             }`.trim()}
             value={cardNumber}
             onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-            onBlur={() => handleBlur({ cardNumber, month, year, cvv }, "cardNumber")}
+            onBlur={() =>
+              handleBlur({ cardNumber, month, year, cvv }, "cardNumber")
+            }
             inputMode="numeric"
             autoComplete="cc-number"
             placeholder="0000 0000 0000 0000"
           />
         </div>
       </FormField>
-
       <div className="checkout-card-form__row">
         <FormField
           label="Expiration date"
@@ -91,7 +107,9 @@ const CheckoutCardForm = ({
               }`.trim()}
               value={month}
               onChange={(e) => setMonth(digitsOnly(e.target.value, 2))}
-              onBlur={() => handleBlur({ cardNumber, month, year, cvv }, "month")}
+              onBlur={() =>
+                handleBlur({ cardNumber, month, year, cvv }, "month")
+              }
               placeholder="MM"
               inputMode="numeric"
               autoComplete="cc-exp-month"
@@ -107,7 +125,9 @@ const CheckoutCardForm = ({
               }`.trim()}
               value={year}
               onChange={(e) => setYear(digitsOnly(e.target.value, 4))}
-              onBlur={() => handleBlur({ cardNumber, month, year, cvv }, "year")}
+              onBlur={() =>
+                handleBlur({ cardNumber, month, year, cvv }, "year")
+              }
               placeholder="YY"
               inputMode="numeric"
               autoComplete="cc-exp-year"
@@ -115,7 +135,6 @@ const CheckoutCardForm = ({
             />
           </div>
         </FormField>
-
         <FormField
           label="CVV"
           id="checkout-card-cvv"
@@ -132,7 +151,6 @@ const CheckoutCardForm = ({
           className="checkout-card-form__cvv"
         />
       </div>
-
       <div className="checkout-card-form__billing">
         <label className="form-field__label checkout-card-form__billing-label">
           Billing address
@@ -142,7 +160,10 @@ const CheckoutCardForm = ({
             {street ? (
               <p className="checkout-card-form__billing-line">{street}</p>
             ) : null}
-            <Link to="/profile/addresses" className="checkout-card-form__billing-edit">
+            <Link
+              to="/profile/addresses"
+              className="checkout-card-form__billing-edit"
+            >
               Edit
             </Link>
           </div>
@@ -151,13 +172,16 @@ const CheckoutCardForm = ({
           ) : null}
         </div>
       </div>
-
       <div className="checkout-form-actions">
         <button type="submit" className="checkout-form-submit">
           {submitLabel}
         </button>
         {onCancel ? (
-          <button type="button" className="checkout-form-cancel" onClick={onCancel}>
+          <button
+            type="button"
+            className="checkout-form-cancel"
+            onClick={onCancel}
+          >
             Cancel
           </button>
         ) : null}

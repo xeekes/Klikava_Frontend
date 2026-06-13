@@ -1,23 +1,33 @@
+/* Поля формы отзыва/возврата, привязанные к конкретному товару заказа. */
 import { useRef } from "react";
 import { Star } from "../../../iconComponents";
 import "./ProfileOrderProductForm.scss";
-
 const MAX_PHOTOS = 4;
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
 
+/**
+ * Читает файл изображения как data URL после проверки MIME-типа.
+ */
 const readImageFile = (file) =>
   new Promise((resolve, reject) => {
     if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       reject(new Error("Unsupported file type"));
       return;
     }
-
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsDataURL(file);
   });
 
+/**
+ * Поля формы отзыва или возврата, привязанные к конкретному товару заказа.
+ */
 const ProfileOrderProductForm = ({
   product,
   textLabel,
@@ -38,37 +48,38 @@ const ProfileOrderProductForm = ({
   const fileInputRef = useRef(null);
   const canUploadPhotos = typeof onPhotosChange === "function";
   const remainingSlots = Math.max(0, maxPhotos - photos.length);
-
+  /**
+   * Открывает скрытое поле выбора файла для загрузки фото.
+   */
   const handleAddPhotosClick = () => {
     fileInputRef.current?.click();
   };
-
+  /**
+   * Читает выбранные файлы изображений и добавляет data URL до лимита фото.
+   */
   const handleFileChange = async (event) => {
     const files = Array.from(event.target.files || []);
     event.target.value = "";
-
     if (!files.length || !canUploadPhotos) {
       return;
     }
-
     const filesToAdd = files.slice(0, remainingSlots);
-
     try {
       const urls = await Promise.all(filesToAdd.map(readImageFile));
       onPhotosChange([...photos, ...urls]);
     } catch {
-      // ignore invalid files for now
+      // пока игнорируем некорректные файлы
     }
   };
-
+  /**
+   * Удаляет одно загруженное превью фото по индексу в списке.
+   */
   const handleRemovePhoto = (index) => {
     if (!canUploadPhotos) {
       return;
     }
-
     onPhotosChange(photos.filter((_, photoIndex) => photoIndex !== index));
   };
-
   return (
     <article className="profile-order-product-form">
       <div className="profile-order-product-form__image-wrap">
@@ -78,7 +89,6 @@ const ProfileOrderProductForm = ({
           alt={product.title}
         />
       </div>
-
       <div className="profile-order-product-form__main">
         <div className="profile-order-product-form__field-box">
           <p className="profile-order-product-form__field-label">{textLabel}</p>
@@ -97,11 +107,12 @@ const ProfileOrderProductForm = ({
           ) : null}
         </div>
       </div>
-
       <div className="profile-order-product-form__side">
         {canUploadPhotos ? (
           <div className="profile-order-product-form__field-box profile-order-product-form__field-box--compact">
-            <p className="profile-order-product-form__field-label">Your photos</p>
+            <p className="profile-order-product-form__field-label">
+              Your photos
+            </p>
             <div className="profile-order-product-form__upload-row">
               <button
                 type="button"
@@ -158,16 +169,20 @@ const ProfileOrderProductForm = ({
           </div>
         ) : (
           <div className="profile-order-product-form__field-box profile-order-product-form__field-box--compact">
-            <p className="profile-order-product-form__field-label">Product Image</p>
+            <p className="profile-order-product-form__field-label">
+              Product Image
+            </p>
             <div className="profile-order-product-form__upload-row">
-              <button type="button" className="profile-order-product-form__add-btn">
+              <button
+                type="button"
+                className="profile-order-product-form__add-btn"
+              >
                 Add
               </button>
               <div className="profile-order-product-form__upload-placeholder" />
             </div>
           </div>
         )}
-
         {showRating ? (
           <div className="profile-order-product-form__rating-row">
             <p className="profile-order-product-form__rating-label">Rating</p>

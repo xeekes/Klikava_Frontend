@@ -1,12 +1,15 @@
+/* Подтверждение после оформления заказа; orderId читается из state навигации. */
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import "./OrderSuccess.scss";
 
+/**
+ * Экран подтверждения после успешного оформления заказа.
+ */
 const OrderSuccess = () => {
   const location = useLocation();
   const { itemCount } = useCart();
   const orderId = location.state?.orderId;
-
   return (
     <section className="order-success">
       <div className="order-success__container">
@@ -21,9 +24,11 @@ const OrderSuccess = () => {
             ? "Some items may still be syncing in your cart preview."
             : "Your cart has been cleared and the order is now available in profile."}
         </p>
-
         <div className="order-success__actions">
-          <Link to="/profile/orders" className="order-success__action order-success__action--primary">
+          <Link
+            to="/profile/orders"
+            className="order-success__action order-success__action--primary"
+          >
             View orders
           </Link>
           <Link to="/catalog" className="order-success__action">

@@ -1,3 +1,7 @@
+/*
+ * Глобальный комбобокс поиска: подсказки из CatalogContext, область задаётся пропом searchScope.
+ * Используется в Header и на SearchPage; навигация с query-параметрами buildSearchUrl.
+ */
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Search } from "../../iconComponents";
@@ -7,6 +11,9 @@ import TagSlider from "../TagSlider/TagSlider";
 import { buildSearchUrl } from "../../utils/searchScope";
 import "./SiteSearch.scss";
 
+/**
+ * Глобальный комбобокс поиска с областью подсказок и навигацией.
+ */
 const SiteSearch = ({
   variant = "header",
   initialQuery = "",
@@ -23,56 +30,47 @@ const SiteSearch = ({
   const [isOpen, setIsOpen] = useState(false);
   const scope = searchScope || {};
   const { getSearchSuggestions } = useCatalog();
-
   const urlQuery = useMemo(() => {
     if (location.pathname !== "/search") {
       return "";
     }
-
     return new URLSearchParams(location.search).get("q") || "";
   }, [location.pathname, location.search]);
-
   useEffect(() => {
     setQuery(urlQuery || initialQuery);
   }, [urlQuery, initialQuery]);
-
   useEffect(() => {
     if (!autoFocus) {
       return undefined;
     }
-
     const timer = window.setTimeout(() => {
       inputRef.current?.focus();
     }, 0);
-
     return () => window.clearTimeout(timer);
   }, [autoFocus]);
-
   useEffect(() => {
     const handlePointerDown = (event) => {
       if (!rootRef.current?.contains(event.target)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("pointerdown", handlePointerDown);
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, []);
-
   const suggestions = useMemo(
     () => getSearchSuggestions(query, scope),
-    [query, scope]
+    [query, scope],
   );
-
   const hasQuery = query.trim().length > 0;
   const hasResults =
     suggestions.products.length > 0 || suggestions.categories.length > 0;
   const showDropdown = isOpen && (hasQuery ? hasResults : true);
   const dropdownMotion = useMotionPresence(showDropdown);
-
+  /**
+   * Переходит к поиску в области или странице листинга для заданного запроса.
+   */
   const goToSearch = (value) => {
     const nextQuery = value.trim();
-
     if (!nextQuery) {
       if (scope.scope === "discounts") {
         navigate("/discounts");
@@ -80,43 +78,47 @@ const SiteSearch = ({
         navigate(
           scope.topCategoryId && scope.topCategoryId !== "all"
             ? `/top-products?category=${scope.topCategoryId}`
-            : "/top-products"
+            : "/top-products",
         );
       } else {
         navigate("/search");
       }
-
       setIsOpen(false);
       return;
     }
-
     navigate(buildSearchUrl(nextQuery, scope));
     setIsOpen(false);
   };
-
+  /**
+   * Отправляет текущее значение поля через маршрутизатор поиска в области.
+   */
   const handleSubmit = (event) => {
     event.preventDefault();
     goToSearch(query);
   };
-
+  /**
+   * Обновляет запрос и открывает выпадающий список подсказок.
+   */
   const handleInputChange = (event) => {
     setQuery(event.target.value);
     setIsOpen(true);
   };
-
+  /**
+   * Заполняет поле популярным термином и выполняет поиск в области.
+   */
   const handlePopularClick = (term) => {
     setQuery(term);
     goToSearch(term);
   };
-
+  /**
+   * Формирует URL листинга категории с необязательным сегментом подкатегории.
+   */
   const getCategoryLink = (category) => {
     if (category.subcategory) {
       return `/categories/${category.categoryId}/${encodeURIComponent(category.subcategory)}`;
     }
-
     return `/categories/${category.categoryId}`;
   };
-
   return (
     <div
       ref={rootRef}
@@ -134,15 +136,16 @@ const SiteSearch = ({
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
           aria-label="Search"
-          aria-expanded={showDropdown}
-          aria-controls={showDropdown ? listboxId : undefined}
           autoComplete="off"
         />
-        <button type="submit" className="site-search__submit" aria-label="Search">
+        <button
+          type="submit"
+          className="site-search__submit"
+          aria-label="Search"
+        >
           <Search className="site-search__icon" aria-hidden="true" />
         </button>
       </form>
-
       {dropdownMotion.rendered ? (
         <div
           className={`site-search__dropdown ${dropdownMotion.className}`.trim()}
@@ -165,7 +168,6 @@ const SiteSearch = ({
               </TagSlider>
             </div>
           ) : null}
-
           {suggestions.products.length ? (
             <div className="site-search__section">
               <p className="site-search__section-title">Products</p>
@@ -195,7 +197,6 @@ const SiteSearch = ({
               </ul>
             </div>
           ) : null}
-
           {suggestions.categories.length ? (
             <div className="site-search__section">
               <p className="site-search__section-title">Categories</p>
@@ -207,7 +208,10 @@ const SiteSearch = ({
                       className="site-search__item site-search__item--category"
                       onClick={() => setIsOpen(false)}
                     >
-                      <span className="site-search__category-icon" aria-hidden="true">
+                      <span
+                        className="site-search__category-icon"
+                        aria-hidden="true"
+                      >
                         #
                       </span>
                       <span className="site-search__item-body">
@@ -226,7 +230,6 @@ const SiteSearch = ({
               </ul>
             </div>
           ) : null}
-
           {hasQuery && !hasResults ? (
             <div className="site-search__empty">
               <p>No quick matches for “{query.trim()}”.</p>
@@ -239,7 +242,6 @@ const SiteSearch = ({
               </button>
             </div>
           ) : null}
-
           {hasQuery && hasResults ? (
             <button
               type="button"

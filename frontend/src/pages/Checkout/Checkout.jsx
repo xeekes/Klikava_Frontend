@@ -1,3 +1,7 @@
+/*
+ * Поток оформления заказа: требует авторизации и непустой корзины; управляет выбором адреса/карты
+ * и делегирует размещение заказа CheckoutSummary.
+ */
 import { useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 import CartItem from "../../components/CartItem/CartItem";
@@ -11,11 +15,14 @@ import { useUserData } from "../../context/UserDataContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import "./Checkout.scss";
 
+/**
+ * Многошаговое оформление заказа для авторизованных пользователей с непустой корзиной.
+ */
 const Checkout = () => {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { items, isEmpty, isLoading, updateQuantity, removeItem } = useCart();
-  const { addresses, cards, addAddress, updateAddress, addCard } = useUserData();
-
+  const { addresses, cards, addAddress, updateAddress, addCard } =
+    useUserData();
   const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id);
   const [selectedCardId, setSelectedCardId] = useState(cards[0]?.id);
   const [isAddressesExpanded, setIsAddressesExpanded] = useState(false);
@@ -23,25 +30,26 @@ const Checkout = () => {
   const [editingAddressId, setEditingAddressId] = useState(null);
   const [showAddCard, setShowAddCard] = useState(false);
   const [editingCardId, setEditingCardId] = useState(null);
-
   const selectedAddress = useMemo(
     () => addresses.find((item) => item.id === selectedAddressId),
-    [addresses, selectedAddressId]
+    [addresses, selectedAddressId],
   );
-
   const billingLines = useMemo(
     () => selectedAddress?.lines || [],
     [selectedAddress],
   );
-
   if (!isAuthLoading && !isAuthenticated) {
     return <Navigate to="/cart" replace />;
   }
-
   if (!isLoading && isEmpty) {
     return <Navigate to="/cart" replace />;
   }
 
+  /**
+   * Сохраняет новый или обновлённый адрес доставки и сбрасывает UI формы адреса.
+   * @param {object} form
+   * @param {string} [addressId]
+   */
   const handleSaveAddress = (form, addressId) => {
     if (addressId) {
       updateAddress(addressId, form);
@@ -55,19 +63,21 @@ const Checkout = () => {
     setIsAddressesExpanded(false);
   };
 
+  /**
+   * Регистрирует платёжную карту и выбирает её для текущего заказа.
+   * @param {object} form
+   */
   const handleAddCard = async (form) => {
     const nextCard = await addCard(cardFromForm(form));
     setSelectedCardId(nextCard.id);
     setShowAddCard(false);
     setEditingCardId(null);
   };
-
   return (
     <div className="checkout-page">
       <div className="checkout-page__layout">
         <div className="container">
           <p className="checkout-page__label">Place an order</p>
-
           <div className="checkout-page__grid">
             <section className="checkout-page__main">
               {isAuthLoading || isLoading ? (
@@ -81,7 +91,9 @@ const Checkout = () => {
                     isExpanded={isAddressesExpanded}
                     showAddForm={showAddAddress}
                     onSelectAddress={setSelectedAddressId}
-                    onToggleExpanded={() => setIsAddressesExpanded((prev) => !prev)}
+                    onToggleExpanded={() =>
+                      setIsAddressesExpanded((prev) => !prev)
+                    }
                     onShowAddForm={() => {
                       setEditingAddressId(null);
                       setShowAddAddress(true);
@@ -98,7 +110,6 @@ const Checkout = () => {
                     }}
                     onSaveAddress={handleSaveAddress}
                   />
-
                   <CheckoutPaymentSection
                     cards={cards}
                     selectedCardId={selectedCardId}
@@ -120,7 +131,6 @@ const Checkout = () => {
                     }}
                     editingCardId={editingCardId}
                   />
-
                   <ul className="checkout-page__items">
                     {items.map((item) => (
                       <li key={item.productId}>
@@ -135,7 +145,6 @@ const Checkout = () => {
                 </>
               )}
             </section>
-
             <CheckoutSummary />
           </div>
         </div>

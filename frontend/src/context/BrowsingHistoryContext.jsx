@@ -1,3 +1,6 @@
+/*
+ * Недавно просмотренные товары (макс. 40 записей), сгруппированные по дате для страницы профиля.
+ */
 import {
   createContext,
   useCallback,
@@ -8,8 +11,14 @@ import {
 } from "react";
 import { readStorage, STORAGE_KEYS, writeStorage } from "../utils/storage";
 
+/** React-контекст для недавно просмотренных товаров и обработчиков отслеживания. */
 const BrowsingHistoryContext = createContext(null);
 
+/**
+ * Форматирует ISO-дату в короткую английскую метку для группировки.
+ * @param {Date} date
+ * @returns {string}
+ */
 const formatDateLabel = (date) =>
   date.toLocaleDateString("en-US", {
     month: "short",
@@ -17,9 +26,13 @@ const formatDateLabel = (date) =>
     year: "numeric",
   });
 
+/**
+ * Группирует записи просмотров по календарному дню, дедуплицируя товары внутри дня.
+ * @param {object[]} entries
+ * @returns {object[]}
+ */
 const groupProductsByDate = (entries) => {
   const groups = new Map();
-
   entries.forEach((entry) => {
     const dateKey = entry.viewedAt.slice(0, 10);
     if (!groups.has(dateKey)) {
@@ -28,30 +41,38 @@ const groupProductsByDate = (entries) => {
         products: [],
       });
     }
-
     const group = groups.get(dateKey);
     if (!group.products.some((item) => item.id === entry.product.id)) {
       group.products.push(entry.product);
     }
   });
-
   return Array.from(groups.values());
 };
 
+/**
+ * Предоставляет сгруппированную историю просмотров и отслеживание дереву компонентов.
+ * @param {{ children: import("react").ReactNode }} props
+ */
 export const BrowsingHistoryProvider = ({ children }) => {
   const [entries, setEntries] = useState(() =>
     readStorage(STORAGE_KEYS.browsingHistory, []),
   );
 
+  /**
+   * Синхронизирует записи просмотров с хранилищем при изменении списка в памяти.
+   */
   useEffect(() => {
     writeStorage(STORAGE_KEYS.browsingHistory, entries);
   }, [entries]);
 
+  /**
+   * Записывает просмотр товара, выносит его в начало и ограничивает длину списка.
+   * @param {object} product
+   */
   const trackProduct = useCallback((product) => {
     if (!product?.id) {
       return;
     }
-
     setEntries((prev) =>
       [
         {
@@ -86,10 +107,16 @@ export const BrowsingHistoryProvider = ({ children }) => {
   );
 };
 
+/**
+ * Читает состояние истории просмотров и действия из ближайшего провайдера.
+ * @returns {object}
+ */
 export const useBrowsingHistory = () => {
   const context = useContext(BrowsingHistoryContext);
   if (!context) {
-    throw new Error("useBrowsingHistory must be used within BrowsingHistoryProvider");
+    throw new Error(
+      "useBrowsingHistory must be used within BrowsingHistoryProvider",
+    );
   }
   return context;
 };

@@ -1,11 +1,14 @@
+/* Индексная сетка категорий со ссылками на маршруты листинга категорий. */
 import { Link } from "react-router-dom";
 import PageSearchHero from "../../components/PageSearchHero/PageSearchHero";
 import { useCatalog } from "../../context/CatalogContext";
 import "./CategoriesPage.scss";
 
+/**
+ * Индекс категорий со ссылками на маршруты листинга отделов.
+ */
 const CategoriesPage = () => {
   const { categories, getProductsByCategory, POPULAR_SEARCHES } = useCatalog();
-
   return (
     <section className="categories-page">
       <PageSearchHero
@@ -15,7 +18,6 @@ const CategoriesPage = () => {
         placeholder="Search categories and products..."
         popularTerms={POPULAR_SEARCHES}
       />
-
       <div className="container">
         {categories.length === 0 ? (
           <p className="categories-page__empty">No categories available.</p>
@@ -23,7 +25,6 @@ const CategoriesPage = () => {
           <div className="categories-page__grid">
             {categories.map((category) => {
               const productCount = getProductsByCategory(category.id).length;
-
               return (
                 <article key={category.id} className="categories-page__card">
                   <Link

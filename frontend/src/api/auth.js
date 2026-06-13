@@ -1,16 +1,20 @@
-import { apiRequest, hasApiBaseUrl } from "./client";
+/*
+ * API авторизации с переключением mock / реальный бэкенд.
+ * Mock подгружается динамически, чтобы prod-сборки могли исключить auth.mock.js.
+ */
+import { apiRequest } from "./client";
 import { ApiError } from "./errors";
-import { getPasswordError, isEmailOrPhone } from "../utils/validation";
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
+/**
+ * Преобразует payload пользователя FastAPI в плоскую структуру для AuthContext.
+ * @param {object|null|undefined} user
+ * @returns {object|null}
+ */
 const mapMarketplaceUser = (user) => {
   if (!user) {
     return null;
   }
-
   const emailOrPhone = user.email || user.phone_number || user.login || "";
-
   return {
     id: String(user.id),
     emailOrPhone,
@@ -19,11 +23,21 @@ const mapMarketplaceUser = (user) => {
   };
 };
 
+/**
+ * Нормализует ответ бэкенда авторизации в token и поля пользователя.
+ * @param {{ access_token: string, user: object }} payload
+ * @returns {{ token: string, user: object|null }}
+ */
 const mapAuthResponse = (payload) => ({
   token: payload.access_token,
   user: mapMarketplaceUser(payload.user),
 });
 
+/**
+ * Очищает строку и приводит к безопасному для бэкенда login-slug (нижний регистр, буквы, цифры, _).
+ * @param {string} value
+ * @returns {string}
+ */
 const sanitizeLogin = (value) =>
   String(value || "")
     .trim()
@@ -32,147 +46,70 @@ const sanitizeLogin = (value) =>
     .replace(/[^a-z0-9_]/g, "")
     .slice(0, 32);
 
+/**
+ * Формирует уникальный login из явного login, префикса email, имени или метки времени.
+ * @param {{ emailOrPhone: string, name?: string, login?: string }} params
+ * @returns {string}
+ */
 const resolveLogin = ({ emailOrPhone, name, login }) => {
   if (login?.trim().length >= 2) {
     return login.trim().slice(0, 32);
   }
-
   const fromEmail = emailOrPhone.includes("@")
     ? emailOrPhone.split("@")[0].trim()
     : emailOrPhone.trim();
-
   if (fromEmail.length >= 2) {
     return fromEmail.slice(0, 32);
   }
-
   const fromName = sanitizeLogin(name);
   if (fromName.length >= 2) {
     return fromName;
   }
-
-  return `${fromEmail || "user"}${Date.now().toString(36).slice(-4)}`.slice(0, 32);
-};
-
-const unsupportedApiFlow = (feature) => {
-  throw new ApiError(
-    501,
-    `${feature} is not available on the current backend yet`
+  return `${fromEmail || "user"}${Date.now().toString(36).slice(-4)}`.slice(
+    0,
+    32,
   );
 };
 
-const mockUser = (emailOrPhone) => ({
-  id: "mock-user-1",
-  emailOrPhone,
-  displayName: emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "User",
-});
-
-const mockAuthResponse = (emailOrPhone) => ({
-  token: `mock-token-${Date.now()}`,
-  user: mockUser(emailOrPhone),
-});
-
-/** @type {typeof realAuthApi} */
-const mockAuthApi = {
-  async login({ emailOrPhone, password }) {
-    await delay(600);
-    if (!emailOrPhone || !password) {
-      throw new Error("Email/phone and password are required");
-    }
-    if (!isEmailOrPhone(emailOrPhone)) {
-      throw new Error("Enter a valid email or phone number");
-    }
-    return mockAuthResponse(emailOrPhone);
-  },
-
-  async register({ emailOrPhone }) {
-    await delay(600);
-    if (!emailOrPhone) {
-      throw new Error("Email or phone is required");
-    }
-    if (!isEmailOrPhone(emailOrPhone)) {
-      throw new Error("Enter a valid email or phone number");
-    }
-    return { verificationId: `mock-verification-${Date.now()}` };
-  },
-
-  async sendVerificationCode({ emailOrPhone, flow }) {
-    await delay(500);
-    return { verificationId: `mock-verification-${flow}-${Date.now()}` };
-  },
-
-  async verifyCode({ verificationId, code }) {
-    await delay(500);
-    if (!code || code.length < 4) {
-      throw new Error("Invalid verification code");
-    }
-    return { verified: true, verificationId };
-  },
-
-  async createPassword({ verificationId, password, confirmPassword }) {
-    await delay(600);
-    const passwordError = getPasswordError(password);
-    if (passwordError) {
-      throw new Error(passwordError);
-    }
-    if (password !== confirmPassword) {
-      throw new Error("Passwords do not match");
-    }
-    const emailOrPhone =
-      localStorage.getItem("auth_email_or_phone") || "user@example.com";
-    return mockAuthResponse(emailOrPhone);
-  },
-
-  async resetPassword({ verificationId, password, confirmPassword }) {
-    await delay(600);
-    const passwordError = getPasswordError(password);
-    if (passwordError) {
-      throw new Error(passwordError);
-    }
-    if (password !== confirmPassword) {
-      throw new Error("Passwords do not match");
-    }
-    return { success: true };
-  },
-
-  async loginWithGoogle() {
-    await delay(600);
-    return mockAuthResponse("google.user@example.com");
-  },
-
-  async logout() {
-    await delay(200);
-    return { success: true };
-  },
-
-  async getCurrentUser() {
-    await delay(300);
-    const token = localStorage.getItem("auth_token");
-    if (!token) return null;
-    const raw = sessionStorage.getItem("mock_current_user");
-    return raw ? JSON.parse(raw) : null;
-  },
+/**
+ * Бросает ApiError 501 — функция недоступна на текущем бэкенде.
+ * @param {string} feature
+ * @returns {never}
+ */
+const unsupportedApiFlow = (feature) => {
+  throw new ApiError(
+    501,
+    `${feature} is not available on the current backend yet`,
+  );
 };
 
 const realAuthApi = {
+  /**
+   * Аутентификация на бэкенде и маппинг ответа для сессии приложения.
+   * @param {{ emailOrPhone: string, password: string }} params
+   * @returns {Promise<{ token: string, user: object|null }>}
+   */
   async login({ emailOrPhone, password }) {
     const payload = await apiRequest("/users/login", {
       method: "POST",
       body: {
-        login: emailOrPhone.trim(),
+        login_email: emailOrPhone.trim(),
         password,
       },
     });
-
     return mapAuthResponse(payload);
   },
 
+  /**
+   * Регистрация нового пользователя с немедленным входом для возврата сессии.
+   * @param {{ emailOrPhone: string, password: string, name?: string, login?: string }} params
+   * @returns {Promise<{ token: string, user: object|null }>}
+   */
   async register({ emailOrPhone, password, name, login }) {
     const email = emailOrPhone?.includes("@")
       ? emailOrPhone.trim()
       : `${emailOrPhone.trim()}@klikava.local`;
-
     const resolvedLogin = resolveLogin({ emailOrPhone, name, login });
-
     await apiRequest("/users/register", {
       method: "POST",
       body: {
@@ -182,46 +119,114 @@ const realAuthApi = {
         name: name?.trim() || resolvedLogin,
       },
     });
-
     const loginPayload = await apiRequest("/users/login", {
       method: "POST",
       body: {
-        login: resolvedLogin,
+        login_email: resolvedLogin,
         password,
       },
     });
-
     return mapAuthResponse(loginPayload);
   },
 
+  /**
+   * @returns {never}
+   */
   sendVerificationCode() {
     return unsupportedApiFlow("Email verification");
   },
 
+  /**
+   * @returns {never}
+   */
   verifyCode() {
     return unsupportedApiFlow("Email verification");
   },
 
+  /**
+   * @returns {never}
+   */
   createPassword() {
     return unsupportedApiFlow("Password setup");
   },
 
+  /**
+   * @returns {never}
+   */
   resetPassword() {
     return unsupportedApiFlow("Password reset");
   },
 
+  /**
+   * @returns {never}
+   */
   loginWithGoogle() {
     return unsupportedApiFlow("Google login");
   },
 
+  /**
+   * Выход на клиенте; для JWT не требуется инвалидация сессии на бэкенде.
+   * @returns {Promise<{ success: boolean }>}
+   */
   async logout() {
     return { success: true };
   },
 
+  /**
+   * Загрузка профиля авторизованного пользователя с бэкенда.
+   * @returns {Promise<object|null>}
+   */
   async getCurrentUser() {
     const user = await apiRequest("/users/me", { method: "GET" });
     return mapMarketplaceUser(user);
   },
 };
 
-export const authApi = hasApiBaseUrl() ? realAuthApi : mockAuthApi;
+const AUTH_METHODS = [
+  "login",
+  "register",
+  "sendVerificationCode",
+  "verifyCode",
+  "createPassword",
+  "resetPassword",
+  "loginWithGoogle",
+  "logout",
+  "getCurrentUser",
+];
+
+/**
+ * Прокси с ленивой загрузкой auth.mock.js при первом вызове (dev без API URL).
+ * @returns {typeof realAuthApi}
+ */
+const createLazyMockAuthApi = () => {
+  /** @type {Promise<typeof realAuthApi>|null} */
+  let mockImplPromise = null;
+
+  /**
+   * Однократно резолвит динамически импортированную mock-реализацию за сессию.
+   * @returns {Promise<typeof realAuthApi>}
+   */
+  const resolveMockImpl = async () => {
+    if (!mockImplPromise) {
+      mockImplPromise = import("./auth.mock.js").then(
+        (module) => module.mockAuthApi,
+      );
+    }
+    return mockImplPromise;
+  };
+
+  return Object.fromEntries(
+    AUTH_METHODS.map((methodName) => [
+      methodName,
+      async (...args) => (await resolveMockImpl())[methodName](...args),
+    ]),
+  );
+};
+
+/**
+ * Фасад Auth API: реальный бэкенд при VITE_API_BASE_URL на этапе сборки;
+ * иначе — ленивый mock-прокси в отдельном чанке.
+ */
+export const authApi = import.meta.env.VITE_API_BASE_URL
+  ? realAuthApi
+  : createLazyMockAuthApi();

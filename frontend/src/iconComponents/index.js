@@ -1,3 +1,4 @@
+/** Barrel-модуль: реэкспорт всех компонентов-обёрток иконок для импорта по приложению. */
 export { default as Logo } from "./Logo";
 export { default as Language } from "./Language";
 export { default as Cart } from "./Cart";

@@ -1,5 +1,9 @@
+/* Универсальный контейнер-карточка с рамкой для маркетинговых секций. */
 import "./Card.scss";
 
+/**
+ * Универсальный контейнер-карточка с рамкой для маркетинговых секций.
+ */
 const Card = ({
   title = "",
   price = "",
@@ -11,9 +15,14 @@ const Card = ({
   return (
     <article className={`card ${rounded ? "card--rounded" : ""}`.trim()}>
       <div className="card__image-wrapper">
-        {image ? <img src={image} alt={title || "Card image"} className="card__image" /> : null}
+        {image ? (
+          <img
+            src={image}
+            alt={title || "Card image"}
+            className="card__image"
+          />
+        ) : null}
       </div>
-
       <div className="card__content">
         <h3 className="card__title">{title}</h3>
         <p className="card__price">{price}</p>

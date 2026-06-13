@@ -1,3 +1,4 @@
+/* Установка нового пароля после верификации или сброса. */
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -9,29 +10,33 @@ import AuthFormField from "../AuthFormField/AuthFormField";
 import AuthCard from "./AuthCard";
 import AuthFormMessage from "./AuthFormMessage";
 import "./AuthForms.scss";
-
 const PASSWORD_HINT =
   "It must contain at least one digit and two Latin letters of each case. Use 8 to 20 characters.";
 
+/**
+ * Устанавливает новый пароль после верификации или при восстановлении пароля.
+ */
 const CreatePasswordForm = ({ isNewPassword = false }) => {
   const location = useLocation();
   const { openAuth, closeAuth } = useAuthModal();
   const flow = location.state?.flow || AUTH_FLOW.REGISTER;
   const isRecoverFlow = isNewPassword || flow === AUTH_FLOW.RECOVER;
-
-  const { createPassword, resetPassword, isSubmitting, error, clearError } = useAuth();
+  const { createPassword, resetPassword, isSubmitting, error, clearError } =
+    useAuth();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { getError, validateAll, handleBlur } = useFormValidation(schemas.password);
-
+  const { getError, validateAll, handleBlur } = useFormValidation(
+    schemas.password,
+  );
+  /**
+   * Сохраняет новый пароль через поток создания или сброса в зависимости от состояния авторизации.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     clearError();
-
     if (!validateAll({ password, confirmPassword })) {
       return;
     }
-
     try {
       if (isRecoverFlow) {
         await resetPassword({ password, confirmPassword });
@@ -40,21 +45,20 @@ const CreatePasswordForm = ({ isNewPassword = false }) => {
         });
         return;
       }
-
       await createPassword({ password, confirmPassword });
       closeAuth();
     } catch {
-      // error is shown via context
+      // ошибка отображается через контекст
     }
   };
-
   return (
-    <AuthCard title={isRecoverFlow ? "Create a new password" : "Create a password"}>
+    <AuthCard
+      title={isRecoverFlow ? "Create a new password" : "Create a password"}
+    >
       <AuthFormMessage error={error} />
       <p className="auth-form__hint">{PASSWORD_HINT}</p>
-
       <form className="auth-form__body" onSubmit={handleSubmit} noValidate>
-        <AuthFormField error={getError("password")}>
+        <AuthFormField label="Password" error={getError("password")}>
           <input
             type="password"
             className="auth-form__input"
@@ -67,25 +71,31 @@ const CreatePasswordForm = ({ isNewPassword = false }) => {
             disabled={isSubmitting}
           />
         </AuthFormField>
-
-        <AuthFormField error={getError("confirmPassword")}>
+        <AuthFormField
+          label="Confirm password"
+          error={getError("confirmPassword")}
+        >
           <input
             type="password"
             className="auth-form__input"
             placeholder="Confirm password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            onBlur={() => handleBlur({ password, confirmPassword }, "confirmPassword")}
+            onBlur={() =>
+              handleBlur({ password, confirmPassword }, "confirmPassword")
+            }
             autoComplete="new-password"
             maxLength={20}
             disabled={isSubmitting}
           />
         </AuthFormField>
-
-        <button type="submit" className="auth-form__submit" disabled={isSubmitting}>
+        <button
+          type="submit"
+          className="auth-form__submit"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? "Saving..." : "Continue"}
         </button>
-
         {!isRecoverFlow && (
           <div className="auth-form__links auth-form__links--center">
             <button

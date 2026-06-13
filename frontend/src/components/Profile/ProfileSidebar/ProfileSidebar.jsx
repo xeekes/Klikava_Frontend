@@ -1,13 +1,19 @@
+/* Навигация профиля из constants/profile. */
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { PROFILE_NAV_ITEMS } from "../../../constants/profile";
 import { useAuth } from "../../../context/AuthContext";
 import "./ProfileSidebar.scss";
 
+/**
+ * Навигация раздела профиля на основе общих констант навигации.
+ */
 const ProfileSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
-
+  /**
+   * Сопоставляет вложенные маршруты профиля с префиксом пути пункта навигации.
+   */
   const isActivePath = (path) => {
     if (path === "/profile/orders") {
       return location.pathname.startsWith("/profile/orders");
@@ -20,12 +26,13 @@ const ProfileSidebar = () => {
     }
     return location.pathname === path;
   };
-
+  /**
+   * Выходит из аккаунта и возвращает на главную страницу витрины.
+   */
   const handleLogout = async () => {
     await logout();
     navigate("/");
   };
-
   return (
     <aside className="profile-sidebar">
       <nav className="profile-sidebar__nav">
@@ -33,7 +40,6 @@ const ProfileSidebar = () => {
           if (item.type === "divider") {
             return <div key={item.id} className="profile-sidebar__divider" />;
           }
-
           if (item.type === "logout") {
             return (
               <button
@@ -46,7 +52,6 @@ const ProfileSidebar = () => {
               </button>
             );
           }
-
           return (
             <NavLink
               key={item.id}

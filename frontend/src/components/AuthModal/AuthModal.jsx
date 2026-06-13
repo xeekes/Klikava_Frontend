@@ -1,3 +1,7 @@
+/*
+ * Оверлей авторизации: вложенные Routes для потоков входа/регистрации/верификации.
+ * Перенаправляет авторизованных пользователей обратно на backgroundLocation (или домой).
+ */
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import LoginForm from "../AuthForms/LoginForm";
@@ -10,15 +14,16 @@ import Modal from "../Modal/Modal";
 import { useAuthModal } from "../../hooks/useAuthModal";
 import "./AuthModal.scss";
 
+/**
+ * Оверлей авторизации с вложенными маршрутами; перенаправляет вошедших пользователей на фоновую страницу.
+ */
 const AuthModal = () => {
   const location = useLocation();
   const { closeAuth } = useAuthModal();
   const { isAuthenticated, isLoading } = useAuth();
-
   if (isLoading) {
     return <LoadingSpinner variant="overlay" label="Loading..." />;
   }
-
   if (isAuthenticated) {
     const back = location.state?.backgroundLocation;
     return (
@@ -32,7 +37,6 @@ const AuthModal = () => {
       />
     );
   }
-
   return (
     <Modal
       ariaLabel="Authentication"

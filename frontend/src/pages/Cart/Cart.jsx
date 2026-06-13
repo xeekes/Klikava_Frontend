@@ -1,3 +1,4 @@
+/* Страница корзины: позиции, управление количеством, ссылка на оформление. */
 import { createPortal } from "react-dom";
 import CartItem from "../../components/CartItem/CartItem";
 import CartSidebar from "../../components/CartSidebar/CartSidebar";
@@ -7,6 +8,9 @@ import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../context/CatalogContext";
 import "./Cart.scss";
 
+/**
+ * Корзина с позициями, боковой панелью итогов и рекомендациями.
+ */
 const Cart = () => {
   const { products } = useCatalog();
   const browsingHistoryProducts = products.slice(6, 12);
@@ -14,6 +18,9 @@ const Cart = () => {
   const { isAuthenticated } = useAuth();
   const { items, isEmpty, isLoading, updateQuantity, removeItem } = useCart();
 
+  /**
+   * Рендерит сетки истории просмотров или «подобрано для вас» в зависимости от состояния авторизации.
+   */
   const renderRecommendations = () => {
     if (isAuthenticated) {
       return (
@@ -39,7 +46,6 @@ const Cart = () => {
         </>
       );
     }
-
     return (
       <div className="cart-page__product-section">
         <ProductGrid
@@ -51,20 +57,20 @@ const Cart = () => {
       </div>
     );
   };
-
   return (
     <div className="cart-page">
       <div className="cart-page__layout">
         <div className="container">
           <p className="cart-page__label">Basket</p>
-
           <div className="cart-page__grid">
             <section className="cart-page__main">
               {isLoading ? (
                 <div className="cart-page__card cart-page__card--loading" />
               ) : isEmpty ? (
                 <div className="cart-page__card cart-page__card--empty">
-                  <h1 className="cart-page__empty-title">There is nothing in the cart</h1>
+                  <h1 className="cart-page__empty-title">
+                    There is nothing in the cart
+                  </h1>
                   <p className="cart-page__empty-text">
                     {isAuthenticated
                       ? "Select products to add them to your cart"
@@ -84,19 +90,15 @@ const Cart = () => {
                   ))}
                 </ul>
               )}
-
               {!isLoading ? (
                 <CartSidebar className="cart-sidebar--inline" />
               ) : null}
-
               {!isLoading ? renderRecommendations() : null}
             </section>
-
             <CartSidebar className="cart-sidebar--aside" />
           </div>
         </div>
       </div>
-
       {!isLoading
         ? createPortal(
             <CartSidebar className="cart-sidebar--fixed" />,
