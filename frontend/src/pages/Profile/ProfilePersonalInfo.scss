@@ -68,6 +68,22 @@ $form-text: #595858;
     object-fit: cover;
     display: block;
     background: $white;
+
+    &--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $light-green;
+      border: 1px solid rgba($black, 0.06);
+    }
+  }
+
+  .profile-personal-info__avatar-icon {
+    width: 38%;
+    height: 38%;
+    color: $dark-gray;
+    display: block;
+    flex-shrink: 0;
   }
 
   .profile-personal-info__avatar-upload {

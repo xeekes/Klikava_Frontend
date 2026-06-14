@@ -1,7 +1,9 @@
 /* Боковая панель итогов корзины; оформление для гостя через модальное окно авторизации. */
+import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { useCatalog } from "../../context/CatalogContext";
 import { useAuthModal } from "../../hooks/useAuthModal";
 import "./CartSidebar.scss";
 import { DELIVERY_FEE } from "../../constants/delivery";
@@ -14,6 +16,19 @@ const CartSidebar = ({ className = "" }) => {
   const { isAuthenticated } = useAuth();
   const { openAuth } = useAuthModal();
   const { items, isEmpty, total, itemCount } = useCart();
+  const { products } = useCatalog();
+  const displayItems = useMemo(
+    () =>
+      items.map((item) => {
+        const catalogProduct = products.find(
+          (product) => String(product.id) === String(item.productId),
+        );
+        return catalogProduct?.image
+          ? { ...item, image: catalogProduct.image }
+          : item;
+      }),
+    [items, products],
+  );
   const isFixedBar = className.includes("cart-sidebar--fixed");
   const deliveryTotal = isEmpty ? 0 : DELIVERY_FEE;
   const checkoutTotal = total + deliveryTotal;
@@ -25,7 +40,7 @@ const CartSidebar = ({ className = "" }) => {
             className="cart-sidebar__thumbs"
             aria-hidden={items.length === 0}
           >
-            {items.map((item) => (
+            {displayItems.map((item) => (
               <img
                 key={item.productId}
                 className="cart-sidebar__thumb"

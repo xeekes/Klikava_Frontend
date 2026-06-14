@@ -9,6 +9,7 @@ import "./CartItem.scss";
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   const rating = item.rating ?? 5;
   const sold = item.sold ?? 422;
+  const lineTotal = Number((item.price * item.quantity).toFixed(2));
   const hasDiscount =
     typeof item.discountPercent === "number" &&
     item.discountPercent > 0 &&
@@ -73,7 +74,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
             </div>
           </div>
           <div className="cart-item__delivery">
-            <p>Delivery $ {item.deliveryPrice ?? item.price}</p>
+            <p>{lineTotal} $</p>
             <p>{item.deliveryDates ?? "23 - 25 May"}</p>
           </div>
         </div>

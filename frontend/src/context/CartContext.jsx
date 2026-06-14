@@ -31,10 +31,8 @@ const normalizeItem = (product, options = {}) => ({
   recentLowestPrice: product.recentLowestPrice ?? product.price,
   originalPrice: product.originalPrice,
   discountPercent: product.discountPercent,
-  sold: product.sold ?? 422,
-  rating: product.rating ?? 5,
-  deliveryPrice: product.deliveryPrice ?? product.price,
-  deliveryDates: product.deliveryDates ?? "23 - 25 May",
+  sold: product.sold,
+  variantId: product.variantId ?? null,
   quantity: options.quantity ?? 1,
   color: options.color ?? null,
 });

@@ -1,12 +1,10 @@
 /* Карточка сводки заказа с кнопками действий в зависимости от статуса. */
-import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { SliderArrowRight } from "../../../iconComponents";
-import { useMotionPresence } from "../../../hooks/useMotionPresence";
-import "swiper/css";
+import {
+  getBuyAgainProductId,
+  getOrderCoverImage,
+} from "../../../utils/orderHelpers";
 import "./ProfileOrderCard.scss";
-import { getBuyAgainProductId } from "../../../utils/orderHelpers";
 
 const ACTION_LABELS = {
   track: "Track",
@@ -19,16 +17,9 @@ const ACTION_LABELS = {
  * Карточка сводки заказа с кнопками действий в зависимости от статуса.
  */
 const ProfileOrderCard = ({ order, actions }) => {
-  const swiperRef = useRef(null);
-  const [showNext, setShowNext] = useState(false);
-  const nextButtonMotion = useMotionPresence(showNext);
   const orderBasePath = `/profile/orders/${encodeURIComponent(order.id)}`;
-  /**
-   * Показывает или скрывает кнопку «далее» галереи в зависимости от состояния блокировки Swiper.
-   */
-  const updateNavigation = (swiper) => {
-    setShowNext(!swiper.isLocked && !swiper.isEnd);
-  };
+  const coverImage = order.image || getOrderCoverImage(order);
+
   /**
    * Определяет маршрут для заданного типа действия с заказом.
    */
@@ -39,43 +30,25 @@ const ProfileOrderCard = ({ order, actions }) => {
     const productId = getBuyAgainProductId(order);
     return productId ? `/product/${productId}` : "/catalog";
   };
+
   return (
     <article className="profile-order-card">
       <div className="profile-order-card__top">
         <div className="profile-order-card__gallery">
-          <Swiper
-            className="profile-order-card__swiper"
-            slidesPerView="auto"
-            spaceBetween={16}
-            watchOverflow
-            onSwiper={(swiper) => {
-              swiperRef.current = swiper;
-              updateNavigation(swiper);
-            }}
-            onResize={updateNavigation}
-            onSlideChange={updateNavigation}
-            onLock={updateNavigation}
-            onUnlock={updateNavigation}
-          >
-            {order.images.map((image, index) => (
-              <SwiperSlide
-                key={`${order.id}-${index}`}
-                className="profile-order-card__slide"
-              >
-                <img className="profile-order-card__image" src={image} alt="" />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-          {nextButtonMotion.rendered ? (
-            <button
-              type="button"
-              className={`profile-order-card__gallery-next ${nextButtonMotion.className}`.trim()}
-              aria-label="Next images"
-              onClick={() => swiperRef.current?.slideNext()}
-            >
-              <SliderArrowRight aria-hidden="true" />
-            </button>
-          ) : null}
+          <div className="profile-order-card__slide">
+            {coverImage ? (
+              <img
+                className="profile-order-card__image"
+                src={coverImage}
+                alt=""
+              />
+            ) : (
+              <div
+                className="profile-order-card__image profile-order-card__image--placeholder"
+                aria-hidden="true"
+              />
+            )}
+          </div>
         </div>
         <div className="profile-order-card__actions">
           {actions.map((action) => (

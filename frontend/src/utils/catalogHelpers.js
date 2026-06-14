@@ -8,29 +8,14 @@ import {
   sortProducts,
 } from "./catalogFilters";
 
-const defaultProductDetails = {
-  sold: 422,
-  recentLowestPrice: 80,
-  colors: ["#d8c7a8", "#8f6f4f", "#3f6a5a", "#6a6f8f", "#2f2f2f"],
-  imagesCount: 5,
-  specs: [
-    { label: "Material", value: "Corduroy" },
-    { label: "Occasion", value: "Daily Commute" },
-    { label: "Style", value: "Street" },
-  ],
-  tabs: [
-    { id: "details", label: "Product Details" },
-    { id: "shipping", label: "Shipping" },
-    { id: "reviews", label: "Reviews" },
-  ],
-  shipping: {
-    company: "nova post",
-    deliveryTime: "7-18 business days",
-    costs: "Free on all orders",
-    stats: [],
-  },
-  reviews: [],
-};
+const DETAIL_TABS = [
+  { id: "details", label: "Product Details" },
+  { id: "shipping", label: "Shipping" },
+  { id: "reviews", label: "Reviews" },
+];
+
+export const buildDetailTabs = (shipping) =>
+  DETAIL_TABS.filter((tab) => tab.id !== "shipping" || shipping);
 
 /**
  * Создаёт API хелперов каталога над списком товаров и опциональными метаданными категорий.
@@ -77,10 +62,12 @@ export const createCatalogHelpers = (products, categories = []) => {
       return topProducts.slice(0, 6);
     }
     const filtered = topProducts.filter(
-      (product) => product.topCategoryId === topCategoryId,
+      (product) =>
+        String(product.categoryId) === String(topCategoryId) ||
+        String(product.topCategoryId) === String(topCategoryId),
     );
     if (filtered.length >= 6) {
-      return filtered;
+      return filtered.slice(0, 6);
     }
     const usedIds = new Set(filtered.map((product) => product.id));
     return [
@@ -211,29 +198,19 @@ export const createCatalogHelpers = (products, categories = []) => {
     if (!product) {
       return null;
     }
-    const images = Array.from(
-      { length: defaultProductDetails.imagesCount },
-      () => (typeof product.image === "string" ? product.image : product.image),
-    );
+    const image =
+      typeof product.image === "string" ? product.image : product.image;
     return {
       ...product,
-      ...defaultProductDetails,
-      images,
-      sold: product.sold,
-      price: product.price,
+      images: product.images?.length ? product.images : image ? [image] : [],
+      tabs: buildDetailTabs(product.shipping || null),
+      specs: product.specs || [],
+      reviews: product.reviews || [],
+      colors: product.colors || [],
       recentLowestPrice: product.originalPrice ?? product.price,
       category: findCategory(product.categoryId),
-      description:
-        product.description || defaultProductDetails.description || "",
-      specs: product.specs?.length
-        ? product.specs
-        : defaultProductDetails.specs,
-      reviews: product.reviews?.length
-        ? product.reviews
-        : defaultProductDetails.reviews,
-      shipping: product.shipping
-        ? { ...defaultProductDetails.shipping, ...product.shipping }
-        : defaultProductDetails.shipping,
+      shipping: product.shipping || null,
+      description: product.description || "",
     };
   };
 

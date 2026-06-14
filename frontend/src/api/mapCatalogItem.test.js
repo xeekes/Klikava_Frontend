@@ -49,9 +49,10 @@ describe("mapBackendProduct", () => {
         current_version: {
           title: "Smartphone X",
           category_id: 10,
-          variants: [{ final_price: 90, discount: 10 }],
+          variants: [{ id: 501, final_price: 90, discount: 10 }],
           pictures: [{ url: "https://cdn.example/img.jpg" }],
         },
+        is_top: true,
       },
       0,
       categoryLookup,
@@ -66,6 +67,7 @@ describe("mapBackendProduct", () => {
     expect(result.categoryId).toBe("10");
     expect(result.categoryName).toBe("Electronics");
     expect(result.isTop).toBe(true);
+    expect(result.variantId).toBe(501);
   });
 
   it("uses slugify fallback and local image when API omits media", () => {
@@ -103,6 +105,7 @@ describe("mapBackendReview", () => {
 
     expect(result).toEqual({
       id: 7,
+      userId: 99,
       author: "User 99",
       rating: 4,
       text: "Great product",

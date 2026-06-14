@@ -18,8 +18,9 @@ export const AboutPage = () => (
       platforms.
     </p>
     <p>
-      This project is a frontend diploma implementation with mock data, local
-      storage, and a complete customer journey from search to checkout.
+      The storefront connects to a live catalog API for products, orders,
+      reviews, and profile data. Cart, favorites, and browsing history are
+      stored locally in the browser.
     </p>
   </InfoPage>
 );

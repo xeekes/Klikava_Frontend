@@ -19,12 +19,6 @@
       min-width: 0;
       flex: 1;
 
-      .profile-order-card__swiper {
-        width: 100%;
-        height: max-content;
-        overflow: hidden;
-      }
-
       .profile-order-card__slide {
         width: 280px;
         height: 186px;
@@ -37,29 +31,10 @@
         object-fit: cover;
         display: block;
         background: $light-gray;
-      }
 
-      .profile-order-card__gallery-next {
-        position: absolute;
-        top: 50%;
-        right: 0;
-        z-index: 2;
-        transform: translateY(-50%);
-
-        &.motion-surface--closed,
-        &.motion-surface--closing {
-          transform: translateY(-50%) translateX(6px);
+        &--placeholder {
+          min-height: 186px;
         }
-
-        &.motion-surface--open {
-          transform: translateY(-50%) translateX(0);
-        }
-        width: 42px;
-        height: 98px;
-        border: none;
-        padding: 0;
-        background: none;
-        cursor: pointer;
       }
     }
     .profile-order-card__actions {

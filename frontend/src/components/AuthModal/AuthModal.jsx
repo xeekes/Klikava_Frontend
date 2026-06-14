@@ -4,6 +4,7 @@
  */
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useScrollLock } from "../../hooks/useScrollLock";
 import LoginForm from "../AuthForms/LoginForm";
 import CreateAccountForm from "../AuthForms/CreateAccountForm";
 import RecoverPasswordForm from "../AuthForms/RecoverPasswordForm";
@@ -21,6 +22,7 @@ const AuthModal = () => {
   const location = useLocation();
   const { closeAuth } = useAuthModal();
   const { isAuthenticated, isLoading } = useAuth();
+  useScrollLock();
   if (isLoading) {
     return <LoadingSpinner variant="overlay" label="Loading..." />;
   }

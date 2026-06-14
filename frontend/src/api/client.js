@@ -68,7 +68,9 @@ const unwrapMarketplacePayload = (payload) => {
 export const apiRequest = async (path, options = {}) => {
   const { body, headers: customHeaders, ...rest } = options;
   const headers = {
-    "Content-Type": "application/json",
+    ...(body !== undefined && !(body instanceof FormData)
+      ? { "Content-Type": "application/json" }
+      : {}),
     ...customHeaders,
   };
   const token = getAuthToken();
@@ -78,7 +80,12 @@ export const apiRequest = async (path, options = {}) => {
   const response = await fetch(`${BASE_URL}${path}`, {
     ...rest,
     headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body:
+      body === undefined
+        ? undefined
+        : body instanceof FormData
+          ? body
+          : JSON.stringify(body),
   });
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
@@ -90,6 +97,19 @@ export const apiRequest = async (path, options = {}) => {
   }
   return unwrapMarketplacePayload(payload);
 };
+
+/**
+ * Выполняет запрос с FormData или без тела (upload/delete).
+ * @param {string} path
+ * @param {FormData|null} [formData]
+ * @param {RequestInit} [options]
+ * @returns {Promise<unknown>}
+ */
+export const apiUpload = async (path, formData = null, options = {}) =>
+  apiRequest(path, {
+    ...options,
+    body: formData ?? undefined,
+  });
 
 /**
  * Указывает, нужно ли делать реальные HTTP-вызовы вместо mock-адаптеров.

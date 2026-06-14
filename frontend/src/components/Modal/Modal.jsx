@@ -6,7 +6,7 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useState,
 } from "react";
 import { lockScroll, unlockScroll } from "../../utils/scrollLock";
@@ -42,7 +42,7 @@ const Modal = ({
       onClose?.();
     }, CLOSE_DURATION_MS);
   }, [onClose]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       setPhase("open");
     });

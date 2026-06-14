@@ -60,4 +60,14 @@
       opacity: 0.88;
     }
   }
+
+  &__error {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    background: #fdecec;
+    color: #8b1e1e;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
 }

@@ -11,6 +11,7 @@ import { useBrowsingHistory } from "../../context/BrowsingHistoryContext";
 import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../context/CatalogContext";
 import ProductDetailThumbsSlider from "./ProductDetailThumbsSlider";
+import ProductReviewsPanel from "./ProductReviewsPanel";
 import "./ProductDetail.scss";
 const MOBILE_THUMBS_MAX = 768;
 
@@ -109,7 +110,7 @@ const ProductDetail = () => {
     );
   }
   const maxDeliveryPercent = Math.max(
-    ...product.shipping.stats.map((item) => item.percent),
+    ...(product.shipping?.stats || []).map((item) => item.percent),
     1,
   );
 
@@ -197,7 +198,9 @@ const ProductDetail = () => {
                     <Clock className="product-detail__icon product-detail__icon--clock" />
                     <p className="product-detail__price">{product.price} $</p>
                   </div>
-                  <p className="product-detail__sold">{product.sold} sold</p>
+                  {typeof product.sold === "number" ? (
+                    <p className="product-detail__sold">{product.sold} sold</p>
+                  ) : null}
                 </div>
                 <div className="product-detail__pricing-bottom">
                   <p className="product-detail__recent-price">
@@ -290,7 +293,7 @@ const ProductDetail = () => {
                     </ul>
                   </div>
                 )}
-                {activeTab === "shipping" && (
+                {activeTab === "shipping" && product.shipping && (
                   <div className="product-detail__panel-section">
                     <h4 className="product-detail__panel-title">Shipping</h4>
                     <div className="product-detail__shipping-table">
@@ -314,7 +317,7 @@ const ProductDetail = () => {
                       </span>
                     </div>
                     <ul className="product-detail__delivery-stats">
-                      {product.shipping.stats.map((stat) => (
+                      {(product.shipping.stats || []).map((stat) => (
                         <li
                           key={stat.label}
                           className="product-detail__delivery-stat"
@@ -339,63 +342,7 @@ const ProductDetail = () => {
                   </div>
                 )}
                 {activeTab === "reviews" && (
-                  <div className="product-detail__panel-section product-detail__panel-section--reviews">
-                    <h4 className="product-detail__panel-title">Reviews</h4>
-                    <div className="product-detail__reviews-scroll">
-                      <ul className="product-detail__reviews-list">
-                        {product.reviews.length === 0 ? (
-                          <li className="product-detail__review product-detail__review--empty">
-                            No reviews yet.
-                          </li>
-                        ) : null}
-                        {product.reviews.map((review) => (
-                          <li
-                            key={review.id}
-                            className="product-detail__review"
-                          >
-                            <div
-                              className="product-detail__review-avatar"
-                              aria-hidden="true"
-                            >
-                              {review.author.charAt(0)}
-                            </div>
-                            <div className="product-detail__review-body">
-                              <div className="product-detail__review-top">
-                                <p className="product-detail__review-author">
-                                  {review.author}
-                                </p>
-                                <div
-                                  className="product-detail__review-rating"
-                                  aria-label={`${review.rating} out of 5 stars`}
-                                >
-                                  {Array.from({ length: 5 }).map((_, index) => (
-                                    <Star
-                                      key={index}
-                                      className={`product-detail__icon product-detail__icon--star ${
-                                        index < review.rating
-                                          ? ""
-                                          : "product-detail__icon--star-empty"
-                                      }`.trim()}
-                                    />
-                                  ))}
-                                </div>
-                              </div>
-                              <p className="product-detail__review-text">
-                                {review.text}
-                              </p>
-                              {review.image ? (
-                                <img
-                                  src={review.image}
-                                  alt=""
-                                  className="product-detail__review-image"
-                                />
-                              ) : null}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
+                  <ProductReviewsPanel product={product} usesApi={usesApi} />
                 )}
               </div>
             </aside>

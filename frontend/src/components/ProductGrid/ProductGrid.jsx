@@ -1,5 +1,6 @@
 /* Адаптивная сетка карточек товаров с хуком пагинации. */
 import ProductCard from "../ProductCard/ProductCard";
+import { ProductCardSkeleton } from "../CatalogSkeleton/CatalogSkeleton";
 import SeeMoreButton from "../SeeMoreButton/SeeMoreButton";
 import useProductGridColumns from "../../hooks/useProductGridColumns";
 import useProductPagination from "../../hooks/useProductPagination";
@@ -27,15 +28,17 @@ const ProductGrid = ({
   pageSize = PRODUCTS_INITIAL_PAGE_SIZE,
   loadMoreSize = PRODUCTS_LOAD_MORE_SIZE,
 }) => {
-  const { products: catalogProducts } = useCatalog();
+  const { products: catalogProducts, isFetchingCatalog } = useCatalog();
   const products = productsProp ?? catalogProducts;
   const effectiveColumns = useProductGridColumns(columns);
+  const showSkeleton = !productsProp && isFetchingCatalog;
   const isLoadMode = showSeeMore && seeMoreMode === "load";
   const isLinkMode = showSeeMore && seeMoreMode === "link";
   const initialPageSize =
     responsiveLimit && isLinkMode
       ? Math.min(effectiveColumns * ROWS_PER_COLUMN, MAX_RESPONSIVE_PRODUCTS)
       : pageSize;
+  const skeletonCount = Math.min(initialPageSize, 10);
   const paginationKey = products.map((product) => product.id).join(",");
   const { visibleItems, hasMore, loadMore } = useProductPagination(
     products,
@@ -51,10 +54,19 @@ const ProductGrid = ({
     isLinkMode && seeMoreLink && products.length > initialPageSize;
   return (
     <section className="product-grid">
-      <div className="product-grid__list" style={{ "--grid-columns": columns }}>
-        {visibleItems.map((product) => (
-          <ProductCard key={product.id} product={product} rounded={rounded} />
-        ))}
+      <div
+        className={`product-grid__list ${
+          showSkeleton ? "" : "catalog-fade-in"
+        }`.trim()}
+        style={{ "--grid-columns": columns }}
+      >
+        {showSkeleton
+          ? Array.from({ length: skeletonCount }, (_, index) => (
+              <ProductCardSkeleton key={`product-grid-skeleton-${index}`} rounded={rounded} />
+            ))
+          : visibleItems.map((product) => (
+              <ProductCard key={product.id} product={product} rounded={rounded} />
+            ))}
       </div>
       {shouldShowLoadMore ? (
         <SeeMoreButton

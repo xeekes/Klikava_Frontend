@@ -1,7 +1,8 @@
 /*
  * Боковая панель итогов заказа: применяет стоимость доставки и активный купон, сохраняет заказ
- * в UserDataContext (localStorage) и очищает корзину при оформлении заказа.
+ * через API или localStorage и очищает корзину при оформлении заказа.
  */
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../../context/CartContext";
 import { useUserData } from "../../../context/UserDataContext";
@@ -14,32 +15,53 @@ import "./CheckoutSummary.scss";
 const CheckoutSummary = () => {
   const navigate = useNavigate();
   const { items, total, itemCount, isEmpty, clearCart } = useCart();
-  const { addOrder, activeCoupon, clearCoupon } = useUserData();
+  const { addOrder, activeCoupon, clearCoupon, usesApi } = useUserData();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const deliveryTotal = isEmpty ? 0 : DELIVERY_FEE;
   const couponDiscount = activeCoupon ? 1.2 : 0;
   const orderTotal = Math.max(total + deliveryTotal - couponDiscount, 0);
+
   /**
-   * Сохраняет заказ в данные пользователя, очищает корзину и купон, затем выполняет навигацию.
+   * Сохраняет заказ в API или localStorage, очищает корзину и купон, затем выполняет навигацию.
    */
   const handlePlaceOrder = async () => {
-    const orderId = `PO-${Date.now()}`;
-    addOrder({
-      id: orderId,
-      status: "processing",
-      itemCount,
-      total: orderTotal,
-      orderTime: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
-      images: items.map((item) => item.image),
-      productTitle: items[0]?.title ?? "Order items",
-    });
-    await clearCart();
-    clearCoupon();
-    navigate("/order-success", { state: { orderId } });
+    setSubmitError("");
+    setIsSubmitting(true);
+    try {
+      let order;
+      if (usesApi) {
+        order = await addOrder(items, {
+          deliveryPrice: deliveryTotal,
+          discountItemId: activeCoupon?.backendId ?? null,
+        });
+      } else {
+        const orderId = `PO-${Date.now()}`;
+        order = await addOrder({
+          id: orderId,
+          status: "processing",
+          itemCount,
+          total: orderTotal,
+          orderTime: new Date().toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          }),
+          image: items[0]?.image ?? "",
+          productTitle: items[0]?.title ?? "Order items",
+          productId: items[0]?.productId ?? null,
+        });
+      }
+      await clearCart();
+      clearCoupon();
+      navigate("/order-success", { state: { orderId: order.id } });
+    } catch (error) {
+      setSubmitError(error.message || "Failed to place order.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
   if (isEmpty) {
     return null;
   }
@@ -71,12 +93,18 @@ const CheckoutSummary = () => {
           </div>
         ) : null}
       </div>
+      {submitError ? (
+        <p className="checkout-summary__error" role="alert">
+          {submitError}
+        </p>
+      ) : null}
       <button
         type="button"
         className="checkout-summary__place-order"
         onClick={handlePlaceOrder}
+        disabled={isSubmitting}
       >
-        <span>Place order</span>
+        <span>{isSubmitting ? "Placing order..." : "Place order"}</span>
         <span>{orderTotal} $</span>
       </button>
     </aside>

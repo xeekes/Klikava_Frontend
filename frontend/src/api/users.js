@@ -135,6 +135,16 @@ const realUsersApi = {
     apiRequest(`/users/${userId}/credit_cards/${cardId}`, {
       method: "DELETE",
     }),
+
+  /**
+   * Удаляет аккаунт пользователя.
+   * @param {string|number} userId
+   * @returns {Promise<unknown>}
+   */
+  deleteUser: (userId) =>
+    apiRequest(`/users/${userId}`, {
+      method: "DELETE",
+    }),
 };
 
 const mockUsersApi = {
@@ -197,6 +207,8 @@ const mockUsersApi = {
    * @returns {Promise<{ success: boolean }>}
    */
   deleteCreditCard: async () => ({ success: true }),
+
+  deleteUser: async () => ({ success: true }),
 };
 
 /**
@@ -272,4 +284,6 @@ export const usersApi = {
    * @returns {ReturnType<typeof realUsersApi.deleteCreditCard>}
    */
   deleteCreditCard: (...args) => resolveApi().deleteCreditCard(...args),
+
+  deleteUser: (...args) => resolveApi().deleteUser(...args),
 };

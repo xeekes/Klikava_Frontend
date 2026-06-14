@@ -4,84 +4,38 @@
   .profile-order-track__card {
     padding-top: 0;
     background: none;
+
     .profile-order-track__timeline {
       list-style: none;
       display: flex;
       flex-direction: column;
+      margin: 0;
+      padding: 0;
 
       .profile-order-track__step {
-        display: grid;
-        grid-template-columns: 1rem 1fr;
-        gap: 1.875rem;
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        padding-bottom: 1.25rem;
+        border-left: 2px solid $light-light-gray;
+        padding-left: 1rem;
+        margin-left: 0.35rem;
 
-        .profile-order-track__marker {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          .profile-order-track__marker-circle {
-            width: 1rem;
-            height: 1rem;
-            border-radius: 50%;
-            background: $light-gray;
-          }
-
-          .profile-order-track__marker-line {
-            width: 3px;
-            height: 100%;
-            background: $light-gray;
-            z-index: 1;
-          }
+        .profile-order-track__status {
+          margin: 0;
+          font-weight: 600;
+          color: $dark-gray;
         }
 
-        .profile-order-track__content {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          .profile-order-track__step-title {
-            color: #8e8e8e;
-            font-size: 1.5rem;
-          }
-
-          .profile-order-track__step-date {
-            color: #8e8e8e;
-            margin-bottom: 2.5rem;
-          }
+        .profile-order-track__tracking,
+        .profile-order-track__date {
+          margin: 0;
+          color: $gray;
         }
       }
 
       .profile-order-track__step:last-child {
         padding-bottom: 0;
-        .profile-order-track__marker-line {
-          display: none;
-        }
-      }
-
-      .profile-order-track__step:not(:last-child)::before {
-        content: "";
-        position: absolute;
-        left: 0.45rem;
-        top: 1.25rem;
-        bottom: 0;
-        width: 2px;
-        background: $light-light-gray;
-      }
-
-      .profile-order-track__step--active {
-        .profile-order-track__marker {
-          .profile-order-track__marker-circle {
-            background: $green;
-          }
-        }
-
-        .profile-order-track__content {
-          .profile-order-track__step-title {
-            color: $green;
-          }
-          .profile-order-track__step-date {
-            color: $gray;
-          }
-        }
       }
     }
   }

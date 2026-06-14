@@ -1,5 +1,6 @@
 /* Точка входа восстановления пароля (только mock-поток верификации). */
 import { useState } from "react";
+import { hasApiBaseUrl } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 import { AUTH_FLOW } from "../../constants/auth";
 import { useAuthModal } from "../../hooks/useAuthModal";
@@ -15,6 +16,7 @@ import "./AuthForms.scss";
  */
 const RecoverPasswordForm = () => {
   const { openAuth } = useAuthModal();
+  const usesApi = hasApiBaseUrl();
   const { sendVerificationCode, isSubmitting, error, clearError } = useAuth();
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const { getError, validateAll, handleBlur } = useFormValidation(
@@ -41,6 +43,22 @@ const RecoverPasswordForm = () => {
       // ошибка отображается через контекст
     }
   };
+  if (usesApi) {
+    return (
+      <AuthCard title="Recover password">
+        <AuthFormMessage error="Password recovery is not available on the server yet." />
+        <div className="auth-form__links auth-form__links--center">
+          <button
+            type="button"
+            className="auth-form__link"
+            onClick={() => openAuth("/login")}
+          >
+            Back to login
+          </button>
+        </div>
+      </AuthCard>
+    );
+  }
   return (
     <AuthCard title="Recover password">
       <AuthFormMessage error={error} />
