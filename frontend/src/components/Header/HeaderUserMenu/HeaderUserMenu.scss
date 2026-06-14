@@ -18,6 +18,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.88;
+    }
 
     .header-user-menu__toggle-icon {
       width: 1.35rem;
@@ -107,6 +112,11 @@
         font-family: inherit;
         cursor: pointer;
         text-align: left;
+        transition: background var(--motion-fast) ease;
+
+        &:hover {
+          background: $light-light-gray;
+        }
 
         .header-user-menu__item-icon {
           width: 1.25rem;
@@ -162,6 +172,11 @@
           font-family: inherit;
           text-align: left;
           cursor: pointer;
+          transition: background var(--motion-fast) ease;
+
+          &:hover {
+            background: $light-light-gray;
+          }
         }
 
         .header-user-menu__submenu-item--active {

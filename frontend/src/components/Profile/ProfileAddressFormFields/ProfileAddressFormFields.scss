@@ -35,6 +35,11 @@
     font-weight: 500;
     cursor: pointer;
     font-family: inherit;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.88;
+    }
   }
 
   .profile-address-form-fields__submit {

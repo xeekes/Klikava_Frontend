@@ -8,6 +8,29 @@ import { ApiError } from "./errors";
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
 /**
+ * Превращает относительный путь медиа в абсолютный URL API.
+ * @param {string|null|undefined} url
+ * @returns {string}
+ */
+export const resolveMediaUrl = (url) => {
+  if (!url || typeof url !== "string") {
+    return "";
+  }
+  if (/^(https?:|data:|blob:)/i.test(url)) {
+    return url;
+  }
+  if (!BASE_URL) {
+    return url;
+  }
+  return `${BASE_URL}${url.startsWith("/") ? url : `/${url}`}`;
+};
+
+/**
+ * @returns {string}
+ */
+export const getApiBaseUrl = () => BASE_URL;
+
+/**
  * Читает bearer-токен, сохранённый после успешного входа.
  * @returns {string|null}
  */

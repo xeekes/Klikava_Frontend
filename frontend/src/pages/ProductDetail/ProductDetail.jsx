@@ -2,7 +2,7 @@
  * Страница товара: загружает обогащённые данные через fetchProductDetail при включённом API,
  * записывает просмотр в историю, обрабатывает добавление в корзину и похожие товары.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
@@ -10,6 +10,8 @@ import { ArrowForward, Clock, Star } from "../../iconComponents";
 import { useBrowsingHistory } from "../../context/BrowsingHistoryContext";
 import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../context/CatalogContext";
+import { usePageMetaOverride } from "../../hooks/usePageMeta";
+import { SITE_NAME } from "../../constants/site";
 import ProductDetailThumbsSlider from "./ProductDetailThumbsSlider";
 import ProductReviewsPanel from "./ProductReviewsPanel";
 import "./ProductDetail.scss";
@@ -41,6 +43,17 @@ const ProductDetail = () => {
       : false,
   );
   const { addItem } = useCart();
+  const pageMeta = useMemo(
+    () =>
+      product?.title
+        ? {
+            title: product.title,
+            description: `Buy ${product.title} on ${SITE_NAME}.`,
+          }
+        : null,
+    [product?.title],
+  );
+  usePageMetaOverride(pageMeta);
   useEffect(() => {
     /* Защита от обновления state после отмены запроса деталей товара. */
     let cancelled = false;
@@ -277,23 +290,29 @@ const ProductDetail = () => {
                       Product Details
                     </h4>
                     <ul className="product-detail__specs-list">
-                      {product.specs.map((spec) => (
-                        <li
-                          key={spec.label}
-                          className="product-detail__spec-item"
-                        >
-                          <span className="product-detail__spec-label">
-                            {spec.label}:
-                          </span>{" "}
-                          <span className="product-detail__spec-value">
-                            {spec.value}
-                          </span>
+                      {product.specs.length > 0 ? (
+                        product.specs.map((spec) => (
+                          <li
+                            key={spec.label}
+                            className="product-detail__spec-item"
+                          >
+                            <span className="product-detail__spec-label">
+                              {spec.label}:
+                            </span>{" "}
+                            <span className="product-detail__spec-value">
+                              {spec.value}
+                            </span>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="product-detail__spec-item product-detail__spec-item--empty">
+                          No specifications available.
                         </li>
-                      ))}
+                      )}
                     </ul>
                   </div>
                 )}
-                {activeTab === "shipping" && product.shipping && (
+                {activeTab === "shipping" && (
                   <div className="product-detail__panel-section">
                     <h4 className="product-detail__panel-title">Shipping</h4>
                     <div className="product-detail__shipping-table">

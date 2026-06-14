@@ -2,6 +2,7 @@
  * Кодирование/декодирование сущностей профиля для бэкенда.
  * Адреса и карты сериализуются в одно поле API (обход ограниченной схемы).
  */
+import { resolveMediaUrl } from "./client";
 const ADDRESS_META_PREFIX = "klikava_addr:";
 
 /**
@@ -83,6 +84,66 @@ export const decodeCardItem = (item) => {
 };
 
 /**
+ * @param {unknown} value
+ * @returns {string}
+ */
+const readMediaValue = (value) => {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (value && typeof value === "object") {
+    const entry = value;
+    return (
+      entry.url ||
+      entry.image_url ||
+      entry.path ||
+      entry.src ||
+      entry.file_url ||
+      ""
+    );
+  }
+  return "";
+};
+
+/**
+ * Достаёт URL аватара пользователя из разных полей ответа API.
+ * @param {object|null|undefined} user
+ * @returns {string}
+ */
+export const pickUserAvatar = (user) => {
+  if (!user) {
+    return "";
+  }
+  const pictures = user.pictures || user.avatar_pictures || user.images || [];
+  const raw =
+    readMediaValue(user.avatar) ||
+    user.avatar_url ||
+    user.avatarUrl ||
+    user.picture_url ||
+    user.image_url ||
+    user.profile_picture_url ||
+    user.profile_image_url ||
+    user.photo_url ||
+    readMediaValue(user.picture) ||
+    readMediaValue(user.profile_picture) ||
+    readMediaValue(user.photo) ||
+    readMediaValue(pictures[0]) ||
+    pictures[0]?.url ||
+    pictures[0]?.image_url ||
+    pictures[0]?.path ||
+    "";
+  return resolveMediaUrl(raw);
+};
+
+/**
+ * URL эндпоинта аватара пользователя на API.
+ * @param {string|number} userId
+ * @returns {string}
+ */
+export const buildUserAvatarEndpoint = (userId) =>
+  resolveMediaUrl(`/pictures/users/${userId}`);
+
+/**
  * Объединяет поля авторизованного пользователя в форму личных данных для UI профиля.
  * @param {object|null|undefined} user
  * @param {object} [current]
@@ -101,8 +162,50 @@ export const mapAuthUserToPersonalInfo = (user, current = {}) => {
     lastName: rest.join(" ") || current.lastName,
     email: emailOrPhone.includes("@") ? emailOrPhone : current.email || "",
     phone: user.phone_number || current.phone || "",
-    avatar: user.avatar_url || current.avatar || "",
+    avatar: pickUserAvatar(user) || current.avatar || "",
   };
+};
+
+/**
+ * Поля профиля, которые синхронизируются с API пользователя.
+ */
+export const PERSONAL_INFO_API_FIELDS = new Set([
+  "firstName",
+  "lastName",
+  "email",
+  "phone",
+]);
+
+/**
+ * @param {string} fieldId
+ * @returns {boolean}
+ */
+export const isPersonalInfoApiField = (fieldId) =>
+  PERSONAL_INFO_API_FIELDS.has(fieldId);
+
+/**
+ * Формирует PATCH payload для одного поля личных данных.
+ * @param {string} fieldId
+ * @param {object} info
+ * @returns {object|null}
+ */
+export const mapPersonalInfoFieldToUserUpdate = (fieldId, info) => {
+  if (!isPersonalInfoApiField(fieldId)) {
+    return null;
+  }
+  switch (fieldId) {
+    case "firstName":
+    case "lastName": {
+      const name = `${info.firstName || ""} ${info.lastName || ""}`.trim();
+      return name ? { name } : {};
+    }
+    case "email":
+      return info.email ? { email: info.email } : {};
+    case "phone":
+      return info.phone ? { phone_number: info.phone } : {};
+    default:
+      return null;
+  }
 };
 
 /**

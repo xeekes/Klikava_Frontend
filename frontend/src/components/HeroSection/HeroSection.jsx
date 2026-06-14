@@ -77,7 +77,7 @@ const HeroSection = ({ className = "" }) => {
                     <OfferBubble
                       image={product.image}
                       alt={product.title}
-                      price={`${product.price}$`}
+                      price={product.price}
                       background="gray"
                       productId={product.id}
                       to={`/product/${product.id}`}

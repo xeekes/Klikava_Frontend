@@ -1,6 +1,7 @@
 /* Список отзывов пользователя о товарах с редактированием и удалением. */
 import { useState } from "react";
 import { Star } from "../../iconComponents";
+import { useActionFeedback } from "../../context/ActionFeedbackContext";
 import { useUserData } from "../../context/UserDataContext";
 import "../../styles/profile-page.scss";
 import "./ProfileFeedback.scss";
@@ -10,6 +11,7 @@ import "./ProfileFeedback.scss";
  */
 const ProfileFeedback = () => {
   const { feedback, updateFeedback, deleteFeedback } = useUserData();
+  const { confirm, showSuccess } = useActionFeedback();
   const [editingId, setEditingId] = useState(null);
   const [draftText, setDraftText] = useState("");
 
@@ -21,6 +23,29 @@ const ProfileFeedback = () => {
     setEditingId(item.id);
     setDraftText(item.text);
   };
+
+  /**
+   * Удаляет отзыв после подтверждения.
+   * @param {string} feedbackId
+   */
+  const handleDelete = async (feedbackId) => {
+    if (
+      !(await confirm({
+        title: "Delete feedback?",
+        message: "This review will be removed from your profile.",
+        confirmLabel: "Delete",
+        cancelLabel: "Cancel",
+      }))
+    ) {
+      return;
+    }
+    deleteFeedback(feedbackId);
+    if (editingId === feedbackId) {
+      setEditingId(null);
+    }
+    showSuccess("Feedback deleted.");
+  };
+
   return (
     <section className="profile-page profile-feedback">
       <h1 className="profile-page__title">Your feedback</h1>
@@ -84,6 +109,7 @@ const ProfileFeedback = () => {
                         onClick={() => {
                           updateFeedback(item.id, { text: draftText });
                           setEditingId(null);
+                          showSuccess("Feedback updated.");
                         }}
                       >
                         Save
@@ -100,7 +126,7 @@ const ProfileFeedback = () => {
                     <button
                       type="button"
                       className="profile-feedback__btn"
-                      onClick={() => deleteFeedback(item.id)}
+                      onClick={() => handleDelete(item.id)}
                     >
                       Delete
                     </button>

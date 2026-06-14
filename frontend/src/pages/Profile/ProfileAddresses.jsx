@@ -1,15 +1,24 @@
 /* CRUD адресов доставки (API или локальный mock). */
 import { Navigate, useMatch, useNavigate } from "react-router-dom";
 import ProfileAddressFormFields from "../../components/Profile/ProfileAddressFormFields/ProfileAddressFormFields";
+import { useActionFeedback } from "../../context/ActionFeedbackContext";
 import { useUserData } from "../../context/UserDataContext";
 import "../../styles/profile-page.scss";
 import "./ProfileAddresses.scss";
+
+const DELETE_ADDRESS_CONFIRM = {
+  title: "Delete address?",
+  message: "This delivery address will be removed permanently.",
+  confirmLabel: "Delete",
+  cancelLabel: "Cancel",
+};
 
 /**
  * Список адресов доставки с созданием, редактированием, удалением и копированием.
  */
 const ProfileAddresses = () => {
   const navigate = useNavigate();
+  const { confirm, showSuccess, showError } = useActionFeedback();
   const addMatch = useMatch("/profile/addresses/new");
   const editMatch = useMatch("/profile/addresses/:addressId/edit");
   const { addresses, deleteAddress, addAddress, updateAddress } = useUserData();
@@ -19,17 +28,35 @@ const ProfileAddresses = () => {
   const isFormView = Boolean(addMatch || editMatch);
 
   /**
-   * Копирует отформатированные строки адреса в буфер обмена, если API доступен.
+   * Удаляет адрес после подтверждения.
+   * @param {string} addressId
+   */
+  const handleDeleteAddress = async (addressId) => {
+    if (!(await confirm(DELETE_ADDRESS_CONFIRM))) {
+      return;
+    }
+    try {
+      await deleteAddress(addressId);
+      showSuccess("Delivery address deleted.");
+    } catch (error) {
+      showError(error.message || "Failed to delete address.");
+    }
+  };
+
+  /**
+   * Копирует отформатированные строки адреса в буфер обмена.
    * @param {object} address
    */
   const handleCopy = async (address) => {
     const text = `${address.fullName}\n${address.phone}\n${address.lines.join("\n")}`;
     try {
       await navigator.clipboard.writeText(text);
+      showSuccess("Address copied to clipboard.");
     } catch {
-      /* Clipboard API может быть недоступен в некоторых браузерах. */
+      showError("Could not copy address. Try again.");
     }
   };
+
   if (editMatch && !editingAddress) {
     return <Navigate to="/profile/addresses" replace />;
   }
@@ -49,8 +76,13 @@ const ProfileAddresses = () => {
               mode="create"
               submitLabel="Create delivery address"
               onSubmit={async (form) => {
-                await addAddress(form);
-                navigate("/profile/addresses");
+                try {
+                  await addAddress(form);
+                  showSuccess("Delivery address created.");
+                  navigate("/profile/addresses");
+                } catch (error) {
+                  showError(error.message || "Failed to create address.");
+                }
               }}
             />
           ) : null}
@@ -60,18 +92,31 @@ const ProfileAddresses = () => {
               addressId={editingAddress.id}
               submitLabel="Save"
               onSubmit={async (form) => {
-                await updateAddress(editingAddress.id, form);
-                navigate("/profile/addresses");
+                try {
+                  await updateAddress(editingAddress.id, form);
+                  showSuccess("Delivery address updated.");
+                  navigate("/profile/addresses");
+                } catch (error) {
+                  showError(error.message || "Failed to update address.");
+                }
               }}
               onDelete={async () => {
-                await deleteAddress(editingAddress.id);
-                navigate("/profile/addresses");
+                if (!(await confirm(DELETE_ADDRESS_CONFIRM))) {
+                  return;
+                }
+                try {
+                  await deleteAddress(editingAddress.id);
+                  showSuccess("Delivery address deleted.");
+                  navigate("/profile/addresses");
+                } catch (error) {
+                  showError(error.message || "Failed to delete address.");
+                }
               }}
             />
           ) : null}
         </div>
       ) : (
-        <>
+        <div className="profile-page__panel">
           <div className="profile-page__body">
             {addresses.length === 0 ? (
               <p className="profile-page__empty">No delivery addresses yet.</p>
@@ -102,9 +147,7 @@ const ProfileAddresses = () => {
                       <button
                         type="button"
                         className="profile-addresses__btn"
-                        onClick={() => {
-                          deleteAddress(address.id);
-                        }}
+                        onClick={() => handleDeleteAddress(address.id)}
                       >
                         Delete
                       </button>
@@ -137,7 +180,7 @@ const ProfileAddresses = () => {
           >
             Add a new address
           </button>
-        </>
+        </div>
       )}
     </section>
   );

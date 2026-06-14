@@ -116,6 +116,15 @@ describe("validateForm with schemas", () => {
     const errors = validateForm({ code: "" }, customSchema);
     expect(errors.code).toBe("Required");
   });
+  it("validates card number as exactly 16 digits", () => {
+    expect(rules.cardNumber()("4111 1111 1111 4242")).toBeNull();
+    expect(rules.cardNumber()("4111 1111 1111 424")).toBe(
+      "Enter a 16-digit card number",
+    );
+    expect(rules.cardNumber()("4111 1111 1111 42421")).toBe(
+      "Enter a 16-digit card number",
+    );
+  });
 });
 
 describe("validatePriceRange", () => {

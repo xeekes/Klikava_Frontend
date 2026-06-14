@@ -55,6 +55,16 @@
         text-align: center;
         background: none;
         border-radius: 12px;
+        cursor: pointer;
+        font-family: inherit;
+        transition:
+          background var(--motion-fast) ease,
+          color var(--motion-fast) ease;
+
+        &:hover {
+          background: $light-light-gray;
+          color: $dark-gray;
+        }
       }
     }
   }

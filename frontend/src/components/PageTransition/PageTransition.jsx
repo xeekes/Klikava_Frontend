@@ -1,6 +1,7 @@
 /* Анимированная обёртка Outlet для переходов между маршрутами. */
 import { useLocation, useOutlet } from "react-router-dom";
 import { isAuthPath } from "../../constants/authRoutes";
+import { useDefaultPageMeta } from "../../hooks/usePageMeta";
 import "./PageTransition.scss";
 
 /**
@@ -9,6 +10,7 @@ import "./PageTransition.scss";
 const PageTransition = () => {
   const location = useLocation();
   const outlet = useOutlet();
+  useDefaultPageMeta();
   /* Маршруты оверлея авторизации не должны перемонтировать фоновую страницу через смену key. */
   if (isAuthPath(location.pathname)) {
     return outlet;

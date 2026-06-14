@@ -1,6 +1,10 @@
 /* Форма добавления карты в разделе профиля. */
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
+import {
+  digitsOnly,
+  formatCardNumberInput,
+} from "../../../utils/inputFormatters";
 import { schemas } from "../../../utils/validation";
 import { useUserData } from "../../../context/UserDataContext";
 import "./ProfileAddCardForm.scss";
@@ -8,20 +12,6 @@ const MONTHS = Array.from({ length: 12 }, (_, index) =>
   String(index + 1).padStart(2, "0"),
 );
 const YEARS = Array.from({ length: 12 }, (_, index) => String(2026 + index));
-
-/**
- * Удаляет нецифровые символы и ограничивает длину ввода для полей карты.
- */
-const digitsOnly = (value, maxLength) =>
-  value.replace(/\D/g, "").slice(0, maxLength);
-
-/**
- * Группирует цифры карты в четверки с пробелами для отображения в поле ввода.
- */
-const formatCardNumber = (value) => {
-  const digits = digitsOnly(value, 19);
-  return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
-};
 
 /**
  * Предпросмотр платёжного адреса только для чтения из первого сохранённого адреса.
@@ -93,13 +83,14 @@ const ProfileAddCardForm = ({ onSubmit, onClose }) => {
                 : ""
             }`.trim()}
             value={cardNumber}
-            onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+            onChange={(e) => setCardNumber(formatCardNumberInput(e.target.value))}
             onBlur={() =>
               handleBlur({ cardNumber, month, year, cvv }, "cardNumber")
             }
             placeholder="Card number"
             inputMode="numeric"
             autoComplete="cc-number"
+            maxLength={19}
           />
         </div>
         {getError("cardNumber") ? (

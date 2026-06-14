@@ -5,6 +5,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  flex: 1;
+  min-height: 12rem;
 
   .checkout-text-btn {
     color: $gray;
@@ -12,6 +14,7 @@
 
   .checkout-card-footer-link {
     color: $gray;
+    margin-top: auto;
   }
 
   &__list {

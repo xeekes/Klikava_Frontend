@@ -113,6 +113,12 @@
               color: $dark-gray;
               font-size: 0.875rem;
               cursor: pointer;
+              font-family: inherit;
+              transition: background var(--motion-fast) ease;
+
+              &:hover {
+                background: $light-light-gray;
+              }
             }
           }
         }

@@ -34,6 +34,11 @@
     font-size: 0.9rem;
     font-weight: 500;
     text-decoration: none;
+    transition: background var(--motion-fast) ease;
+
+    &:hover:not(&--active) {
+      background: rgba($light-green, 0.18);
+    }
 
     &--active {
       background: $light-green;

@@ -1,46 +1,20 @@
-# AliExpress Clone - Frontend
+# KlikAVA Frontend
 
-React приложение для дипломной работы - клон AliExpress.
+React storefront for the KlikAVA online marketplace.
 
-## Технологии
-
-- React 18
-- React Router DOM
-- Vite
-- CSS3
-
-## Установка
+## Setup
 
 ```bash
+cd frontend
+cp .env.example .env
 npm install
-```
-
-## Запуск
-
-```bash
 npm run dev
 ```
 
-Приложение будет доступно по адресу http://localhost:3000
+Set `VITE_API_BASE_URL` in `.env` to your backend URL.
 
-## Сборка
+## Scripts
 
-```bash
-npm run build
-```
-
-## Структура проекта
-
-```
-src/
-  ├── components/     # Переиспользуемые компоненты
-  │   ├── Header/
-  │   └── ProductCard/
-  ├── pages/          # Страницы приложения
-  │   ├── Home/
-  │   ├── Catalog/
-  │   ├── ProductDetail/
-  │   └── Cart/
-  ├── App.jsx         # Главный компонент
-  └── main.jsx        # Точка входа
-```
+- `npm run dev` — local development
+- `npm run build` — production build
+- `npm run test` — unit tests

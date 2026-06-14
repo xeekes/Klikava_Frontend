@@ -29,6 +29,22 @@ export const catalogApi = {
   },
 
   /**
+   * Загружает справочник характеристик для подписей и порядка фильтров.
+   * @param {{ page?: number, perPage?: number }} [params]
+   * @returns {Promise<Array<{ id: string, title: string, isPrimary: boolean }>>}
+   */
+  async listFeatures({ page = 1, perPage = 100 } = {}) {
+    const payload = await apiRequest(
+      `/features?per_page=${perPage}&page=${page}`,
+    );
+    return getListItems(payload).map((item) => ({
+      id: String(item.id),
+      title: item.title || "Feature",
+      isPrimary: Boolean(item.is_primary),
+    }));
+  },
+
+  /**
    * Загружает одну страницу сырых товаров и метаданные пагинации сервера.
    * @param {{ page?: number, perPage?: number, q?: string|null, categoryId?: string|number|null, sortBy?: string|null, sortDir?: string|null, hasDiscount?: boolean|null }} [params]
    * @returns {Promise<{ items: Array<object>, pagination: object|null }>}

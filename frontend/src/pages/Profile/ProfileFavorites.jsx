@@ -2,6 +2,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { useActionFeedback } from "../../context/ActionFeedbackContext";
 import { useFavorites } from "../../context/FavoritesContext";
 import { Clock, Star } from "../../iconComponents";
 import "../../styles/profile-page.scss";
@@ -13,6 +14,25 @@ import "./ProfileFavorites.scss";
 const ProfileFavorites = () => {
   const { favorites, removeFavorite } = useFavorites();
   const { addItem } = useCart();
+  const { confirm } = useActionFeedback();
+
+  /**
+   * Удаляет товар из избранного после подтверждения.
+   * @param {string|number} productId
+   */
+  const handleRemoveFavorite = async (productId) => {
+    if (
+      !(await confirm({
+        title: "Remove from favorites?",
+        message: "This product will be removed from your favorites list.",
+        confirmLabel: "Remove",
+        cancelLabel: "Cancel",
+      }))
+    ) {
+      return;
+    }
+    removeFavorite(productId);
+  };
   return (
     <section className="profile-page profile-favorites">
       <h1 className="profile-page__title">Favorites</h1>
@@ -72,7 +92,7 @@ const ProfileFavorites = () => {
                   <button
                     type="button"
                     className="profile-favorites__action"
-                    onClick={() => removeFavorite(item.id)}
+                    onClick={() => handleRemoveFavorite(item.id)}
                   >
                     Delete item
                   </button>

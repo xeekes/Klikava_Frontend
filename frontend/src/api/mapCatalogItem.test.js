@@ -6,7 +6,9 @@ import {
   mapBackendProductList,
   mapBackendReview,
   mapVariantFeaturesToSpecs,
+  pickProductImages,
 } from "./mapCatalogItem";
+import { PRODUCT_PLACEHOLDER_IMAGES } from "../assets/productPlaceholderImages";
 
 describe("mapBackendCategory", () => {
   it("maps nested backend fields to flat category model", () => {
@@ -68,6 +70,38 @@ describe("mapBackendProduct", () => {
     expect(result.categoryName).toBe("Electronics");
     expect(result.isTop).toBe(true);
     expect(result.variantId).toBe(501);
+    expect(result.features).toEqual([]);
+  });
+
+  it("maps variant features for catalog filters", () => {
+    const result = mapBackendProduct({
+      id: 7,
+      current_version: {
+        title: "Jacket",
+        variants: [
+          {
+            id: 11,
+            final_price: 120,
+            features: [
+              {
+                feature_id: 2,
+                value: "Red",
+                feature: { id: 2, title: "Color", is_primary: true },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    expect(result.features).toEqual([
+      {
+        featureId: 2,
+        label: "Color",
+        value: "Red",
+        isPrimary: true,
+      },
+    ]);
   });
 
   it("uses slugify fallback and local image when API omits media", () => {
@@ -79,6 +113,17 @@ describe("mapBackendProduct", () => {
     expect(result.categoryName).toBe("Catalog");
     expect(typeof result.image).toBe("string");
     expect(result.image.length).toBeGreaterThan(0);
+    expect(result.images).toHaveLength(3);
+    expect(PRODUCT_PLACEHOLDER_IMAGES).toContain(result.image);
+  });
+
+  it("builds local gallery from placeholder pool when API omits media", () => {
+    const images = pickProductImages({ id: 12 }, 0, 3);
+
+    expect(images).toHaveLength(3);
+    images.forEach((image) => {
+      expect(PRODUCT_PLACEHOLDER_IMAGES).toContain(image);
+    });
   });
 });
 

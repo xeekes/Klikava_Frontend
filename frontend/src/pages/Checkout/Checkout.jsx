@@ -9,6 +9,7 @@ import CheckoutAddressSection from "../../components/Checkout/CheckoutAddressSec
 import CheckoutPaymentSection from "../../components/Checkout/CheckoutPaymentSection/CheckoutPaymentSection";
 import CheckoutSummary from "../../components/Checkout/CheckoutSummary/CheckoutSummary";
 import { cardFromForm } from "../../api/mapUserData";
+import { useActionFeedback } from "../../context/ActionFeedbackContext";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useUserData } from "../../context/UserDataContext";
@@ -20,6 +21,7 @@ import "./Checkout.scss";
  */
 const Checkout = () => {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { showSuccess, showError } = useActionFeedback();
   const { items, isEmpty, isLoading, updateQuantity, removeItem } = useCart();
   const { addresses, cards, addAddress, updateAddress, addCard } =
     useUserData();
@@ -50,17 +52,23 @@ const Checkout = () => {
    * @param {object} form
    * @param {string} [addressId]
    */
-  const handleSaveAddress = (form, addressId) => {
-    if (addressId) {
-      updateAddress(addressId, form);
-      setSelectedAddressId(addressId);
-    } else {
-      const nextAddress = addAddress(form);
-      setSelectedAddressId(nextAddress.id);
+  const handleSaveAddress = async (form, addressId) => {
+    try {
+      if (addressId) {
+        await updateAddress(addressId, form);
+        setSelectedAddressId(addressId);
+        showSuccess("Delivery address updated.");
+      } else {
+        const nextAddress = await addAddress(form);
+        setSelectedAddressId(nextAddress.id);
+        showSuccess("Delivery address added.");
+      }
+      setShowAddAddress(false);
+      setEditingAddressId(null);
+      setIsAddressesExpanded(false);
+    } catch (error) {
+      showError(error.message || "Failed to save address.");
     }
-    setShowAddAddress(false);
-    setEditingAddressId(null);
-    setIsAddressesExpanded(false);
   };
 
   /**
@@ -68,10 +76,15 @@ const Checkout = () => {
    * @param {object} form
    */
   const handleAddCard = async (form) => {
-    const nextCard = await addCard(cardFromForm(form));
-    setSelectedCardId(nextCard.id);
-    setShowAddCard(false);
-    setEditingCardId(null);
+    try {
+      const nextCard = await addCard(cardFromForm(form));
+      setSelectedCardId(nextCard.id);
+      setShowAddCard(false);
+      setEditingCardId(null);
+      showSuccess("Payment card added.");
+    } catch (error) {
+      showError(error.message || "Failed to add card.");
+    }
   };
   return (
     <div className="checkout-page">

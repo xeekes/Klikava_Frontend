@@ -32,11 +32,13 @@
     background: none;
     display: grid;
     place-items: center;
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-    padding: 0.5rem;
     border: 0;
     cursor: pointer;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.75;
+    }
 
     .site-search__icon {
       width: 18px;
@@ -192,6 +194,11 @@
     font-weight: 600;
     cursor: pointer;
     text-align: center;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
   }
 
   .site-search__view-all {
@@ -200,12 +207,6 @@
 
   &.site-search--header {
     min-width: 18rem;
-
-    .site-search__submit {
-      min-width: 0;
-      min-height: 0;
-      padding: 0;
-    }
 
     .site-search__dropdown {
       min-width: 22rem;
@@ -238,6 +239,14 @@
       height: 3rem;
       border-radius: 50%;
       background: $light-green;
+      transition:
+        opacity var(--motion-fast) ease,
+        background-color var(--motion-fast) ease;
+
+      &:hover {
+        opacity: 1;
+        background: lighten($light-green, 6%);
+      }
     }
 
     .site-search__dropdown {

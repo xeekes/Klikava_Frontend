@@ -99,6 +99,11 @@
         width var(--motion-base) var(--motion-ease-out),
         background-color var(--motion-fast) ease;
 
+      &:hover:not(.discounts__pagination-bullet--active) {
+        background: $dark-gray;
+        opacity: 0.5;
+      }
+
       &.discounts__pagination-bullet--active {
         width: 91px;
         height: 4px;

@@ -54,7 +54,7 @@ const Footer = () => {
             </div>
           </div>
           <div className="footer-column">
-            <h3 className="footer-heading">Connect with BuyWay</h3>
+            <h3 className="footer-heading">Connect with KlikAVA</h3>
             <div className="social-icons">
               <a
                 href="https://instagram.com"

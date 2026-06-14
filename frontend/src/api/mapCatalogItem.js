@@ -2,11 +2,10 @@
  * Антикоррупционный слой: преобразует вложенные структуры product/category FastAPI
  * в плоскую модель товара, используемую в UI каталога.
  */
-import bagImage from "../assets/images/bag.png";
-import phoneImage from "../assets/images/phone.png";
-import carImage from "../assets/images/car.png";
-
-const FALLBACK_IMAGES = [bagImage, phoneImage, carImage];
+import {
+  pickPlaceholderGallery,
+  pickPlaceholderImage,
+} from "../assets/productPlaceholderImages";
 
 /**
  * Определяет URL изображения товара из вложенных полей picture или локальных заглушек.
@@ -24,13 +23,49 @@ export const pickImage = (item, index) => {
     pictures[0]?.url ||
     pictures[0]?.image_url ||
     pictures[0]?.path ||
+    pictures[0]?.file_url ||
+    pictures[0]?.thumbnail_url ||
+    pictures[0]?.preview_url ||
+    pictures[0]?.original_url ||
     item?.image_url ||
     item?.image;
   if (typeof url === "string" && url.length > 0) {
-    return url.startsWith("http") ? url : url;
+    return url;
   }
-  const seed = Number(item?.id ?? item?.product_id ?? index) || index;
-  return FALLBACK_IMAGES[Math.abs(seed) % FALLBACK_IMAGES.length];
+  const seed = item?.id ?? item?.product_id ?? index;
+  return pickPlaceholderImage(seed);
+};
+
+/**
+ * Собирает галерею товара из API или локальных webp-заглушек.
+ * @param {object} item
+ * @param {number} [index]
+ * @param {number} [count]
+ * @returns {string[]}
+ */
+export const pickProductImages = (item, index = 0, count = 3) => {
+  const pictures =
+    item?.pictures ||
+    item?.current_version?.pictures ||
+    item?.versions?.[0]?.pictures ||
+    [];
+  const apiImages = pictures
+    .map(
+      (picture) =>
+        picture?.url ||
+        picture?.image_url ||
+        picture?.path ||
+        picture?.file_url ||
+        picture?.thumbnail_url ||
+        picture?.preview_url ||
+        picture?.original_url,
+    )
+    .filter((url) => typeof url === "string" && url.length > 0);
+  if (apiImages.length) {
+    return apiImages;
+  }
+  const seed = item?.id ?? item?.product_id ?? index;
+  return pickPlaceholderGallery(seed, count);
 };
 
 /**
@@ -149,11 +184,13 @@ export const mapBackendProduct = (
   const category =
     categoryLookup.get(categoryId) ||
     (embeddedCategory ? mapBackendCategory(embeddedCategory) : null);
+  const images = pickProductImages(item, index);
   return {
     id: item?.id ?? item?.product_id ?? `api-${index}`,
     slug: item?.slug || item?.current_version?.slug || slugify(title),
     title,
     image: pickImage(item, index),
+    images,
     ...pricing,
     categoryId: category ? String(category.id) : "all",
     categoryName: category?.name || "Catalog",
@@ -171,6 +208,7 @@ export const mapBackendProduct = (
         : item?.average_rating !== undefined
           ? Number(item.average_rating)
           : undefined,
+    features: extractFeaturesFromBackendRaw(item),
     backendRaw: item,
   };
 };
@@ -199,6 +237,35 @@ export const mapBackendReview = (review) => ({
 });
 
 /**
+ * Достаёт нормализованные характеристики варианта из сырого ответа API.
+ * @param {object|null|undefined} raw
+ * @returns {Array<{ featureId: string|number, label: string, value: string, isPrimary: boolean }>}
+ */
+export const extractFeaturesFromBackendRaw = (raw) => {
+  const variant =
+    raw?.current_version?.variants?.[0] || raw?.variants?.[0] || null;
+  return (variant?.features || [])
+    .map((entry) => ({
+      featureId: entry.feature_id ?? entry.feature?.id,
+      label: entry.feature?.title || "Feature",
+      value: String(entry.value || "").trim(),
+      isPrimary: Boolean(entry.feature?.is_primary),
+    }))
+    .filter((entry) => entry.featureId && entry.value);
+};
+
+/**
+ * @param {object} product
+ * @returns {Array<{ featureId: string|number, label: string, value: string, isPrimary: boolean }>}
+ */
+export const getProductFeatures = (product) => {
+  if (product?.features?.length) {
+    return product.features;
+  }
+  return extractFeaturesFromBackendRaw(product?.backendRaw);
+};
+
+/**
  * Разворачивает features варианта в строки характеристик label/value для страницы товара.
  * @param {object|null|undefined} variant
  * @returns {Array<{ label: string, value: string }>}
@@ -208,6 +275,17 @@ export const mapVariantFeaturesToSpecs = (variant) =>
     label: entry.feature?.title || "Feature",
     value: entry.value || "",
   }));
+
+/**
+ * Достаёт характеристики из сырого ответа списка/детали товара.
+ * @param {object|null|undefined} raw
+ * @returns {Array<{ label: string, value: string }>}
+ */
+export const extractSpecsFromBackendRaw = (raw) => {
+  const variant =
+    raw?.current_version?.variants?.[0] || raw?.variants?.[0] || null;
+  return mapVariantFeaturesToSpecs(variant);
+};
 
 /**
  * Применяет отдельные правила скидок (категория, продавец, товар) к ценам товаров.

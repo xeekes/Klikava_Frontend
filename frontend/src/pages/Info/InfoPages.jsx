@@ -14,13 +14,11 @@ export const AboutPage = () => (
   >
     <p>
       KlikAVA is a marketplace focused on affordable products, fast discovery,
-      and a simple shopping experience inspired by modern global e-commerce
-      platforms.
+      and a simple shopping experience for buyers and sellers.
     </p>
     <p>
-      The storefront connects to a live catalog API for products, orders,
-      reviews, and profile data. Cart, favorites, and browsing history are
-      stored locally in the browser.
+      Browse categories, search the catalog, manage orders, and keep track of
+      favorites and browsing history in your account.
     </p>
   </InfoPage>
 );

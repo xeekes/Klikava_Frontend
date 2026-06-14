@@ -5,6 +5,7 @@ import { ArrowLeft } from "../../iconComponents";
 import ProfileOrderProductForm from "../../components/Profile/ProfileOrderProductForm/ProfileOrderProductForm";
 import { catalogApi } from "../../api/catalogApi";
 import { hasApiBaseUrl } from "../../api/client";
+import { useActionFeedback } from "../../context/ActionFeedbackContext";
 import { useUserData } from "../../context/UserDataContext";
 import {
   getOrderByIdFromList,
@@ -32,6 +33,7 @@ const createInitialReviews = (products) =>
 const ProfileOrderReview = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
+  const { showSuccess } = useActionFeedback();
   const { orders, addFeedback } = useUserData();
   const order = getOrderByIdFromList(orders, orderId);
   const products = getOrderProducts(order);
@@ -139,6 +141,7 @@ const ProfileOrderReview = () => {
                 rating: review?.rating ?? 0,
                 photos: attachedPhotos,
               });
+              showSuccess("Review published.");
               navigate("/profile/feedback");
             }}
             showRating

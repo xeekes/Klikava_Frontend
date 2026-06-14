@@ -150,7 +150,7 @@ const ComponentsDemo = () => {
   return (
     <div className="components-demo">
       <div className="demo-container">
-        <h1 className="demo-title">Демонстрация компонентов</h1>
+        <h1 className="demo-title">UI Components</h1>
         {/* Демо CategoryNav */}
         <section className="demo-section">
           <h2 className="section-title">

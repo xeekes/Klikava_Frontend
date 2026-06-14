@@ -56,6 +56,11 @@
     font-weight: 600;
     text-decoration: none;
     border: 1px solid $light-light-gray;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
 
     &--primary {
       background: $light-green;

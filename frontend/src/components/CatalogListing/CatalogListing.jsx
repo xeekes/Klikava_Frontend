@@ -6,6 +6,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Filter, MenuArrowRight, Star } from "../../iconComponents";
 import { useMotionPresence } from "../../hooks/useMotionPresence";
 import useProductPagination from "../../hooks/useProductPagination";
+import { useCatalog } from "../../context/CatalogContext";
+import {
+  buildFeatureFacets,
+  filterProductsByFeatures,
+  sortProducts,
+} from "../../utils/catalogFilters";
 import { validatePriceRange } from "../../utils/validation";
 import Modal, { useModalClose } from "../Modal/Modal";
 import ProductCard from "../ProductCard/ProductCard";
@@ -86,7 +92,9 @@ const CatalogListing = ({
   emptyMessage = "No products found.",
   showFilters = true,
   showDiscountFilter = false,
+  showFeatureFilters = false,
 }) => {
+  const { features: featureCatalog = [] } = useCatalog();
   const [sortBy, setSortBy] = useState("popular");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const sortRef = useRef(null);
@@ -95,6 +103,7 @@ const CatalogListing = ({
   const [maxPrice, setMaxPrice] = useState("");
   const [minRating, setMinRating] = useState("");
   const [discountedOnly, setDiscountedOnly] = useState(false);
+  const [selectedFeatures, setSelectedFeatures] = useState({});
   const [filterErrors, setFilterErrors] = useState({});
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
   const [useFilterModal, setUseFilterModal] = useState(() =>
@@ -102,6 +111,23 @@ const CatalogListing = ({
       ? window.matchMedia(`(max-width: ${FILTER_SIDEBAR_MAX}px)`).matches
       : false,
   );
+  const featureFacets = useMemo(
+    () =>
+      showFeatureFilters ? buildFeatureFacets(products, featureCatalog) : [],
+    [products, featureCatalog, showFeatureFilters],
+  );
+  const productScopeKey = useMemo(
+    () => products.map((product) => product.id).join(","),
+    [products],
+  );
+  useEffect(() => {
+    setSelectedFeatures({});
+  }, [productScopeKey]);
+  useEffect(() => {
+    if (!showFeatureFilters) {
+      setSelectedFeatures({});
+    }
+  }, [showFeatureFilters]);
   const priceBounds = useMemo(() => {
     if (!products.length) {
       return { min: 0, max: 500 };
@@ -191,12 +217,24 @@ const CatalogListing = ({
     setMaxPrice("");
     setMinRating("");
     setDiscountedOnly(false);
+    setSelectedFeatures({});
     setFilterErrors({});
   };
+  const selectedFeatureCount = useMemo(
+    () =>
+      showFeatureFilters
+        ? Object.values(selectedFeatures).reduce(
+            (total, values) => total + (values?.length || 0),
+            0,
+          )
+        : 0,
+    [selectedFeatures, showFeatureFilters],
+  );
   const hasActiveFilters =
     Boolean(minPrice) ||
     Boolean(maxPrice) ||
     Boolean(minRating) ||
+    selectedFeatureCount > 0 ||
     (showDiscountFilter && discountedOnly);
   const activeFilterTags = useMemo(() => {
     const tags = [];
@@ -214,6 +252,17 @@ const CatalogListing = ({
     if (showDiscountFilter && discountedOnly) {
       tags.push({ id: "discount", label: "On sale" });
     }
+    if (showFeatureFilters) {
+      Object.entries(selectedFeatures).forEach(([featureId, values]) => {
+        const facet = featureFacets.find((item) => item.id === featureId);
+        values.forEach((value) => {
+          tags.push({
+            id: `feature|${featureId}|${value}`,
+            label: `${facet?.label || "Feature"}: ${value}`,
+          });
+        });
+      });
+    }
     return tags;
   }, [
     minPrice,
@@ -221,7 +270,10 @@ const CatalogListing = ({
     minRating,
     discountedOnly,
     showDiscountFilter,
+    showFeatureFilters,
     filterErrors,
+    selectedFeatures,
+    featureFacets,
   ]);
   const activeFilterCount = activeFilterTags.length;
   /**
@@ -236,6 +288,17 @@ const CatalogListing = ({
       setMinRating("");
     } else if (id === "discount") {
       setDiscountedOnly(false);
+    } else if (id.startsWith("feature|")) {
+      const [, featureId, value] = id.split("|");
+      setSelectedFeatures((prev) => {
+        const current = prev[featureId] || [];
+        const nextValues = current.filter((item) => item !== value);
+        if (!nextValues.length) {
+          const { [featureId]: _, ...rest } = prev;
+          return rest;
+        }
+        return { ...prev, [featureId]: nextValues };
+      });
     }
     setFilterErrors(
       validatePriceRange(
@@ -244,8 +307,24 @@ const CatalogListing = ({
       ),
     );
   };
+  const toggleFeatureValue = (featureId, value) => {
+    setSelectedFeatures((prev) => {
+      const key = String(featureId);
+      const current = prev[key] || [];
+      const nextValues = current.includes(value)
+        ? current.filter((item) => item !== value)
+        : [...current, value];
+      if (!nextValues.length) {
+        const { [key]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [key]: nextValues };
+    });
+  };
   const visibleProducts = useMemo(() => {
-    let result = [...products];
+    let result = showFeatureFilters
+      ? filterProductsByFeatures(products, selectedFeatures)
+      : [...products];
     if (showDiscountFilter && discountedOnly) {
       result = result.filter((product) => product.discountPercent);
     }
@@ -256,21 +335,11 @@ const CatalogListing = ({
       result = result.filter((product) => product.price <= Number(maxPrice));
     }
     if (minRating !== "") {
-      result = result.filter((product) => product.rating >= Number(minRating));
+      result = result.filter(
+        (product) => (Number(product.rating) || 0) >= Number(minRating),
+      );
     }
-    switch (sortBy) {
-      case "price-low":
-        return result.sort((a, b) => a.price - b.price);
-      case "price-high":
-        return result.sort((a, b) => b.price - a.price);
-      case "rating":
-        return result.sort((a, b) => b.rating - a.rating);
-      case "sold":
-        return result.sort((a, b) => b.sold - a.sold);
-      case "popular":
-      default:
-        return result.sort((a, b) => b.sold - a.sold);
-    }
+    return sortProducts(result, sortBy);
   }, [
     products,
     sortBy,
@@ -280,6 +349,8 @@ const CatalogListing = ({
     discountedOnly,
     showDiscountFilter,
     filterErrors,
+    selectedFeatures,
+    showFeatureFilters,
   ]);
   const listingKey = [
     sortBy,
@@ -287,6 +358,7 @@ const CatalogListing = ({
     minPrice,
     maxPrice,
     minRating,
+    JSON.stringify(selectedFeatures),
     visibleProducts.map((product) => product.id).join(","),
   ].join("-");
   const {
@@ -444,6 +516,41 @@ const CatalogListing = ({
           ))}
         </div>
       </div>
+      {showFeatureFilters
+        ? featureFacets.map((facet) => (
+            <div key={facet.id} className="catalog-listing__filter-group">
+              <h3 className="catalog-listing__filter-label">{facet.label}</h3>
+              <div
+                className="catalog-listing__feature-options"
+                role="group"
+                aria-label={facet.label}
+              >
+                {facet.options.map((option) => {
+                  const isActive = selectedFeatures[facet.id]?.includes(
+                    option.value,
+                  );
+                  return (
+                    <button
+                      key={`${facet.id}-${option.value}`}
+                      type="button"
+                      className={`catalog-listing__feature-btn ${
+                        isActive ? "catalog-listing__feature-btn--active" : ""
+                      }`.trim()}
+                      onClick={() =>
+                        toggleFeatureValue(facet.id, option.value)
+                      }
+                    >
+                      <span>{option.value}</span>
+                      <span className="catalog-listing__feature-count">
+                        {option.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        : null}
       {showDiscountFilter ? (
         <div className="catalog-listing__filter-group catalog-listing__filter-group--offers">
           <h3 className="catalog-listing__filter-label">Special offers</h3>

@@ -69,6 +69,11 @@
     font-size: 0.95rem;
     font-weight: 600;
     text-decoration: none;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
   }
 
   &__loading {

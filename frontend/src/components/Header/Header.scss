@@ -61,6 +61,12 @@ $header-compact-max: 1050px;
     display: flex;
     align-items: center;
     gap: 1rem;
+    text-decoration: none;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.88;
+    }
 
     @media (max-width: $header-compact-max) {
       gap: 0.65rem;
@@ -200,6 +206,11 @@ $header-compact-max: 1050px;
       align-items: center;
       justify-content: center;
       text-decoration: none;
+      transition: color var(--motion-fast) ease;
+
+      &:hover {
+        color: $light-green;
+      }
 
       @media (max-width: $header-compact-max) {
         width: 24px;
@@ -209,6 +220,11 @@ $header-compact-max: 1050px;
 
     .header-cart-link {
       position: relative;
+      transition: color var(--motion-fast) ease;
+
+      &:hover {
+        color: $light-green;
+      }
 
       .header-cart-link__badge {
         position: absolute;
@@ -289,6 +305,11 @@ $header-compact-max: 1050px;
     background: transparent;
     cursor: pointer;
     flex-shrink: 0;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
 
     @media (max-width: $header-compact-max) {
       display: flex;
@@ -402,6 +423,11 @@ $header-compact-max: 1050px;
       border: none;
       background: none;
       cursor: pointer;
+      transition: opacity var(--motion-fast) ease;
+
+      &:hover {
+        opacity: 0.75;
+      }
     }
   }
 
@@ -499,6 +525,11 @@ $header-compact-max: 1050px;
       &--active {
         background: $light-light-gray;
         border-color: $light-light-gray;
+      }
+
+      &:hover:not(&--active) {
+        background: $light-light-gray;
+        border-color: $light-gray;
       }
     }
   }

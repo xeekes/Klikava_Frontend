@@ -60,6 +60,11 @@
       font-size: 2rem;
       font-weight: 500;
       text-decoration: none;
+      transition: color var(--motion-fast) ease;
+
+      &:hover:not(.profile-page__tab--active) {
+        color: $dark-gray;
+      }
     }
 
     .profile-page__tab--active {
@@ -81,10 +86,18 @@
   }
 
   &.profile-page--footer-action {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 0;
+    gap: 1.25rem;
+
+    .profile-page__panel {
+      display: flex;
+      flex-direction: column;
+      background: $white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      min-height: 20rem;
+    }
 
     .profile-page__body {
       flex: 1;
@@ -94,22 +107,8 @@
     .profile-page__footer-action {
       margin-top: auto;
       flex-shrink: 0;
+      padding-top: 1.25rem;
     }
   }
 }
 
-@media (max-width: 1100px) {
-  .profile-page {
-    &.profile-page--footer-action {
-      flex: none;
-
-      .profile-page__body {
-        flex: none;
-      }
-
-      .profile-page__footer-action {
-        margin-top: 1rem;
-      }
-    }
-  }
-}

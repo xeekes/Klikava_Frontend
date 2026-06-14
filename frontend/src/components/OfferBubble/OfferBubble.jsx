@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../context/CatalogContext";
 import { Cart } from "../../iconComponents";
+import { formatBubblePrice } from "../../utils/formatPrice";
 import "./OfferBubble.scss";
 
 /**
@@ -10,7 +11,7 @@ import "./OfferBubble.scss";
  */
 const OfferBubble = ({
   image,
-  price = "20$",
+  price = 0,
   alt = "Offer image",
   background = "gray",
   className = "",
@@ -19,6 +20,7 @@ const OfferBubble = ({
 }) => {
   const { getProductById } = useCatalog();
   const { addItem } = useCart();
+  const displayPrice = formatBubblePrice(price);
   const backgroundClass =
     background === "white" ? "offer-bubble--white" : "offer-bubble--gray";
   /**
@@ -40,7 +42,7 @@ const OfferBubble = ({
       <img src={image} alt={alt} />
       <div className="offer-bubble__badges">
         <div className="offer-bubble__price">
-          <p>{price}</p>
+          <p>{displayPrice}</p>
         </div>
         <button
           type="button"

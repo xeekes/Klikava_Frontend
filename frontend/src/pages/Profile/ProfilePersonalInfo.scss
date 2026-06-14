@@ -5,6 +5,84 @@ $form-text: #595858;
 .profile-personal-info {
   color: $form-text;
 
+  .profile-personal-info__saved {
+    margin: 0 0 0.75rem;
+    color: $green;
+    font-weight: 500;
+  }
+
+  .profile-personal-info__error {
+    margin: 0 0 0.75rem;
+    color: #b42318;
+    font-weight: 500;
+  }
+
+  .profile-personal-info__hint {
+    margin: 0 0 1.25rem;
+    color: $gray;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    max-width: 42rem;
+  }
+
+  .profile-personal-info__field-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    width: 100%;
+  }
+
+  .profile-personal-info__field-note {
+    margin: 0;
+    color: $gray;
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .profile-personal-info__field-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .profile-personal-info__field-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 0.45rem 0.9rem;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    &--save {
+      background: $black;
+      color: $white;
+
+      &:hover:not(:disabled) {
+        opacity: 0.88;
+      }
+    }
+
+    &--cancel {
+      background: $light-light-gray;
+      color: $dark-gray;
+
+      &:hover:not(:disabled) {
+        background: $light-gray;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+
+  .profile-personal-info__control--readonly {
+    cursor: default;
+    background: $white;
+  }
+
   .profile-page__title {
     color: $form-text;
   }
@@ -100,6 +178,11 @@ $form-text: #595858;
     background: $black;
     cursor: pointer;
     padding: 0;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover:not(:disabled) {
+      opacity: 0.88;
+    }
   }
 
   .profile-personal-info__upload-icon {
@@ -173,6 +256,11 @@ $form-text: #595858;
     padding: 0;
     color: $form-text;
     cursor: pointer;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.75;
+    }
   }
 
   .profile-personal-info__filter-icon {
@@ -202,6 +290,12 @@ $form-text: #595858;
     font-weight: 500;
     cursor: pointer;
     font-family: inherit;
+    text-decoration: none;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
   }
 
   .profile-personal-info__footer-actions {
@@ -222,6 +316,11 @@ $form-text: #595858;
     font-weight: 500;
     cursor: pointer;
     font-family: inherit;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover {
+      opacity: 0.88;
+    }
   }
 
   .profile-personal-info__save-btn {
@@ -234,6 +333,11 @@ $form-text: #595858;
     font-weight: 500;
     cursor: pointer;
     font-family: inherit;
+    transition: opacity var(--motion-fast) ease;
+
+    &:hover:not(:disabled) {
+      opacity: 0.88;
+    }
   }
 }
 

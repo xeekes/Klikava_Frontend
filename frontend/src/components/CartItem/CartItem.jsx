@@ -1,12 +1,21 @@
 /* Позиция корзины со степпером количества и действием удаления. */
 import { Link } from "react-router-dom";
+import { useActionFeedback } from "../../context/ActionFeedbackContext";
 import { Clock, Star } from "../../iconComponents";
 import "./CartItem.scss";
+
+const REMOVE_CONFIRM = {
+  title: "Remove item?",
+  message: "This product will be removed from your bag.",
+  confirmLabel: "Remove",
+  cancelLabel: "Keep item",
+};
 
 /**
  * Позиция корзины со степпером количества и действием удаления.
  */
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
+  const { confirm, showSuccess } = useActionFeedback();
   const rating = item.rating ?? 5;
   const sold = item.sold ?? 422;
   const lineTotal = Number((item.price * item.quantity).toFixed(2));
@@ -14,6 +23,45 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     typeof item.discountPercent === "number" &&
     item.discountPercent > 0 &&
     typeof item.originalPrice === "number";
+
+  /**
+   * Удаляет позицию после подтверждения пользователя.
+   */
+  const handleRemove = async (event) => {
+    event.preventDefault();
+    if (!(await confirm(REMOVE_CONFIRM))) {
+      return;
+    }
+    onRemove(item.productId);
+    showSuccess("Item removed from your bag.");
+  };
+
+  /**
+   * Уменьшает количество или удаляет последнюю единицу с подтверждением.
+   */
+  const handleDecrease = async (event) => {
+    event.preventDefault();
+    if (item.quantity <= 1) {
+      if (!(await confirm(REMOVE_CONFIRM))) {
+        return;
+      }
+      onRemove(item.productId);
+      showSuccess("Item removed from your bag.");
+      return;
+    }
+    onUpdateQuantity(item.productId, item.quantity - 1);
+    showSuccess("Quantity updated.");
+  };
+
+  /**
+   * Увеличивает количество позиции в корзине.
+   */
+  const handleIncrease = (event) => {
+    event.preventDefault();
+    onUpdateQuantity(item.productId, item.quantity + 1);
+    showSuccess("Quantity updated.");
+  };
+
   return (
     <article className="cart-item">
       <Link to={`/product/${item.productId}`} className="cart-item__image-wrap">
@@ -47,28 +95,15 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
         </div>
         <div className="cart-item__footer">
           <div className="cart-item__controls">
-            <a
-              className="cart-item__delete"
-              onClick={() => onRemove(item.productId)}
-            >
+            <a className="cart-item__delete" onClick={handleRemove}>
               Delete item
             </a>
             <div className="cart-item__quantity">
-              <a
-                onClick={() =>
-                  onUpdateQuantity(item.productId, item.quantity - 1)
-                }
-                aria-label="Decrease quantity"
-              >
+              <a onClick={handleDecrease} aria-label="Decrease quantity">
                 <span>−</span>
               </a>
               <span>{item.quantity}</span>
-              <a
-                onClick={() =>
-                  onUpdateQuantity(item.productId, item.quantity + 1)
-                }
-                aria-label="Increase quantity"
-              >
+              <a onClick={handleIncrease} aria-label="Increase quantity">
                 <span>+</span>
               </a>
             </div>

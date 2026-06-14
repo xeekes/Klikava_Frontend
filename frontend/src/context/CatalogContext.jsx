@@ -13,7 +13,7 @@ import {
 import { catalogApi } from "../api/catalogApi";
 import { hasApiBaseUrl } from "../api/client";
 import { applyCatalogDiscounts } from "../api/mapCatalogItem";
-import { createCatalogHelpers, buildDetailTabs } from "../utils/catalogHelpers";
+import { createCatalogHelpers, mergeProductDetailView } from "../utils/catalogHelpers";
 
 /** React-контекст для состояния списка товаров и хелперов поиска. */
 const CatalogContext = createContext(null);
@@ -25,6 +25,7 @@ const CatalogContext = createContext(null);
 export const CatalogProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [features, setFeatures] = useState([]);
   const [discounts, setDiscounts] = useState([]);
   const [source, setSource] = useState("empty");
   const [isLoading, setIsLoading] = useState(() => hasApiBaseUrl());
@@ -37,6 +38,7 @@ export const CatalogProvider = ({ children }) => {
     if (!hasApiBaseUrl()) {
       setProducts([]);
       setCategories([]);
+      setFeatures([]);
       setDiscounts([]);
       setSource("empty");
       setError(null);
@@ -45,9 +47,10 @@ export const CatalogProvider = ({ children }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const [loadedCategories, rawProducts, loadedDiscounts, popularIds] =
+      const [loadedCategories, loadedFeatures, rawProducts, loadedDiscounts, popularIds] =
         await Promise.all([
           catalogApi.listCategories(),
+          catalogApi.listFeatures().catch(() => []),
           catalogApi.listAllProducts(),
           catalogApi.listAllDiscounts(),
           catalogApi.listPopularProductIds({ perPage: 12 }),
@@ -63,6 +66,7 @@ export const CatalogProvider = ({ children }) => {
           product.isTop,
       }));
       setCategories(loadedCategories);
+      setFeatures(loadedFeatures);
       setProducts(mappedProducts);
       setDiscounts(loadedDiscounts);
       setSource("api");
@@ -70,6 +74,7 @@ export const CatalogProvider = ({ children }) => {
       console.warn("[catalog] API unavailable:", err.message);
       setProducts([]);
       setCategories([]);
+      setFeatures([]);
       setDiscounts([]);
       setSource("error");
       setError(err.message || "Catalog API unavailable");
@@ -102,26 +107,16 @@ export const CatalogProvider = ({ children }) => {
         const raw = await catalogApi.getProductByIdOrSlug(idOrSlug);
         const detailed = catalogApi.buildProductDetail(raw, categories);
         const base = cached || helpers.getProductById(detailed.id);
-        if (!base) {
-          return helpers.getProductById(detailed.id) || detailed;
-        }
-        return {
-          ...base,
-          ...detailed,
-          images: detailed.images?.length
-            ? detailed.images
-            : base.images?.length
-              ? base.images
-              : detailed.image
-                ? [detailed.image]
-                : [],
-          colors: detailed.colors?.length ? detailed.colors : base.colors || [],
-          tabs: buildDetailTabs(detailed.shipping ?? base.shipping),
-          sold: detailed.sold ?? base.sold,
-          recentLowestPrice: detailed.originalPrice ?? base.recentLowestPrice,
-        };
+        return mergeProductDetailView(base, detailed);
       } catch (err) {
         console.warn("[catalog] product detail:", err.message);
+        if (cached?.backendRaw) {
+          const detailed = catalogApi.buildProductDetail(
+            cached.backendRaw,
+            categories,
+          );
+          return mergeProductDetailView(cached, detailed);
+        }
         return cached;
       }
     },
@@ -163,6 +158,7 @@ export const CatalogProvider = ({ children }) => {
     () => ({
       ...helpers,
       categories,
+      features,
       discounts,
       source,
       isLoading,
@@ -181,6 +177,7 @@ export const CatalogProvider = ({ children }) => {
     [
       helpers,
       categories,
+      features,
       discounts,
       source,
       isLoading,

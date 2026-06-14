@@ -20,6 +20,11 @@
         border-radius: 16px;
         overflow: hidden;
         background: $light-gray;
+        transition: opacity var(--motion-fast) ease;
+
+        &:hover {
+          opacity: 0.92;
+        }
 
         img {
           width: 100%;
@@ -42,6 +47,11 @@
           font-size: 1rem;
           line-height: 1.35;
           text-decoration: none;
+          transition: color var(--motion-fast) ease;
+
+          &:hover {
+            color: $dark-gray;
+          }
         }
 
         .profile-favorites__summary {

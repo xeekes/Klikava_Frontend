@@ -7,6 +7,10 @@ import {
   POPULAR_SEARCHES,
   sortProducts,
 } from "./catalogFilters";
+import {
+  extractSpecsFromBackendRaw,
+  getProductFeatures,
+} from "../api/mapCatalogItem";
 
 const DETAIL_TABS = [
   { id: "details", label: "Product Details" },
@@ -14,8 +18,66 @@ const DETAIL_TABS = [
   { id: "reviews", label: "Reviews" },
 ];
 
-export const buildDetailTabs = (shipping) =>
-  DETAIL_TABS.filter((tab) => tab.id !== "shipping" || shipping);
+export const DEFAULT_PRODUCT_SHIPPING = {
+  company: "Standard delivery",
+  deliveryTime: "3–7 business days",
+  costs: "Calculated at checkout",
+  stats: [
+    { label: "Delivered on time", percent: 94 },
+    { label: "Shipped within 24h", percent: 88 },
+  ],
+};
+
+/**
+ * @param {object|null|undefined} shipping
+ * @returns {object}
+ */
+export const resolveProductShipping = (shipping) => ({
+  ...DEFAULT_PRODUCT_SHIPPING,
+  ...(shipping || {}),
+  stats:
+    shipping?.stats?.length > 0
+      ? shipping.stats
+      : DEFAULT_PRODUCT_SHIPPING.stats,
+});
+
+export const buildDetailTabs = () => DETAIL_TABS;
+
+/**
+ * Собирает view model страницы товара из кэша списка и деталей API.
+ * @param {object|null|undefined} base
+ * @param {object} detailed
+ * @returns {object}
+ */
+export const mergeProductDetailView = (base, detailed) => {
+  const shipping = resolveProductShipping(detailed?.shipping ?? base?.shipping);
+  const image =
+    typeof detailed?.image === "string"
+      ? detailed.image
+      : typeof base?.image === "string"
+        ? base.image
+        : null;
+
+  return {
+    ...(base || {}),
+    ...detailed,
+    shipping,
+    images: detailed?.images?.length
+      ? detailed.images
+      : base?.images?.length
+        ? base.images
+        : image
+          ? [image]
+          : [],
+    colors: detailed?.colors?.length ? detailed.colors : base?.colors || [],
+    tabs: buildDetailTabs(),
+    specs: detailed?.specs?.length ? detailed.specs : base?.specs || [],
+    reviews: detailed?.reviews?.length ? detailed.reviews : base?.reviews || [],
+    sold: detailed?.sold ?? base?.sold,
+    recentLowestPrice:
+      detailed?.originalPrice ?? base?.recentLowestPrice ?? base?.price,
+  };
+};
 
 /**
  * Создаёт API хелперов каталога над списком товаров и опциональными метаданными категорий.
@@ -131,6 +193,7 @@ export const createCatalogHelpers = (products, categories = []) => {
         product.title,
         product.categoryName,
         product.subcategory,
+        ...getProductFeatures(product).map((entry) => entry.value),
       ]
         .join(" ")
         .toLowerCase();
@@ -203,13 +266,16 @@ export const createCatalogHelpers = (products, categories = []) => {
     return {
       ...product,
       images: product.images?.length ? product.images : image ? [image] : [],
-      tabs: buildDetailTabs(product.shipping || null),
-      specs: product.specs || [],
+      tabs: buildDetailTabs(),
+    specs:
+      product.specs?.length > 0
+        ? product.specs
+        : extractSpecsFromBackendRaw(product.backendRaw),
       reviews: product.reviews || [],
       colors: product.colors || [],
       recentLowestPrice: product.originalPrice ?? product.price,
       category: findCategory(product.categoryId),
-      shipping: product.shipping || null,
+      shipping: resolveProductShipping(product.shipping),
       description: product.description || "",
     };
   };

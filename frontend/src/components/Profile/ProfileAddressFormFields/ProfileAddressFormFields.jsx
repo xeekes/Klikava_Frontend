@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { useUserData } from "../../../context/UserDataContext";
 import { useFormValidation } from "../../../hooks/useFormValidation";
+import { formatAddressFieldInput, MAX_PHONE_DIGITS } from "../../../utils/inputFormatters";
 import { schemas } from "../../../utils/validation";
 import FormField from "../../FormField/FormField";
 import "./ProfileAddressFormFields.scss";
@@ -59,7 +60,8 @@ const ProfileAddressFormFields = ({
    * Возвращает обработчик изменения одного поля формы адреса.
    */
   const handleChange = (field) => (event) => {
-    setForm((prev) => ({ ...prev, [field]: event.target.value }));
+    const nextValue = formatAddressFieldInput(field, event.target.value);
+    setForm((prev) => ({ ...prev, [field]: nextValue }));
   };
   /**
    * Проверяет форму и передаёт значения в родительский callback отправки.
@@ -89,6 +91,14 @@ const ProfileAddressFormFields = ({
             onChange={handleChange(field)}
             onBlur={() => handleBlur(form, field)}
             error={getError(field)}
+            inputMode={field === "phone" ? "numeric" : undefined}
+            maxLength={
+              field === "phone"
+                ? MAX_PHONE_DIGITS
+                : field === "postalCode"
+                  ? 12
+                  : undefined
+            }
             className={
               field === "postalCode"
                 ? "profile-address-form-fields__field--postal"

@@ -43,7 +43,7 @@ const PopularProducts = ({ className = "" }) => {
       className={bubbleClass}
       image={product.image}
       alt={product.title}
-      price={`${product.price}$`}
+      price={product.price}
       background="white"
       productId={product.id}
       to={`/product/${product.id}`}

@@ -26,6 +26,11 @@
         background: $white;
         text-align: left;
         cursor: pointer;
+        transition: background var(--motion-fast) ease;
+
+        &:hover:not(.profile-chat__thread--active) {
+          background: $light-light-gray;
+        }
 
         .profile-chat__thread-avatar {
           width: 2.5rem;
@@ -220,6 +225,11 @@
           color: $gray;
           cursor: pointer;
           flex-shrink: 0;
+          transition: color var(--motion-fast) ease;
+
+          &:hover {
+            color: $dark-gray;
+          }
 
           .profile-chat__attach-icon {
             display: block;
@@ -250,6 +260,11 @@
           font-weight: 500;
           cursor: pointer;
           flex-shrink: 0;
+          transition: opacity var(--motion-fast) ease;
+
+          &:hover:not(:disabled) {
+            opacity: 0.88;
+          }
         }
       }
     }

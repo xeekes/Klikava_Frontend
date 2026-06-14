@@ -18,6 +18,7 @@ import {
   encodeCardPayload,
   mapAuthUserToPersonalInfo,
   mapPersonalInfoToUserUpdate,
+  pickUserAvatar,
 } from "../api/mapUserData";
 import { ordersApi } from "../api/orders";
 import { withOrderCoverImage } from "../utils/orderHelpers";
@@ -142,9 +143,15 @@ export const UserDataProvider = ({ children }) => {
     ]);
     setAddresses(addressItems.map(decodeAddressItem).map(normalizeAddress));
     setCards(cardItems.map(decodeCardItem));
-    setPersonalInfo(
-      mapAuthUserToPersonalInfo(profileUser || authUser, EMPTY_PERSONAL_INFO),
-    );
+    const localPersonal = loadLocalUserData(nextUserId).personalInfo;
+    const remoteUser = profileUser
+      ? {
+          ...authUser,
+          ...profileUser,
+          avatar_url: profileUser.avatar_url || authUser?.avatar_url || "",
+        }
+      : authUser;
+    setPersonalInfo(mapAuthUserToPersonalInfo(remoteUser, localPersonal));
   }, []);
 
   /**
@@ -224,15 +231,17 @@ export const UserDataProvider = ({ children }) => {
   }, [userId, isAuthLoading, usesApi, user, loadRemoteProfileData]);
 
   /**
-   * Сохраняет личные данные в localStorage в офлайн-режиме.
+   * Сохраняет личные данные в localStorage (в т.ч. локальные поля и аватар в API-режиме).
    */
   useEffect(() => {
-    if (!canPersistLocal) return;
+    if (!userId || dataUserId !== userId) {
+      return;
+    }
     writeStorage(
       getUserStorageKey(STORAGE_KEYS.personalInfo, userId),
       personalInfo,
     );
-  }, [personalInfo, userId, canPersistLocal]);
+  }, [personalInfo, userId, dataUserId]);
 
   /**
    * Сохраняет адреса в localStorage в офлайн-режиме.
@@ -299,6 +308,38 @@ export const UserDataProvider = ({ children }) => {
           userId,
           mapPersonalInfoToUserUpdate(nextInfo),
         );
+      }
+      setPersonalInfo(nextInfo);
+    },
+    [usesApi, userId],
+  );
+
+  /**
+   * Сохраняет только изменённые поля: API-поля уходят PATCH-запросом, остальное в localStorage.
+   * @param {object} nextInfo
+   * @param {string[]} changedFieldIds
+   * @returns {Promise<void>}
+   */
+  const savePersonalInfoChanges = useCallback(
+    async (nextInfo, changedFieldIds) => {
+      const apiPayload = {};
+      const changed = new Set(changedFieldIds);
+
+      if (changed.has("firstName") || changed.has("lastName")) {
+        const name = `${nextInfo.firstName || ""} ${nextInfo.lastName || ""}`.trim();
+        if (name) {
+          apiPayload.name = name;
+        }
+      }
+      if (changed.has("email") && nextInfo.email) {
+        apiPayload.email = nextInfo.email;
+      }
+      if (changed.has("phone") && nextInfo.phone) {
+        apiPayload.phone_number = nextInfo.phone;
+      }
+
+      if (usesApi && userId && Object.keys(apiPayload).length > 0) {
+        await usersApi.updateUser(userId, apiPayload);
       }
       setPersonalInfo(nextInfo);
     },
@@ -581,6 +622,7 @@ export const UserDataProvider = ({ children }) => {
       userDataError,
       usesApi,
       savePersonalInfo,
+      savePersonalInfoChanges,
       addAddress,
       updateAddress,
       deleteAddress,
@@ -609,6 +651,7 @@ export const UserDataProvider = ({ children }) => {
       userDataError,
       usesApi,
       savePersonalInfo,
+      savePersonalInfoChanges,
       addAddress,
       updateAddress,
       deleteAddress,

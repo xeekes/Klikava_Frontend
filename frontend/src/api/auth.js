@@ -4,6 +4,7 @@
  */
 import { apiRequest } from "./client";
 import { ApiError } from "./errors";
+import { pickUserAvatar } from "./mapUserData";
 
 /**
  * Преобразует payload пользователя FastAPI в плоскую структуру для AuthContext.
@@ -20,6 +21,11 @@ const mapMarketplaceUser = (user) => {
     emailOrPhone,
     displayName: user.name || emailOrPhone.split("@")[0] || "User",
     roles: user.roles || [],
+    name: user.name || "",
+    email: user.email || "",
+    phone_number: user.phone_number || "",
+    avatar_url: user.avatar_url || "",
+    avatar: pickUserAvatar(user),
   };
 };
 

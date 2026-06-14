@@ -266,7 +266,7 @@ export const rules = {
     },
 
   /**
-   * Фабрика для номеров платёжных карт (13–19 цифр после удаления пробелов).
+   * Фабрика для номеров платёжных карт (ровно 16 цифр после удаления пробелов).
    * @returns {(value: unknown) => string|null}
    */
   cardNumber: () => (value) => {
@@ -274,8 +274,8 @@ export const rules = {
     if (!digits) {
       return "Card number is required";
     }
-    if (!/^\d{13,19}$/.test(digits)) {
-      return "Enter a valid card number";
+    if (!/^\d{16}$/.test(digits)) {
+      return "Enter a 16-digit card number";
     }
     return null;
   },

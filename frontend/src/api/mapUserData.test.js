@@ -7,7 +7,10 @@ import {
   encodeAddressForm,
   encodeCardPayload,
   mapAuthUserToPersonalInfo,
+  mapPersonalInfoFieldToUserUpdate,
   mapPersonalInfoToUserUpdate,
+  pickUserAvatar,
+  isPersonalInfoApiField,
 } from "./mapUserData";
 
 describe("encodeAddressForm / decodeAddressItem", () => {
@@ -144,6 +147,55 @@ describe("mapPersonalInfoToUserUpdate", () => {
     expect(mapPersonalInfoToUserUpdate({ firstName: "", lastName: "" })).toEqual(
       {},
     );
+  });
+});
+
+describe("mapPersonalInfoFieldToUserUpdate", () => {
+  const info = {
+    firstName: "Artem",
+    lastName: "Borisenko",
+    email: "artem@example.com",
+    phone: "+380501234567",
+    city: "Kyiv",
+  };
+
+  it("maps single API-backed fields", () => {
+    expect(mapPersonalInfoFieldToUserUpdate("email", info)).toEqual({
+      email: "artem@example.com",
+    });
+    expect(mapPersonalInfoFieldToUserUpdate("phone", info)).toEqual({
+      phone_number: "+380501234567",
+    });
+    expect(mapPersonalInfoFieldToUserUpdate("firstName", info)).toEqual({
+      name: "Artem Borisenko",
+    });
+  });
+
+  it("returns null for local-only fields", () => {
+    expect(mapPersonalInfoFieldToUserUpdate("city", info)).toBeNull();
+    expect(mapPersonalInfoFieldToUserUpdate("password", info)).toBeNull();
+  });
+
+  it("identifies API-backed fields", () => {
+    expect(isPersonalInfoApiField("phone")).toBe(true);
+    expect(isPersonalInfoApiField("city")).toBe(false);
+  });
+});
+
+describe("pickUserAvatar", () => {
+  it("resolves avatar from nested picture fields", () => {
+    const avatar = pickUserAvatar({
+      pictures: [{ url: "/media/avatar.webp" }],
+    });
+    expect(avatar).toContain("/media/avatar.webp");
+  });
+
+  it("prefers avatar_url when present", () => {
+    expect(
+      pickUserAvatar({
+        avatar_url: "https://cdn.example/avatar.png",
+      }),
+    ).toBe("https://cdn.example/avatar.png");
   });
 });
 

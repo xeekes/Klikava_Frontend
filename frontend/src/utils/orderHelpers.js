@@ -130,6 +130,65 @@ export const filterOrdersByTabFromList = (orders, tab) => {
 export const getOrderByIdFromList = (orders, orderId) =>
   orders.find((order) => String(order.id) === String(orderId));
 
+/** Статусы заказа, после которых бэкенд разрешает оставить отзыв. */
+export const REVIEW_ELIGIBLE_ORDER_STATUSES = new Set(["delivered", "return"]);
+
+/**
+ * Проверяет, есть ли в заказе товар с указанным productId или variantId.
+ * @param {object} order
+ * @param {string|number|null|undefined} productId
+ * @param {string|number|null|undefined} variantId
+ * @returns {boolean}
+ */
+export const orderContainsProduct = (order, productId, variantId) => {
+  const products = getOrderProducts(order);
+  return products.some((item) => {
+    if (
+      productId &&
+      item.productId &&
+      String(item.productId) === String(productId)
+    ) {
+      return true;
+    }
+    if (
+      variantId &&
+      item.variantId &&
+      String(item.variantId) === String(variantId)
+    ) {
+      return true;
+    }
+    return false;
+  });
+};
+
+/**
+ * Находит доставленный заказ с товаром, по которому можно оставить отзыв.
+ * @param {Array<object>} orders
+ * @param {string|number|null|undefined} productId
+ * @param {string|number|null|undefined} variantId
+ * @returns {object|undefined}
+ */
+export const findEligibleReviewOrderForProduct = (
+  orders,
+  productId,
+  variantId,
+) =>
+  orders.find(
+    (order) =>
+      REVIEW_ELIGIBLE_ORDER_STATUSES.has(order.status) &&
+      orderContainsProduct(order, productId, variantId),
+  );
+
+/**
+ * Может ли пользователь оставить отзыв на товар со страницы товара.
+ * @param {Array<object>} orders
+ * @param {string|number|null|undefined} productId
+ * @param {string|number|null|undefined} variantId
+ * @returns {boolean}
+ */
+export const canUserReviewProduct = (orders, productId, variantId) =>
+  Boolean(findEligibleReviewOrderForProduct(orders, productId, variantId));
+
 /**
  * Возвращает id кнопок действий, доступных для заказов на вкладке с данным статусом.
  * @param {string} tab

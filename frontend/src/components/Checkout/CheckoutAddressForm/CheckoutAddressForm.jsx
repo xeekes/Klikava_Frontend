@@ -1,6 +1,7 @@
 /* Форма адреса при оформлении заказа со схемой валидации. */
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
+import { formatAddressFieldInput, MAX_PHONE_DIGITS } from "../../../utils/inputFormatters";
 import { schemas } from "../../../utils/validation";
 import FormField from "../../FormField/FormField";
 import "./CheckoutAddressForm.scss";
@@ -59,7 +60,8 @@ const CheckoutAddressForm = ({
    * Возвращает обработчик изменения одного поля формы адреса.
    */
   const handleChange = (field) => (e) => {
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    const nextValue = formatAddressFieldInput(field, e.target.value);
+    setForm((prev) => ({ ...prev, [field]: nextValue }));
   };
   /**
    * Проверяет форму и передаёт значения в родительский callback сохранения.
@@ -91,6 +93,14 @@ const CheckoutAddressForm = ({
             onChange={handleChange(field)}
             onBlur={() => handleBlur(form, field)}
             error={getError(field)}
+            inputMode={field === "phone" ? "numeric" : undefined}
+            maxLength={
+              field === "phone"
+                ? MAX_PHONE_DIGITS
+                : field === "postalCode"
+                  ? 12
+                  : undefined
+            }
             className={
               field === "postalCode" ? "checkout-address-form__postal" : ""
             }

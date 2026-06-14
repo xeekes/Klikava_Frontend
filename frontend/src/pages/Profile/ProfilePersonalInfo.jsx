@@ -1,19 +1,22 @@
-/* Форма профиля, синхронизируемая с API пользователей при наличии. */
+/* Форма профиля: все поля редактируются сразу, Save сохраняет только изменения. */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { hasApiBaseUrl } from "../../api/client";
-import { picturesApi } from "../../api/pictures";
+import { mapAuthUserToPersonalInfo, pickUserAvatar } from "../../api/mapUserData";
+import { isApiMediaUrl, picturesApi } from "../../api/pictures";
 import { usersApi } from "../../api/users";
-import { mapAuthUserToPersonalInfo } from "../../api/mapUserData";
 import { getSellerPanelLoginUrl } from "../../constants/panel";
+import { useActionFeedback } from "../../context/ActionFeedbackContext";
 import { useAuth } from "../../context/AuthContext";
 import { useUserData } from "../../context/UserDataContext";
 import { useFormValidation } from "../../hooks/useFormValidation";
+import { formatPhoneInput, MAX_PHONE_DIGITS } from "../../utils/inputFormatters";
 import { schemas } from "../../utils/validation";
 import FormField from "../../components/FormField/FormField";
-import { Filter, Upload, User } from "../../iconComponents";
+import { Upload, User } from "../../iconComponents";
 import "../../styles/profile-page.scss";
 import "./ProfilePersonalInfo.scss";
+
 const FIELDS = [
   { id: "firstName", label: "First Name", area: "firstName" },
   { id: "lastName", label: "Last Name", area: "lastName" },
@@ -26,62 +29,152 @@ const FIELDS = [
 ];
 
 /**
- * Редактируемая форма личных данных, синхронизируемая с API пользователей при наличии.
+ * @param {object} personalInfo
+ * @param {object|null|undefined} user
+ * @returns {object}
+ */
+const buildFormValues = (personalInfo, user) =>
+  mapAuthUserToPersonalInfo(user, personalInfo);
+
+/**
+ * @param {object} form
+ * @param {object} baseline
+ * @returns {string[]}
+ */
+const getChangedFieldIds = (form, baseline) =>
+  FIELDS.filter(
+    (field) => (form[field.id] ?? "") !== (baseline[field.id] ?? ""),
+  ).map((field) => field.id);
+
+/**
+ * Редактируемая форма личных данных с одной кнопкой Save.
  */
 const ProfilePersonalInfo = () => {
   const navigate = useNavigate();
+  const { confirm, showSuccess, showError } = useActionFeedback();
   const { user, logout } = useAuth();
-  const { personalInfo, savePersonalInfo, deleteAccount } = useUserData();
+  const { personalInfo, savePersonalInfoChanges, deleteAccount } =
+    useUserData();
   const fileInputRef = useRef(null);
+  const avatarBlobRef = useRef("");
+  const [form, setForm] = useState(() => buildFormValues(personalInfo, user));
+  const [avatarSrc, setAvatarSrc] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [isAvatarLoading, setIsAvatarLoading] = useState(false);
   const [avatarLoadError, setAvatarLoadError] = useState(false);
-  const [form, setForm] = useState({
-    ...personalInfo,
-    email: user?.emailOrPhone?.includes("@")
-      ? user.emailOrPhone
-      : personalInfo.email,
-    firstName: user?.displayName || personalInfo.firstName,
-  });
-  const [saved, setSaved] = useState(false);
-  const showAvatar = Boolean(form.avatar) && !avatarLoadError;
+  const showAvatar = Boolean(avatarSrc) && !avatarLoadError;
 
-  useEffect(() => {
-    setAvatarLoadError(false);
-  }, [form.avatar]);
-
-  const { getError, validateAll, handleBlur } = useFormValidation(
+  const { getError, validateFields, handleBlur } = useFormValidation(
     schemas.personalInfo,
   );
 
+  useEffect(() => {
+    setAvatarLoadError(false);
+  }, [avatarSrc]);
+
+  useEffect(() => {
+    setForm(buildFormValues(personalInfo, user));
+  }, [personalInfo, user]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    /**
+     * Освобождает предыдущий blob:-URL аватара.
+     */
+    const revokeAvatarBlob = () => {
+      if (avatarBlobRef.current?.startsWith("blob:")) {
+        URL.revokeObjectURL(avatarBlobRef.current);
+      }
+      avatarBlobRef.current = "";
+    };
+
+    /**
+     * Подставляет src для <img>: внешний URL напрямую, API-медиа — через blob + JWT.
+     */
+    const resolveAvatar = async () => {
+      const avatarUrl =
+        form.avatar || personalInfo.avatar || user?.avatar || "";
+
+      if (!user?.id || !hasApiBaseUrl()) {
+        const offlineUrl = avatarUrl;
+        setAvatarSrc(
+          offlineUrl && !isApiMediaUrl(offlineUrl) ? offlineUrl : "",
+        );
+        return;
+      }
+
+      setIsAvatarLoading(true);
+      revokeAvatarBlob();
+
+      const resolvedSrc = await picturesApi.resolveUserAvatarObjectUrl({
+        userId: user.id,
+        avatarUrl,
+      });
+
+      if (cancelled) {
+        if (resolvedSrc.startsWith("blob:")) {
+          URL.revokeObjectURL(resolvedSrc);
+        }
+        return;
+      }
+
+      if (resolvedSrc.startsWith("blob:")) {
+        avatarBlobRef.current = resolvedSrc;
+        setAvatarSrc(resolvedSrc);
+      } else if (resolvedSrc && !isApiMediaUrl(resolvedSrc)) {
+        setAvatarSrc(resolvedSrc);
+      } else {
+        setAvatarSrc("");
+      }
+      setIsAvatarLoading(false);
+    };
+
+    resolveAvatar();
+
+    return () => {
+      cancelled = true;
+      revokeAvatarBlob();
+    };
+  }, [form.avatar, personalInfo.avatar, user?.avatar, user?.id]);
+
   /**
-   * Возвращает обработчик изменения, обновляющий одно поле формы и сбрасывающий состояние сохранения.
    * @param {string} field
    */
   const handleChange = (field) => (event) => {
-    setForm((prev) => ({ ...prev, [field]: event.target.value }));
-    setSaved(false);
+    const value =
+      field === "phone"
+        ? formatPhoneInput(event.target.value)
+        : event.target.value;
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   /**
-   * Проверяет и сохраняет изменения личных данных в хранилище пользователя.
    * @param {import("react").FormEvent} event
    */
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!validateAll(form)) {
-      setSaved(false);
+    const changedFieldIds = getChangedFieldIds(form, personalInfo);
+    if (changedFieldIds.length === 0) {
+      showSuccess("No changes to save.");
       return;
     }
+    if (!validateFields(form, changedFieldIds)) {
+      return;
+    }
+    setIsSaving(true);
     try {
-      await savePersonalInfo(form);
-      setSaved(true);
-    } catch {
-      setSaved(false);
+      await savePersonalInfoChanges(form, changedFieldIds);
+      showSuccess("Changes saved.");
+    } catch (error) {
+      showError(error.message || "Failed to save changes.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
   /**
-   * Загружает новый аватар на бэкенд и обновляет превью в форме.
    * @param {import("react").ChangeEvent<HTMLInputElement>} event
    */
   const handleAvatarUpload = async (event) => {
@@ -91,38 +184,49 @@ const ProfilePersonalInfo = () => {
     }
     setIsUploadingAvatar(true);
     try {
-      await picturesApi.uploadUserAvatar(user.id, file);
+      const uploadResult = await picturesApi.uploadUserAvatar(user.id, file);
       const profileUser = await usersApi.getUser(user.id);
-      const nextAvatar = mapAuthUserToPersonalInfo(profileUser, form).avatar;
-      setForm((prev) => ({ ...prev, avatar: nextAvatar }));
-      await savePersonalInfo({ ...form, avatar: nextAvatar });
+      const nextAvatar =
+        pickUserAvatar(uploadResult) ||
+        pickUserAvatar(profileUser) ||
+        `avatar:${user.id}`;
+      const nextForm = { ...form, avatar: nextAvatar };
+      await savePersonalInfoChanges(nextForm, ["avatar"]);
+      setForm(nextForm);
+      setAvatarLoadError(false);
+      showSuccess("Profile photo updated.");
+    } catch (error) {
+      showError(error.message || "Failed to upload photo.");
     } finally {
       setIsUploadingAvatar(false);
       event.target.value = "";
     }
   };
 
-  /**
-   * Выходит из аккаунта и перенаправляет на главную после удаления учётной записи.
-   */
   const handleDeleteAccount = async () => {
     if (
-      !window.confirm(
-        "Delete your account permanently? This action cannot be undone.",
-      )
+      !(await confirm({
+        title: "Delete account?",
+        message: "Delete your account permanently? This action cannot be undone.",
+        confirmLabel: "Delete account",
+        cancelLabel: "Cancel",
+      }))
     ) {
       return;
     }
-    await deleteAccount();
-    await logout();
-    navigate("/");
+    try {
+      await deleteAccount();
+      await logout();
+      showSuccess("Your account has been deleted.");
+      navigate("/");
+    } catch (error) {
+      showError(error.message || "Failed to delete account.");
+    }
   };
+
   return (
     <section className="profile-page profile-personal-info profile-page--footer-action">
       <h1 className="profile-page__title">Personal info</h1>
-      {saved ? (
-        <p className="profile-personal-info__saved">Changes saved.</p>
-      ) : null}
       <form
         className="profile-personal-info__card"
         onSubmit={handleSubmit}
@@ -135,7 +239,7 @@ const ProfilePersonalInfo = () => {
                 {showAvatar ? (
                   <img
                     className="profile-personal-info__avatar"
-                    src={form.avatar}
+                    src={avatarSrc}
                     alt=""
                     onError={() => setAvatarLoadError(true)}
                   />
@@ -160,7 +264,7 @@ const ProfilePersonalInfo = () => {
                   className="profile-personal-info__avatar-upload"
                   aria-label="Upload profile photo"
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploadingAvatar}
+                  disabled={isUploadingAvatar || isAvatarLoading}
                 >
                   <Upload
                     className="profile-personal-info__upload-icon"
@@ -178,32 +282,22 @@ const ProfilePersonalInfo = () => {
                 error={getError(field.id)}
                 className={`profile-personal-info__field profile-personal-info__field--${field.area}`}
               >
-                <div className="profile-personal-info__control-wrap">
-                  <input
-                    type={field.type || "text"}
-                    className={`form-field__control profile-personal-info__control ${
-                      getError(field.id) ? "form-field__control--invalid" : ""
-                    }`.trim()}
-                    value={form[field.id] ?? ""}
-                    onChange={handleChange(field.id)}
-                    onBlur={() => handleBlur(form, field.id)}
-                    placeholder={personalInfo[field.id]}
-                    autoComplete={
-                      field.id === "password" ? "new-password" : undefined
-                    }
-                  />
-                  <button
-                    type="button"
-                    className="profile-personal-info__edit-btn"
-                    aria-label={`Edit ${field.label}`}
-                    tabIndex={-1}
-                  >
-                    <Filter
-                      className="profile-personal-info__filter-icon"
-                      aria-hidden="true"
-                    />
-                  </button>
-                </div>
+                <input
+                  type={field.type || "text"}
+                  id={`personal-info-${field.id}`}
+                  className={`form-field__control profile-personal-info__control ${
+                    getError(field.id) ? "form-field__control--invalid" : ""
+                  }`.trim()}
+                  value={form[field.id] ?? ""}
+                  onChange={handleChange(field.id)}
+                  onBlur={() => handleBlur(form, field.id)}
+                  placeholder={personalInfo[field.id]}
+                  autoComplete={
+                    field.id === "password" ? "new-password" : undefined
+                  }
+                  inputMode={field.id === "phone" ? "numeric" : undefined}
+                  maxLength={field.id === "phone" ? MAX_PHONE_DIGITS : undefined}
+                />
               </FormField>
             ))}
           </div>
@@ -223,8 +317,12 @@ const ProfilePersonalInfo = () => {
             >
               Delete account permanently
             </button>
-            <button type="submit" className="profile-personal-info__save-btn">
-              Save
+            <button
+              type="submit"
+              className="profile-personal-info__save-btn"
+              disabled={isSaving}
+            >
+              {isSaving ? "Saving..." : "Save"}
             </button>
           </div>
         </div>

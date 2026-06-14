@@ -12,6 +12,7 @@ import {
 } from "react-router-dom";
 import { resetScrollLock } from "./utils/scrollLock";
 import { AuthProvider } from "./context/AuthContext";
+import { ActionFeedbackProvider } from "./context/ActionFeedbackContext";
 import { CatalogProvider } from "./context/CatalogContext";
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
@@ -193,22 +194,24 @@ function App() {
 
   return (
     <AuthProvider>
-      <CatalogProvider>
-        <CartProvider>
-          <FavoritesProvider>
-            <BrowsingHistoryProvider>
-              <UserDataProvider>
-                <Router>
-                  <ScrollToTop />
-                  <div className="app">
-                    <AppRoutes />
-                  </div>
-                </Router>
-              </UserDataProvider>
-            </BrowsingHistoryProvider>
-          </FavoritesProvider>
-        </CartProvider>
-      </CatalogProvider>
+      <ActionFeedbackProvider>
+        <CatalogProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <BrowsingHistoryProvider>
+                <UserDataProvider>
+                  <Router>
+                    <ScrollToTop />
+                    <div className="app">
+                      <AppRoutes />
+                    </div>
+                  </Router>
+                </UserDataProvider>
+              </BrowsingHistoryProvider>
+            </FavoritesProvider>
+          </CartProvider>
+        </CatalogProvider>
+      </ActionFeedbackProvider>
     </AuthProvider>
   );
 }

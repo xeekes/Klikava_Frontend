@@ -2,6 +2,10 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
+import {
+  digitsOnly,
+  formatCardNumberInput,
+} from "../../../utils/inputFormatters";
 import { schemas } from "../../../utils/validation";
 import FormField from "../../FormField/FormField";
 import "./CheckoutCardForm.scss";
@@ -17,20 +21,6 @@ const getBillingDisplay = (lines) => {
     street: lines[0].replace(/,\s*$/, ""),
     rest: lines.slice(1).join(" "),
   };
-};
-
-/**
- * Удаляет нецифровые символы и ограничивает длину ввода для полей карты.
- */
-const digitsOnly = (value, maxLength) =>
-  value.replace(/\D/g, "").slice(0, maxLength);
-
-/**
- * Группирует цифры карты в четверки с пробелами для отображения в поле ввода.
- */
-const formatCardNumber = (value) => {
-  const digits = digitsOnly(value, 19);
-  return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
 };
 
 /**
@@ -82,13 +72,14 @@ const CheckoutCardForm = ({
               getError("cardNumber") ? "form-field__control--invalid" : ""
             }`.trim()}
             value={cardNumber}
-            onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+            onChange={(e) => setCardNumber(formatCardNumberInput(e.target.value))}
             onBlur={() =>
               handleBlur({ cardNumber, month, year, cvv }, "cardNumber")
             }
             inputMode="numeric"
             autoComplete="cc-number"
             placeholder="0000 0000 0000 0000"
+            maxLength={19}
           />
         </div>
       </FormField>

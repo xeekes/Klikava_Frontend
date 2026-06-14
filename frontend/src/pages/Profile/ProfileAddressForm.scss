@@ -66,6 +66,11 @@
         font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
+        transition: opacity var(--motion-fast) ease;
+
+        &:hover {
+          opacity: 0.88;
+        }
       }
 
       .profile-address-form__save {
@@ -77,6 +82,11 @@
         font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
+        transition: background var(--motion-fast) ease;
+
+        &:hover {
+          background: $light-gray;
+        }
       }
     }
   }
