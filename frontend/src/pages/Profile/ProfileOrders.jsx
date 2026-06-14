@@ -1,13 +1,15 @@
-/* История заказов с вкладками по статусу; данные из localStorage UserDataContext. */
-import { useSearchParams } from "react-router-dom";
+/* История заказов с вкладками по статусу; данные из API или localStorage. */
+import { useMemo } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import ProfileOrderCard from "../../components/Profile/ProfileOrderCard/ProfileOrderCard";
+import { useCatalog } from "../../context/CatalogContext";
 import { useUserData } from "../../context/UserDataContext";
 import { ORDER_TABS } from "../../constants/profile";
 import {
   filterOrdersByTabFromList,
   getOrderActions,
+  withOrderCoverImage,
 } from "../../utils/orderHelpers";
-import { Link } from "react-router-dom";
 import "../../styles/profile-page.scss";
 import "./ProfileOrders.scss";
 
@@ -18,7 +20,13 @@ const ProfileOrders = () => {
   const [searchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "all";
   const { orders } = useUserData();
-  const visibleOrders = filterOrdersByTabFromList(orders, activeTab);
+  const { products } = useCatalog();
+  const ordersWithImages = useMemo(
+    () =>
+      orders.map((order) => withOrderCoverImage(order, { catalogProducts: products })),
+    [orders, products],
+  );
+  const visibleOrders = filterOrdersByTabFromList(ordersWithImages, activeTab);
   const actions = getOrderActions(activeTab);
   return (
     <section className="profile-page profile-orders">

@@ -14,7 +14,7 @@ const FALLBACK_IMAGES = [bagImage, phoneImage, carImage];
  * @param {number} index
  * @returns {string}
  */
-const pickImage = (item, index) => {
+export const pickImage = (item, index) => {
   const pictures =
     item?.pictures ||
     item?.current_version?.pictures ||
@@ -29,7 +29,8 @@ const pickImage = (item, index) => {
   if (typeof url === "string" && url.length > 0) {
     return url.startsWith("http") ? url : url;
   }
-  return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
+  const seed = Number(item?.id ?? item?.product_id ?? index) || index;
+  return FALLBACK_IMAGES[Math.abs(seed) % FALLBACK_IMAGES.length];
 };
 
 /**
@@ -37,7 +38,7 @@ const pickImage = (item, index) => {
  * @param {object} item
  * @returns {string}
  */
-const pickTitle = (item) =>
+export const pickTitle = (item) =>
   item?.title ||
   item?.current_version?.title ||
   item?.versions?.[0]?.title ||
@@ -124,6 +125,14 @@ export const mapBackendCategory = (category) => ({
  * @param {Map<number|string, object>} [categoryLookup]
  * @returns {object}
  */
+const pickFirstVariantId = (item) => {
+  const variant =
+    item?.variants?.[0] ||
+    item?.current_version?.variants?.[0] ||
+    item?.versions?.[0]?.variants?.[0];
+  return variant?.id ?? null;
+};
+
 export const mapBackendProduct = (
   item,
   index = 0,
@@ -149,10 +158,19 @@ export const mapBackendProduct = (
     categoryId: category ? String(category.id) : "all",
     categoryName: category?.name || "Catalog",
     subcategory: category?.name || "General",
-    topCategoryId: "all",
-    isTop: index < 12,
-    sold: Number(item?.sold ?? item?.stock ?? 100 + index * 3),
-    rating: Number(item?.rating ?? 4.2),
+    topCategoryId: category ? String(category.id) : "all",
+    isTop: Boolean(item?.is_top ?? item?.is_popular ?? false),
+    variantId: pickFirstVariantId(item),
+    sold:
+      item?.sold !== undefined && item?.sold !== null
+        ? Number(item.sold)
+        : undefined,
+    rating:
+      item?.rating !== undefined && item?.rating !== null
+        ? Number(item.rating)
+        : item?.average_rating !== undefined
+          ? Number(item.average_rating)
+          : undefined,
     backendRaw: item,
   };
 };
@@ -173,7 +191,8 @@ export const mapBackendProductList = (items = [], categoryLookup = new Map()) =>
  */
 export const mapBackendReview = (review) => ({
   id: review.id,
-  author: `User ${review.user_id ?? ""}`.trim(),
+  userId: review.user_id ?? null,
+  author: review.author_name || `User ${review.user_id ?? ""}`.trim(),
   rating: Number(review.rating) || 0,
   text: review.comment || "",
   date: review.created_at,

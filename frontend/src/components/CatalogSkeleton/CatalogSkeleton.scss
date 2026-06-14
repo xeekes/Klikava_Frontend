@@ -1,0 +1,59 @@
+@use "../../styles/variables" as *;
+
+.loading-skeleton {
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba($light-light-gray, 0.65) 0%,
+    rgba($white, 0.95) 50%,
+    rgba($light-light-gray, 0.65) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.catalog-fade-in {
+  animation: fade-in var(--motion-base) var(--motion-ease-out);
+}
+
+.catalog-skeleton__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: $white;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.08);
+
+  &.catalog-skeleton__card--rounded {
+    border-radius: 1.25rem;
+  }
+}
+
+.catalog-skeleton__card-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+}
+
+.catalog-skeleton__card-line {
+  height: 0.85rem;
+  border-radius: 999px;
+
+  &--short {
+    width: 45%;
+  }
+}
+
+.catalog-skeleton__bubble {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+
+  &--gray {
+    opacity: 0.55;
+  }
+
+  &--white {
+    opacity: 0.9;
+  }
+}

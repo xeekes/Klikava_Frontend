@@ -1,13 +1,17 @@
 /* Форма профиля, синхронизируемая с API пользователей при наличии. */
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { hasApiBaseUrl } from "../../api/client";
+import { picturesApi } from "../../api/pictures";
+import { usersApi } from "../../api/users";
+import { mapAuthUserToPersonalInfo } from "../../api/mapUserData";
 import { getSellerPanelLoginUrl } from "../../constants/panel";
 import { useAuth } from "../../context/AuthContext";
 import { useUserData } from "../../context/UserDataContext";
 import { useFormValidation } from "../../hooks/useFormValidation";
 import { schemas } from "../../utils/validation";
 import FormField from "../../components/FormField/FormField";
-import { Filter, Upload } from "../../iconComponents";
+import { Filter, Upload, User } from "../../iconComponents";
 import "../../styles/profile-page.scss";
 import "./ProfilePersonalInfo.scss";
 const FIELDS = [
@@ -27,7 +31,10 @@ const FIELDS = [
 const ProfilePersonalInfo = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { personalInfo, savePersonalInfo } = useUserData();
+  const { personalInfo, savePersonalInfo, deleteAccount } = useUserData();
+  const fileInputRef = useRef(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [avatarLoadError, setAvatarLoadError] = useState(false);
   const [form, setForm] = useState({
     ...personalInfo,
     email: user?.emailOrPhone?.includes("@")
@@ -36,6 +43,12 @@ const ProfilePersonalInfo = () => {
     firstName: user?.displayName || personalInfo.firstName,
   });
   const [saved, setSaved] = useState(false);
+  const showAvatar = Boolean(form.avatar) && !avatarLoadError;
+
+  useEffect(() => {
+    setAvatarLoadError(false);
+  }, [form.avatar]);
+
   const { getError, validateAll, handleBlur } = useFormValidation(
     schemas.personalInfo,
   );
@@ -68,9 +81,39 @@ const ProfilePersonalInfo = () => {
   };
 
   /**
-   * Выходит из аккаунта и перенаправляет на главную витрины после удаления учётной записи.
+   * Загружает новый аватар на бэкенд и обновляет превью в форме.
+   * @param {import("react").ChangeEvent<HTMLInputElement>} event
+   */
+  const handleAvatarUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file || !user?.id || !hasApiBaseUrl()) {
+      return;
+    }
+    setIsUploadingAvatar(true);
+    try {
+      await picturesApi.uploadUserAvatar(user.id, file);
+      const profileUser = await usersApi.getUser(user.id);
+      const nextAvatar = mapAuthUserToPersonalInfo(profileUser, form).avatar;
+      setForm((prev) => ({ ...prev, avatar: nextAvatar }));
+      await savePersonalInfo({ ...form, avatar: nextAvatar });
+    } finally {
+      setIsUploadingAvatar(false);
+      event.target.value = "";
+    }
+  };
+
+  /**
+   * Выходит из аккаунта и перенаправляет на главную после удаления учётной записи.
    */
   const handleDeleteAccount = async () => {
+    if (
+      !window.confirm(
+        "Delete your account permanently? This action cannot be undone.",
+      )
+    ) {
+      return;
+    }
+    await deleteAccount();
     await logout();
     navigate("/");
   };
@@ -89,22 +132,35 @@ const ProfilePersonalInfo = () => {
           <div className="profile-personal-info__grid">
             <div className="profile-personal-info__avatar-block">
               <div className="profile-personal-info__avatar-wrap">
-                {form.avatar ? (
+                {showAvatar ? (
                   <img
                     className="profile-personal-info__avatar"
                     src={form.avatar}
                     alt=""
+                    onError={() => setAvatarLoadError(true)}
                   />
                 ) : (
                   <div
                     className="profile-personal-info__avatar profile-personal-info__avatar--placeholder"
                     aria-hidden="true"
-                  />
+                  >
+                    <User className="profile-personal-info__avatar-icon" />
+                  </div>
                 )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="profile-personal-info__avatar-input"
+                  onChange={handleAvatarUpload}
+                  hidden
+                />
                 <button
                   type="button"
                   className="profile-personal-info__avatar-upload"
                   aria-label="Upload profile photo"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingAvatar}
                 >
                   <Upload
                     className="profile-personal-info__upload-icon"

@@ -2,7 +2,7 @@
   .profile-layout__grid {
     display: flex;
     gap: 5rem;
-    align-items: stretch;
+    align-items: flex-start;
 
     .profile-layout__content {
       flex: 1;

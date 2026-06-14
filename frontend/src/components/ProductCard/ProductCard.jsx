@@ -12,7 +12,7 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
   const { addItem } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
   const { id, title, price, image, originalPrice, discountPercent } = product;
-  const sold = product.sold ?? 422;
+  const sold = product.sold;
   const favorite = isFavorite(id);
   const hasDiscount =
     typeof discountPercent === "number" &&
@@ -59,7 +59,7 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
             <p className="product-card__price-old">{originalPrice} $</p>
           ) : null}
         </div>
-        {showAddToBasket ? (
+        {showAddToBasket && sold != null ? (
           <p className="product-card__sold-count">{sold} sold</p>
         ) : null}
       </div>
@@ -108,7 +108,11 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
         <h3 className="product-card__title">{title}</h3>
         {summary}
         <div className="product-card__actions-row">
-          <p className="product-card__sold-count">{sold} sold</p>
+          {sold != null ? (
+            <p className="product-card__sold-count">{sold} sold</p>
+          ) : (
+            <span />
+          )}
           <div className="product-card__add-to-cart">
             <button
               type="button"

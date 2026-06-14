@@ -1,6 +1,7 @@
 /* Форма входа; отправка через AuthContext.login. */
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { hasApiBaseUrl } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 import { useAuthModal } from "../../hooks/useAuthModal";
 import { useFormValidation } from "../../hooks/useFormValidation";
@@ -18,6 +19,7 @@ const LoginForm = () => {
   const location = useLocation();
   const { openAuth, closeAuth } = useAuthModal();
   const { login, loginWithGoogle, isSubmitting, error, clearError } = useAuth();
+  const usesApi = hasApiBaseUrl();
   const successMessage = location.state?.message || "";
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -100,23 +102,27 @@ const LoginForm = () => {
           >
             Create an account
           </button>
+          {!usesApi ? (
+            <button
+              type="button"
+              className="auth-form__link"
+              onClick={() => openAuth("/forgot-password")}
+            >
+              Forgot password?
+            </button>
+          ) : null}
+        </div>
+        {!usesApi ? (
           <button
             type="button"
-            className="auth-form__link"
-            onClick={() => openAuth("/forgot-password")}
+            className="auth-form__google"
+            onClick={handleGoogleLogin}
+            disabled={isSubmitting}
           >
-            Forgot password?
+            <Google className="auth-form__google-icon" />
+            Continue with Google
           </button>
-        </div>
-        <button
-          type="button"
-          className="auth-form__google"
-          onClick={handleGoogleLogin}
-          disabled={isSubmitting}
-        >
-          <Google className="auth-form__google-icon" />
-          Continue with Google
-        </button>
+        ) : null}
       </form>
     </AuthCard>
   );

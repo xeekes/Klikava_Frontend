@@ -2,7 +2,9 @@
 
 .profile-sidebar {
   flex: 0 0 382px;
-  align-self: stretch;
+  align-self: flex-start;
+  position: sticky;
+  top: 5.5rem;
   display: flex;
   flex-direction: column;
   background: $white;
@@ -12,7 +14,6 @@
   width: 100%;
 
   .profile-sidebar__nav {
-    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 0.625rem;
@@ -46,7 +47,14 @@
     }
 
     .profile-sidebar__link--logout {
-      margin-top: auto;
+      margin-top: 0;
     }
+  }
+}
+
+@media (max-width: 1100px) {
+  .profile-sidebar {
+    position: static;
+    max-width: none;
   }
 }

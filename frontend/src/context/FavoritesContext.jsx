@@ -168,7 +168,7 @@ export const FavoritesProvider = ({ children }) => {
         .filter(Boolean)
         .map((product) => ({
           ...product,
-          sold: product.sold ?? 422,
+          sold: product.sold,
           recentLowestPrice: product.recentLowestPrice ?? product.price,
           rating: Math.round(product.rating ?? 5),
         })),

@@ -2,7 +2,7 @@
 
 /**
  * Нормализует позиции заказа из массива products или legacy-списка images.
- * @param {{ products?: Array<object>, images?: string[], id?: string, productTitle?: string, productId?: string }|null|undefined} order
+ * @param {{ products?: Array<object>, images?: string[], image?: string, id?: string, productTitle?: string, productId?: string }|null|undefined} order
  * @returns {Array<object>}
  */
 export const getOrderProducts = (order) => {
@@ -12,12 +12,87 @@ export const getOrderProducts = (order) => {
   if (order.products?.length) {
     return order.products;
   }
-  return (order.images || []).map((image, index) => ({
-    id: `${order.id}-item-${index}`,
-    title: order.productTitle || "Product",
-    image,
-    productId: order.productId,
-  }));
+  const legacyImage = order.image || order.images?.find(Boolean);
+  if (!legacyImage) {
+    return [];
+  }
+  return [
+    {
+      id: `${order.id}-item-0`,
+      title: order.productTitle || "Product",
+      image: legacyImage,
+      productId: order.productId,
+    },
+  ];
+};
+
+/**
+ * Возвращает картинку первого товара в заказе.
+ * @param {{ products?: Array<object>, images?: string[], image?: string, productId?: string }|null|undefined} order
+ * @param {Array<{ id: string|number, image?: string }>} [catalogProducts]
+ * @param {Array<{ productId: string|number, image?: string }>} [cartItems]
+ * @returns {string|null}
+ */
+export const getOrderCoverImage = (
+  order,
+  catalogProducts = [],
+  cartItems = [],
+) => {
+  if (!order) {
+    return null;
+  }
+  if (order.image) {
+    return order.image;
+  }
+  const products = getOrderProducts(order);
+  const firstItem = products[0];
+  if (firstItem?.image) {
+    return firstItem.image;
+  }
+  const legacyImage = order.images?.find(Boolean);
+  if (legacyImage) {
+    return legacyImage;
+  }
+  const productId = firstItem?.productId ?? order.productId;
+  if (productId) {
+    const catalogImage = catalogProducts.find(
+      (product) => String(product.id) === String(productId),
+    )?.image;
+    if (catalogImage) {
+      return catalogImage;
+    }
+    const cartImage = cartItems.find(
+      (item) => String(item.productId) === String(productId),
+    )?.image;
+    if (cartImage) {
+      return cartImage;
+    }
+  }
+  const variantId = firstItem?.variantId;
+  if (variantId) {
+    const variantImage = catalogProducts.find(
+      (product) => String(product.variantId) === String(variantId),
+    )?.image;
+    if (variantImage) {
+      return variantImage;
+    }
+  }
+  return cartItems[0]?.image ?? null;
+};
+
+/**
+ * Добавляет на заказ поле image с обложкой первого товара.
+ * @param {object} order
+ * @param {{ catalogProducts?: Array<object>, cartItems?: Array<object> }} [options]
+ * @returns {object}
+ */
+export const withOrderCoverImage = (order, options = {}) => {
+  const image = getOrderCoverImage(
+    order,
+    options.catalogProducts,
+    options.cartItems,
+  );
+  return image ? { ...order, image } : order;
 };
 
 /**
@@ -53,7 +128,7 @@ export const filterOrdersByTabFromList = (orders, tab) => {
  * @returns {object|undefined}
  */
 export const getOrderByIdFromList = (orders, orderId) =>
-  orders.find((order) => order.id === orderId);
+  orders.find((order) => String(order.id) === String(orderId));
 
 /**
  * Возвращает id кнопок действий, доступных для заказов на вкладке с данным статусом.

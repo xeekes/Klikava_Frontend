@@ -13,8 +13,7 @@ import {
 import { catalogApi } from "../api/catalogApi";
 import { hasApiBaseUrl } from "../api/client";
 import { applyCatalogDiscounts } from "../api/mapCatalogItem";
-import { createCatalogHelpers } from "../utils/catalogHelpers";
-import { useAuth } from "./AuthContext";
+import { createCatalogHelpers, buildDetailTabs } from "../utils/catalogHelpers";
 
 /** React-контекст для состояния списка товаров и хелперов поиска. */
 const CatalogContext = createContext(null);
@@ -24,16 +23,15 @@ const CatalogContext = createContext(null);
  * @param {{ children: import("react").ReactNode }} props
  */
 export const CatalogProvider = ({ children }) => {
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [discounts, setDiscounts] = useState([]);
   const [source, setSource] = useState("empty");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(() => hasApiBaseUrl());
   const [error, setError] = useState(null);
 
   /**
-   * Загружает товары и, при авторизации, категории и скидки из API.
+   * Загружает товары, категории и скидки из публичного API витрины.
    */
   const loadCatalog = useCallback(async () => {
     if (!hasApiBaseUrl()) {
@@ -47,20 +45,23 @@ export const CatalogProvider = ({ children }) => {
     setIsLoading(true);
     setError(null);
     try {
-      /* Категории и скидки на бэкенде требуют auth; товары — публичны. */
-      const loadedCategories = isAuthenticated
-        ? await catalogApi.listCategories()
-        : [];
-      const rawProducts = await catalogApi.listAllProducts();
-      let mappedProducts = catalogApi.mapProducts(
-        rawProducts,
-        loadedCategories,
-      );
-      let loadedDiscounts = [];
-      if (isAuthenticated) {
-        loadedDiscounts = await catalogApi.listAllDiscounts();
-        mappedProducts = applyCatalogDiscounts(mappedProducts, loadedDiscounts);
-      }
+      const [loadedCategories, rawProducts, loadedDiscounts, popularIds] =
+        await Promise.all([
+          catalogApi.listCategories(),
+          catalogApi.listAllProducts(),
+          catalogApi.listAllDiscounts(),
+          catalogApi.listPopularProductIds({ perPage: 12 }),
+        ]);
+      const mappedProducts = applyCatalogDiscounts(
+        catalogApi.mapProducts(rawProducts, loadedCategories),
+        loadedDiscounts,
+      ).map((product) => ({
+        ...product,
+        isTop:
+          popularIds.has(Number(product.id)) ||
+          popularIds.has(product.id) ||
+          product.isTop,
+      }));
       setCategories(loadedCategories);
       setProducts(mappedProducts);
       setDiscounts(loadedDiscounts);
@@ -75,17 +76,11 @@ export const CatalogProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated]);
+  }, []);
 
-  /**
-   * Перезагружает данные каталога после завершения bootstrap авторизации.
-   */
   useEffect(() => {
-    if (isAuthLoading) {
-      return;
-    }
     loadCatalog();
-  }, [isAuthLoading, loadCatalog]);
+  }, [loadCatalog]);
 
   const helpers = useMemo(
     () => createCatalogHelpers(products, categories),
@@ -113,9 +108,15 @@ export const CatalogProvider = ({ children }) => {
         return {
           ...base,
           ...detailed,
-          images: base.images?.length ? base.images : [detailed.image],
-          colors: base.colors,
-          tabs: base.tabs,
+          images: detailed.images?.length
+            ? detailed.images
+            : base.images?.length
+              ? base.images
+              : detailed.image
+                ? [detailed.image]
+                : [],
+          colors: detailed.colors?.length ? detailed.colors : base.colors || [],
+          tabs: buildDetailTabs(detailed.shipping ?? base.shipping),
           sold: detailed.sold ?? base.sold,
           recentLowestPrice: detailed.originalPrice ?? base.recentLowestPrice,
         };
@@ -127,6 +128,37 @@ export const CatalogProvider = ({ children }) => {
     [categories, helpers],
   );
 
+  /**
+   * Ищет товары через API и возвращает нормализованный список.
+   * @param {string} query
+   * @param {{ scope?: string, categoryId?: string, topCategoryId?: string }} [scope]
+   * @returns {Promise<Array<object>>}
+   */
+  const searchProductsRemote = useCallback(
+    async (query, scope = {}) => {
+      if (!hasApiBaseUrl() || !query.trim()) {
+        return helpers.searchProducts(query, scope);
+      }
+      const rawItems = await catalogApi.searchProducts(query, {
+        categoryId:
+          scope.categoryId ||
+          (scope.topCategoryId && scope.topCategoryId !== "all"
+            ? scope.topCategoryId
+            : null),
+        hasDiscount: scope.scope === "discounts" ? true : null,
+      });
+      let mapped = applyCatalogDiscounts(
+        catalogApi.mapProducts(rawItems, categories),
+        discounts,
+      );
+      if (scope.scope === "top") {
+        mapped = mapped.filter((product) => product.isTop);
+      }
+      return mapped;
+    },
+    [categories, discounts, helpers],
+  );
+
   const value = useMemo(
     () => ({
       ...helpers,
@@ -134,9 +166,11 @@ export const CatalogProvider = ({ children }) => {
       discounts,
       source,
       isLoading,
+      isFetchingCatalog: hasApiBaseUrl() && isLoading,
       error,
       reloadCatalog: loadCatalog,
       fetchProductDetail,
+      searchProductsRemote,
       usesApi: source === "api",
       getSearchSuggestions: (query, options = {}) =>
         helpers.getSearchSuggestions(query, {
@@ -153,6 +187,7 @@ export const CatalogProvider = ({ children }) => {
       error,
       loadCatalog,
       fetchProductDetail,
+      searchProductsRemote,
     ],
   );
 

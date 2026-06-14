@@ -9,6 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useCatalog } from "./CatalogContext";
 import { readStorage, STORAGE_KEYS, writeStorage } from "../utils/storage";
 
 /** React-контекст для недавно просмотренных товаров и обработчиков отслеживания. */
@@ -50,10 +51,32 @@ const groupProductsByDate = (entries) => {
 };
 
 /**
+ * Подмешивает актуальные данные каталога (в т.ч. image) в снимок товара из истории.
+ * @param {object} snapshot
+ * @param {Array<object>} catalogProducts
+ * @returns {object}
+ */
+const mergeWithCatalogProduct = (snapshot, catalogProducts) => {
+  const catalogProduct = catalogProducts.find(
+    (item) => String(item.id) === String(snapshot.id),
+  );
+  if (!catalogProduct) {
+    return snapshot;
+  }
+  return {
+    ...catalogProduct,
+    title: snapshot.title || catalogProduct.title,
+    price: snapshot.price ?? catalogProduct.price,
+    sold: snapshot.sold ?? catalogProduct.sold,
+  };
+};
+
+/**
  * Предоставляет сгруппированную историю просмотров и отслеживание дереву компонентов.
  * @param {{ children: import("react").ReactNode }} props
  */
 export const BrowsingHistoryProvider = ({ children }) => {
+  const { products: catalogProducts } = useCatalog();
   const [entries, setEntries] = useState(() =>
     readStorage(STORAGE_KEYS.browsingHistory, []),
   );
@@ -82,7 +105,7 @@ export const BrowsingHistoryProvider = ({ children }) => {
             title: product.title,
             price: product.price,
             image: product.image,
-            sold: product.sold ?? 0,
+            sold: product.sold,
           },
         },
         ...prev.filter((entry) => entry.product.id !== product.id),
@@ -90,7 +113,13 @@ export const BrowsingHistoryProvider = ({ children }) => {
     );
   }, []);
 
-  const groups = useMemo(() => groupProductsByDate(entries), [entries]);
+  const groups = useMemo(() => {
+    const enrichedEntries = entries.map((entry) => ({
+      ...entry,
+      product: mergeWithCatalogProduct(entry.product, catalogProducts),
+    }));
+    return groupProductsByDate(enrichedEntries);
+  }, [entries, catalogProducts]);
 
   const value = useMemo(
     () => ({

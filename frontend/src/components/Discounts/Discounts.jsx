@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Discounts.scss";
 import ProductCard from "../ProductCard/ProductCard";
+import { ProductCardSkeleton } from "../CatalogSkeleton/CatalogSkeleton";
 import SeeMoreButton from "../SeeMoreButton/SeeMoreButton";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { SliderArrowLeft, SliderArrowRight } from "../../iconComponents";
@@ -9,6 +10,7 @@ import "swiper/css";
 import { useCatalog } from "../../context/CatalogContext";
 
 const DISCOUNTS_PREVIEW_COUNT = 12;
+const DISCOUNTS_SKELETON_COUNT = 4;
 const SPACE_BETWEEN = 20;
 const MIN_SLIDE_WIDTH = 280;
 
@@ -16,7 +18,8 @@ const MIN_SLIDE_WIDTH = 280;
  * Карусель товаров со скидкой на главной с адаптивными элементами постраничной навигации.
  */
 const Discounts = ({ className = "" }) => {
-  const { getDiscountProducts } = useCatalog();
+  const { getDiscountProducts, isFetchingCatalog } = useCatalog();
+  const showSkeleton = isFetchingCatalog;
   const discountProducts = useMemo(
     () => getDiscountProducts(),
     [getDiscountProducts],
@@ -30,6 +33,12 @@ const Discounts = ({ className = "" }) => {
     () => discountProducts.slice(0, DISCOUNTS_PREVIEW_COUNT),
     [discountProducts],
   );
+  const sliderItems = showSkeleton
+    ? Array.from({ length: DISCOUNTS_SKELETON_COUNT }, (_, index) => ({
+        id: `discount-skeleton-${index}`,
+        skeleton: true,
+      }))
+    : previewProducts;
   const hasMoreDiscounts = discountProducts.length > DISCOUNTS_PREVIEW_COUNT;
   /**
    * Определяет, сколько слайдов помещается при текущей ширине viewport.
@@ -42,18 +51,18 @@ const Discounts = ({ className = "" }) => {
       const fitCount = Math.floor(
         (width + SPACE_BETWEEN) / (MIN_SLIDE_WIDTH + SPACE_BETWEEN),
       );
-      return Math.max(1, Math.min(fitCount, previewProducts.length));
+      return Math.max(1, Math.min(fitCount, sliderItems.length));
     },
-    [previewProducts.length],
+    [sliderItems.length],
   );
   /**
    * Вычисляет общее число точек пager из количества слайдов и видимых слайдов.
    */
   const getPageCount = useCallback(
     (perView) => {
-      return Math.max(1, Math.ceil(previewProducts.length / perView));
+      return Math.max(1, Math.ceil(sliderItems.length / perView));
     },
-    [previewProducts.length],
+    [sliderItems.length],
   );
   /**
    * Синхронизирует параметры Swiper, число страниц и активную точку с разметкой.
@@ -153,7 +162,9 @@ const Discounts = ({ className = "" }) => {
           <SliderArrowLeft aria-hidden="true" />
         </button>
         <Swiper
-          className="discounts__slider"
+          className={`discounts__slider ${
+            showSkeleton ? "" : "catalog-fade-in"
+          }`.trim()}
           slidesPerView={slidesPerView}
           slidesPerGroup={slidesPerView}
           spaceBetween={SPACE_BETWEEN}
@@ -167,9 +178,13 @@ const Discounts = ({ className = "" }) => {
           onSlideChange={updateSliderState}
           onTransitionEnd={updateSliderState}
         >
-          {previewProducts.map((product) => (
-            <SwiperSlide key={product.id} className="discounts__slide">
-              <ProductCard product={product} rounded />
+          {sliderItems.map((item) => (
+            <SwiperSlide key={item.id} className="discounts__slide">
+              {item.skeleton ? (
+                <ProductCardSkeleton rounded />
+              ) : (
+                <ProductCard product={item} rounded />
+              )}
             </SwiperSlide>
           ))}
         </Swiper>
@@ -182,7 +197,7 @@ const Discounts = ({ className = "" }) => {
           <SliderArrowRight aria-hidden="true" />
         </button>
       </div>
-      {pageCount > 1 ? (
+      {!showSkeleton && pageCount > 1 ? (
         <div
           className="discounts__pagination"
           role="tablist"
@@ -205,7 +220,7 @@ const Discounts = ({ className = "" }) => {
           ))}
         </div>
       ) : null}
-      {hasMoreDiscounts ? (
+      {!showSkeleton && hasMoreDiscounts ? (
         <SeeMoreButton
           to="/discounts"
           wrapClassName="discounts__see-more-wrap"

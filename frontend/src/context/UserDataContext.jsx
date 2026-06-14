@@ -1,6 +1,6 @@
 /*
  * Данные профиля: гибридное хранение — адреса/карты/личные данные из API при наличии,
- * заказы/отзывы/чат/купоны всегда в localStorage на пользователя.
+ * заказы из API при наличии; отзывы/чат/купоны в localStorage на пользователя.
  */
 import {
   createContext,
@@ -19,6 +19,8 @@ import {
   mapAuthUserToPersonalInfo,
   mapPersonalInfoToUserUpdate,
 } from "../api/mapUserData";
+import { ordersApi } from "../api/orders";
+import { withOrderCoverImage } from "../utils/orderHelpers";
 import { usersApi } from "../api/users";
 import {
   getUserStorageKey,
@@ -177,12 +179,12 @@ export const UserDataProvider = ({ children }) => {
       try {
         if (usesApi) {
           await loadRemoteProfileData(userId, user);
-          const localExtras = loadLocalUserData(userId);
+          const remoteOrders = await ordersApi.listOrders();
           if (!cancelled) {
-            setOrders(localExtras.orders);
-            setFeedback(localExtras.feedback);
-            setChatMessages(localExtras.chatMessages);
-            setActiveCoupon(localExtras.activeCoupon);
+            setOrders(remoteOrders);
+            setFeedback(loadLocalUserData(userId).feedback);
+            setChatMessages(loadLocalUserData(userId).chatMessages);
+            setActiveCoupon(loadLocalUserData(userId).activeCoupon);
           }
         } else {
           const data = loadLocalUserData(userId);
@@ -252,9 +254,9 @@ export const UserDataProvider = ({ children }) => {
    * Сохраняет историю заказов в localStorage пользователя.
    */
   useEffect(() => {
-    if (!canPersistLocalExtras) return;
+    if (!canPersistLocalExtras || usesApi) return;
     writeStorage(getUserStorageKey(STORAGE_KEYS.orders, userId), orders);
-  }, [orders, userId, canPersistLocalExtras]);
+  }, [orders, userId, canPersistLocalExtras, usesApi]);
 
   /**
    * Сохраняет отзывы о товарах в localStorage пользователя.
@@ -445,14 +447,55 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Добавляет снимок завершённого заказа в начало локальной истории.
-   * @param {object} order
-   * @returns {object}
+   * Создаёт заказ через API или добавляет локальную запись.
+   * @param {object|Array<object>} orderOrCartItems
+   * @param {{ deliveryPrice?: number, discountItemId?: number|null, localSnapshot?: object }} [options]
+   * @returns {Promise<object>}
    */
-  const addOrder = useCallback((order) => {
-    setOrders((prev) => [order, ...prev]);
-    return order;
-  }, []);
+  const addOrder = useCallback(
+    async (orderOrCartItems, options = {}) => {
+      if (usesApi && Array.isArray(orderOrCartItems)) {
+        const created = await ordersApi.createOrder(orderOrCartItems, {
+          deliveryPrice: options.deliveryPrice,
+          discountItemId: options.discountItemId,
+        });
+        const withImages = withOrderCoverImage(created, {
+          cartItems: orderOrCartItems,
+        });
+        setOrders((prev) => [withImages, ...prev]);
+        return withImages;
+      }
+      const order = Array.isArray(orderOrCartItems)
+        ? options.localSnapshot
+        : orderOrCartItems;
+      setOrders((prev) => [order, ...prev]);
+      return order;
+    },
+    [usesApi],
+  );
+
+  /**
+   * Перезагружает заказы с бэкенда.
+   * @returns {Promise<Array<object>>}
+   */
+  const reloadOrders = useCallback(async () => {
+    if (!usesApi) {
+      return orders;
+    }
+    const remoteOrders = await ordersApi.listOrders();
+    setOrders(remoteOrders);
+    return remoteOrders;
+  }, [orders, usesApi]);
+
+  /**
+   * Удаляет аккаунт на бэкенде и очищает локальные данные пользователя.
+   * @returns {Promise<void>}
+   */
+  const deleteAccount = useCallback(async () => {
+    if (usesApi && userId) {
+      await usersApi.deleteUser(userId);
+    }
+  }, [usesApi, userId]);
 
   /**
    * Добавляет новый отзыв о товаре с сгенерированным id.
@@ -545,6 +588,8 @@ export const UserDataProvider = ({ children }) => {
       updateCard,
       deleteCard,
       addOrder,
+      reloadOrders,
+      deleteAccount,
       addFeedback,
       updateFeedback,
       deleteFeedback,
@@ -571,6 +616,8 @@ export const UserDataProvider = ({ children }) => {
       updateCard,
       deleteCard,
       addOrder,
+      reloadOrders,
+      deleteAccount,
       addFeedback,
       updateFeedback,
       deleteFeedback,

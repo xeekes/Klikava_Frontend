@@ -5,13 +5,15 @@ import "swiper/css";
 import "./HeroSection.scss";
 import { ArrowRight, Sale } from "../../iconComponents";
 import OfferBubble from "../OfferBubble/OfferBubble";
+import { OfferBubbleSkeleton } from "../CatalogSkeleton/CatalogSkeleton";
 import { useCatalog } from "../../context/CatalogContext";
 
 /**
  * Hero-баннер главной страницы со ссылками CTA и каруселью недельных предложений.
  */
 const HeroSection = ({ className = "" }) => {
-  const { getDiscountProducts } = useCatalog();
+  const { getDiscountProducts, isFetchingCatalog } = useCatalog();
+  const showSkeleton = isFetchingCatalog;
   const offers = getDiscountProducts().slice(0, 5);
   return (
     <section className={`hero-section ${className}`.trim()}>
@@ -37,7 +39,9 @@ const HeroSection = ({ className = "" }) => {
             <ArrowRight className="arrow-right" />
           </Link>
           <Swiper
-            className="offers offers--slider"
+            className={`offers offers--slider ${
+              showSkeleton ? "" : "catalog-fade-in"
+            }`.trim()}
             slidesPerView={1}
             spaceBetween={20}
             loop={false}
@@ -62,18 +66,24 @@ const HeroSection = ({ className = "" }) => {
               },
             }}
           >
-            {offers.map((product) => (
-              <SwiperSlide key={product.id} className="offers__slide">
-                <OfferBubble
-                  image={product.image}
-                  alt={product.title}
-                  price={`${product.price}$`}
-                  background="gray"
-                  productId={product.id}
-                  to={`/product/${product.id}`}
-                />
-              </SwiperSlide>
-            ))}
+            {showSkeleton
+              ? Array.from({ length: 5 }, (_, index) => (
+                  <SwiperSlide key={`hero-skeleton-${index}`} className="offers__slide">
+                    <OfferBubbleSkeleton background="gray" />
+                  </SwiperSlide>
+                ))
+              : offers.map((product) => (
+                  <SwiperSlide key={product.id} className="offers__slide">
+                    <OfferBubble
+                      image={product.image}
+                      alt={product.title}
+                      price={`${product.price}$`}
+                      background="gray"
+                      productId={product.id}
+                      to={`/product/${product.id}`}
+                    />
+                  </SwiperSlide>
+                ))}
           </Swiper>
         </div>
       </div>

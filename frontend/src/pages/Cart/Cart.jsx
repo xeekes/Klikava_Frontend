@@ -1,9 +1,11 @@
 /* Страница корзины: позиции, управление количеством, ссылка на оформление. */
+import { useMemo } from "react";
 import { createPortal } from "react-dom";
 import CartItem from "../../components/CartItem/CartItem";
 import CartSidebar from "../../components/CartSidebar/CartSidebar";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
 import { useAuth } from "../../context/AuthContext";
+import { useBrowsingHistory } from "../../context/BrowsingHistoryContext";
 import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../context/CatalogContext";
 import "./Cart.scss";
@@ -12,11 +14,38 @@ import "./Cart.scss";
  * Корзина с позициями, боковой панелью итогов и рекомендациями.
  */
 const Cart = () => {
-  const { products } = useCatalog();
-  const browsingHistoryProducts = products.slice(6, 12);
-  const selectedForYouProducts = products.slice(0, 6);
+  const { products, getTopProducts } = useCatalog();
+  const { groups } = useBrowsingHistory();
+  const browsingHistoryProducts = useMemo(
+    () => groups.flatMap((group) => group.products).slice(0, 6),
+    [groups],
+  );
+  const selectedForYouProducts = getTopProducts("all").slice(0, 6);
   const { isAuthenticated } = useAuth();
   const { items, isEmpty, isLoading, updateQuantity, removeItem } = useCart();
+  const displayItems = useMemo(
+    () =>
+      items.map((item) => {
+        const catalogProduct = products.find(
+          (product) => String(product.id) === String(item.productId),
+        );
+        if (!catalogProduct) {
+          return item;
+        }
+        return {
+          ...item,
+          title: item.title || catalogProduct.title,
+          image: catalogProduct.image || item.image,
+          price: item.price ?? catalogProduct.price,
+          originalPrice: item.originalPrice ?? catalogProduct.originalPrice,
+          discountPercent:
+            item.discountPercent ?? catalogProduct.discountPercent,
+          sold: item.sold ?? catalogProduct.sold,
+          rating: item.rating ?? catalogProduct.rating,
+        };
+      }),
+    [items, products],
+  );
 
   /**
    * Рендерит сетки истории просмотров или «подобрано для вас» в зависимости от состояния авторизации.
@@ -25,15 +54,17 @@ const Cart = () => {
     if (isAuthenticated) {
       return (
         <>
-          <div className="cart-page__product-section">
-            <h2 className="cart-page__section-heading">BROWSING HISTORY</h2>
-            <ProductGrid
-              columns={3}
-              products={browsingHistoryProducts}
-              showSeeMore={false}
-              rounded
-            />
-          </div>
+          {browsingHistoryProducts.length > 0 ? (
+            <div className="cart-page__product-section">
+              <h2 className="cart-page__section-heading">BROWSING HISTORY</h2>
+              <ProductGrid
+                columns={3}
+                products={browsingHistoryProducts}
+                showSeeMore={false}
+                rounded
+              />
+            </div>
+          ) : null}
           <div className="cart-page__product-section">
             <h2 className="cart-page__section-heading">SELECTED FOR YOU</h2>
             <ProductGrid
@@ -57,6 +88,7 @@ const Cart = () => {
       </div>
     );
   };
+
   return (
     <div className="cart-page">
       <div className="cart-page__layout">
@@ -79,7 +111,7 @@ const Cart = () => {
                 </div>
               ) : (
                 <ul className="cart-page__items">
-                  {items.map((item) => (
+                  {displayItems.map((item) => (
                     <li key={item.productId}>
                       <CartItem
                         item={item}

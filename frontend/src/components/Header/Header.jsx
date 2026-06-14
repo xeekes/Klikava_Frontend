@@ -3,7 +3,7 @@
  * Настройки языка/валюты только для UI (хранятся локально, не отправляются в API).
  */
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "./Header.scss";
 import { Cart, Logo, SliderArrowLeft } from "../../iconComponents";
 import SiteSearch from "../SiteSearch/SiteSearch";
@@ -101,12 +101,11 @@ const Header = () => {
       }
     };
   }, []);
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      lockScroll();
-    } else {
-      unlockScroll();
+  useLayoutEffect(() => {
+    if (!isMobileMenuOpen) {
+      return undefined;
     }
+    lockScroll();
     return () => {
       unlockScroll();
     };

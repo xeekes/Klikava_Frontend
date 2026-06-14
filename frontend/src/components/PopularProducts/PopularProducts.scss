@@ -40,7 +40,7 @@
     }
   }
 
-  .products {
+  .products--grid {
     display: grid;
     grid-template-columns: 1.15fr 1fr 1fr;
     align-items: center;
@@ -67,6 +67,28 @@
     .offer-bubble__badges {
       top: 10%;
       right: 10%;
+    }
+  }
+
+  .products--slider {
+    width: 100%;
+    overflow: hidden;
+
+    .swiper-wrapper {
+      padding-right: 1rem;
+    }
+
+    .products__slide {
+      display: flex;
+      justify-content: center;
+      height: auto;
+      padding-top: 1.25rem;
+    }
+
+    .offer-bubble {
+      width: 100%;
+      max-width: 288px;
+      margin: 0 auto;
     }
   }
 }

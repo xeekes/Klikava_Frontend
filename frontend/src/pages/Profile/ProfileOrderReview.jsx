@@ -118,7 +118,9 @@ const ProfileOrderReview = () => {
                   const raw = await catalogApi.getProductByIdOrSlug(
                     product.productId,
                   );
-                  const variantId = raw?.current_version?.variants?.[0]?.id;
+                  const variantId =
+                    product.variantId ||
+                    raw?.current_version?.variants?.[0]?.id;
                   if (variantId) {
                     await catalogApi.createReview(product.productId, {
                       product_variant_id: variantId,

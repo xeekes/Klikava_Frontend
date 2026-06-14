@@ -30,17 +30,59 @@ export const catalogApi = {
 
   /**
    * Загружает одну страницу сырых товаров и метаданные пагинации сервера.
-   * @param {{ page?: number, perPage?: number }} [params]
+   * @param {{ page?: number, perPage?: number, q?: string|null, categoryId?: string|number|null, sortBy?: string|null, sortDir?: string|null, hasDiscount?: boolean|null }} [params]
    * @returns {Promise<{ items: Array<object>, pagination: object|null }>}
    */
-  async listProductsPage({ page = 1, perPage = 100 } = {}) {
-    const payload = await apiRequest(
-      `/products?per_page=${perPage}&page=${page}`,
-    );
+  async listProductsPage({
+    page = 1,
+    perPage = 100,
+    q = null,
+    categoryId = null,
+    sortBy = null,
+    sortDir = null,
+    hasDiscount = null,
+  } = {}) {
+    const params = new URLSearchParams({
+      page: String(page),
+      per_page: String(perPage),
+    });
+    if (q) {
+      params.set("q", q);
+    }
+    if (categoryId) {
+      params.set("category_id", String(categoryId));
+    }
+    if (sortBy) {
+      params.set("sort_by", sortBy);
+    }
+    if (sortDir) {
+      params.set("sort_dir", sortDir);
+    }
+    if (hasDiscount !== null && hasDiscount !== undefined) {
+      params.set("has_discount", String(hasDiscount));
+    }
+    const payload = await apiRequest(`/products?${params.toString()}`);
     return {
       items: getListItems(payload),
       pagination: payload?.pagination || null,
     };
+  },
+
+  /**
+   * Загружает id популярных товаров для блоков top/popular.
+   * @param {{ perPage?: number }} [params]
+   * @returns {Promise<Set<string|number>>}
+   */
+  async listPopularProductIds({ perPage = 12 } = {}) {
+    const { items } = await this.listProductsPage({
+      page: 1,
+      perPage,
+      sortBy: "popularity",
+      sortDir: "desc",
+    });
+    return new Set(
+      items.map((item) => item?.id ?? item?.product_id).filter(Boolean),
+    );
   },
 
   /**
@@ -69,19 +111,17 @@ export const catalogApi = {
   },
 
   /**
-   * Ищет товары по строке запроса с опциональной пагинацией.
+   * Ищет товары через GET /products?q=...
    * @param {string} query
-   * @param {{ page?: number, perPage?: number }} [params]
+   * @param {{ page?: number, perPage?: number, categoryId?: string|number|null, hasDiscount?: boolean|null }} [params]
    * @returns {Promise<Array<object>>}
    */
-  async searchProducts(query, { page = 1, perPage = 100 } = {}) {
-    const params = new URLSearchParams({
+  async searchProducts(query, params = {}) {
+    const { items } = await this.listProductsPage({
       q: query,
-      page: String(page),
-      per_page: String(perPage),
+      ...params,
     });
-    const payload = await apiRequest(`/products/search?${params.toString()}`);
-    return getListItems(payload);
+    return items;
   },
 
   /**
@@ -138,9 +178,40 @@ export const catalogApi = {
    * @returns {Promise<object>}
    */
   async createReview(productId, body) {
-    return apiRequest(`/products/${productId}/reviews`, {
+    const payload = await apiRequest(`/products/${productId}/reviews`, {
       method: "POST",
       body,
+    });
+    return mapBackendReview(payload);
+  },
+
+  /**
+   * Обновляет отзыв текущего пользователя.
+   * @param {string|number} productId
+   * @param {string|number} reviewId
+   * @param {object} body
+   * @returns {Promise<object>}
+   */
+  async updateReview(productId, reviewId, body) {
+    const payload = await apiRequest(
+      `/products/${productId}/reviews/${reviewId}`,
+      {
+        method: "PATCH",
+        body,
+      },
+    );
+    return mapBackendReview(payload);
+  },
+
+  /**
+   * Удаляет отзыв текущего пользователя.
+   * @param {string|number} productId
+   * @param {string|number} reviewId
+   * @returns {Promise<unknown>}
+   */
+  async deleteReview(productId, reviewId) {
+    return apiRequest(`/products/${productId}/reviews/${reviewId}`, {
+      method: "DELETE",
     });
   },
 
