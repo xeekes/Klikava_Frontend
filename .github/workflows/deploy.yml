@@ -13,7 +13,8 @@ jobs:
       - name: Deploy storefront
         run: |
           set -e
-          cd ~/Klikava_Frontend/frontend
+          cd ~/Klikava_Frontend
           git pull origin main
+          cd frontend
           docker compose up -d --build
           docker image prune -f
