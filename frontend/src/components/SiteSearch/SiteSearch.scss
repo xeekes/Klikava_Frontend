@@ -7,11 +7,14 @@
   .site-search__form {
     display: flex;
     align-items: center;
+    gap: 0.5rem;
   }
 
   .site-search__input {
     flex: 1;
     min-width: 0;
+    min-height: 44px;
+    box-sizing: border-box;
     border: 0;
     background: none;
     outline: none;
@@ -29,6 +32,9 @@
   }
 
   .site-search__submit {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
     background: none;
     display: grid;
     place-items: center;
@@ -208,6 +214,18 @@
   &.site-search--header {
     min-width: 18rem;
 
+    .site-search__input {
+      min-height: 44px;
+      padding: 0;
+      line-height: 1.25;
+    }
+
+    .site-search__submit {
+      width: 44px;
+      height: 44px;
+      margin-right: -0.35rem;
+    }
+
     .site-search__dropdown {
       min-width: 22rem;
       z-index: 1;
@@ -231,7 +249,8 @@
 
     .site-search__input {
       font-size: 1.05rem;
-      padding: 0.85rem 0;
+      min-height: 44px;
+      padding: 0.625rem 0;
     }
 
     .site-search__submit {
