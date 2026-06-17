@@ -884,13 +884,15 @@
           }
 
           .product-detail__thumbs-slide {
+            width: 4.75rem;
             height: auto;
+            flex-shrink: 0;
           }
 
           .product-detail__thumb {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 76 / 61;
+            width: 4.75rem;
+            max-width: 4.75rem;
+            height: 3.8125rem;
             border-radius: 1rem;
           }
         }

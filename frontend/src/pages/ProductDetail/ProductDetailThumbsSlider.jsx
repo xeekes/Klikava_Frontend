@@ -3,7 +3,6 @@ import { useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
-const THUMB_SLIDES_PER_VIEW = 4;
 const THUMB_AUTOPLAY_DELAY = 2800;
 
 /**
@@ -18,7 +17,6 @@ const ProductDetailThumbsSlider = ({
   onSelect,
 }) => {
   const swiperRef = useRef(null);
-  const slidesPerView = Math.min(THUMB_SLIDES_PER_VIEW, images.length);
   const canAutoplay = images.length > 1;
 
   /**
@@ -51,7 +49,7 @@ const ProductDetailThumbsSlider = ({
         key={productId}
         className="product-detail__thumbs-swiper"
         modules={[Autoplay]}
-        slidesPerView={slidesPerView}
+        slidesPerView="auto"
         spaceBetween={8}
         loop={false}
         rewind={canAutoplay}

@@ -79,6 +79,7 @@ const Cart = () => {
     }
     return (
       <div className="cart-page__product-section">
+        <h2 className="cart-page__section-heading">You may also like</h2>
         <ProductGrid
           columns={3}
           products={selectedForYouProducts}

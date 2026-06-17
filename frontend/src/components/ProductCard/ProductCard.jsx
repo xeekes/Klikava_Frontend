@@ -7,13 +7,32 @@ import "./ProductCard.scss";
 import { Cart, Clock, Heart, Star } from "../../iconComponents";
 
 /**
+ * Returns sold count from the product or a stable placeholder between 100 and 999.
+ * @param {string|number|undefined} productId
+ * @param {number|string|null|undefined} sold
+ * @returns {number}
+ */
+const getDisplaySold = (productId, sold) => {
+  if (sold !== null && sold !== undefined && sold !== "") {
+    const parsed = Number(sold);
+    if (!Number.isNaN(parsed)) {
+      return parsed;
+    }
+  }
+  const seed = String(productId ?? "")
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return 100 + (seed % 900);
+};
+
+/**
  * Single product tile with price, favorites toggle and link to details.
  */
 const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
   const { addItem } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
   const { id, title, price, image, originalPrice, discountPercent, slug } = product;
-  const sold = product.sold;
+  const sold = getDisplaySold(id, product.sold);
   const favorite = isFavorite(id);
   const hasDiscount =
     typeof discountPercent === "number" &&
@@ -60,7 +79,7 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
             <p className="product-card__price-old">{originalPrice} $</p>
           ) : null}
         </div>
-        {showAddToBasket && sold != null ? (
+        {showAddToBasket ? (
           <p className="product-card__sold-count">{sold} sold</p>
         ) : null}
       </div>
@@ -110,11 +129,7 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
         <h3 className="product-card__title">{title}</h3>
         {summary}
         <div className="product-card__actions-row">
-          {sold != null ? (
-            <p className="product-card__sold-count">{sold} sold</p>
-          ) : (
-            <span />
-          )}
+          <span className="product-card__sold-count">{sold} sold</span>
           <div className="product-card__add-to-cart">
             <button
               type="button"
