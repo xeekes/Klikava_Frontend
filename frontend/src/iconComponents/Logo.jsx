@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/logo.svg";
 
 /**
- * Логотип бренда KLIKAVA для шапки и футера сайта.
+ * KLIKAVA brand logo for the header and footer of the site.
  * @param {object} props
  */
 const Logo = (props) => <IconMask src={icon} {...props} />;

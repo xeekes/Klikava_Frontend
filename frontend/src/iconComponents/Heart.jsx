@@ -1,5 +1,5 @@
 /**
- * Контур сердца для избранного и wishlist на карточках товаров.
+ * Heart outline for favorites and wishlist on product cards.
  * @param {object} props
  */
 const Heart = (props) => (

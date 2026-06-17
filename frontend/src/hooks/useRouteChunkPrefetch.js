@@ -1,6 +1,6 @@
 /*
- * Конфигурация C: после idle подгружает вероятные route-чанки в фоне.
- * Работает на любой странице витрины (через MainLayout), не только на Home.
+ * Configuration C: after idle, loads possible route chunks in the background.
+ * Works on any storefront page (via MainLayout), not only on Home.
  */
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -10,7 +10,7 @@ const IDLE_TIMEOUT_MS = 4000;
 const TIER2_DELAY_MS = 2500;
 
 /**
- * Планирует callback через requestIdleCallback или setTimeout.
+ * Schedules a callback via requestIdleCallback or setTimeout.
  * @param {() => void} callback
  * @returns {() => void}
  */
@@ -24,7 +24,7 @@ const scheduleIdle = (callback) => {
 };
 
 /**
- * После отрисовки текущей страницы префетчит чанки частых маршрутов.
+ * After rendering the current page, it prefetches chunks of frequent routes.
  */
 export const useRouteChunkPrefetch = () => {
   const { pathname } = useLocation();

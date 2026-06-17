@@ -1,7 +1,7 @@
-/* Вспомогательные функции нормализации данных карточки заказа для legacy- и новых форматов. */
+/* Auxiliary functions for normalizing order card data for legacy and new formats. */
 
 /**
- * Нормализует позиции заказа из массива products или legacy-списка images.
+ * Normalizes order items from the products array or the legacy images list.
  * @param {{ products?: Array<object>, images?: string[], image?: string, id?: string, productTitle?: string, productId?: string }|null|undefined} order
  * @returns {Array<object>}
  */
@@ -27,7 +27,7 @@ export const getOrderProducts = (order) => {
 };
 
 /**
- * Возвращает картинку первого товара в заказе.
+ * Returns an image of the first product in the order.
  * @param {{ products?: Array<object>, images?: string[], image?: string, productId?: string }|null|undefined} order
  * @param {Array<{ id: string|number, image?: string }>} [catalogProducts]
  * @param {Array<{ productId: string|number, image?: string }>} [cartItems]
@@ -81,7 +81,7 @@ export const getOrderCoverImage = (
 };
 
 /**
- * Добавляет на заказ поле image с обложкой первого товара.
+ * Adds an image field to the order with the cover of the first product.
  * @param {object} order
  * @param {{ catalogProducts?: Array<object>, cartItems?: Array<object> }} [options]
  * @returns {object}
@@ -96,7 +96,7 @@ export const withOrderCoverImage = (order, options = {}) => {
 };
 
 /**
- * Определяет id товара для действия «купить снова» на карточке заказа.
+ * Defines the product id for the “buy again” action on the order card.
  * @param {{ productId?: string, products?: Array<{ productId?: string }>, images?: string[] }|null|undefined} order
  * @returns {string|null}
  */
@@ -109,7 +109,7 @@ export const getBuyAgainProductId = (order) => {
 };
 
 /**
- * Фильтрует список заказов по статусу вкладки заказов профиля.
+ * Filters the list of orders by the status of the profile orders tab.
  * @param {Array<{ status: string }>} orders
  * @param {string} tab
  * @returns {Array<object>}
@@ -122,7 +122,7 @@ export const filterOrdersByTabFromList = (orders, tab) => {
 };
 
 /**
- * Находит один заказ в списке по id.
+ * Finds one order in the list by id.
  * @param {Array<{ id: string }>} orders
  * @param {string} orderId
  * @returns {object|undefined}
@@ -130,11 +130,11 @@ export const filterOrdersByTabFromList = (orders, tab) => {
 export const getOrderByIdFromList = (orders, orderId) =>
   orders.find((order) => String(order.id) === String(orderId));
 
-/** Статусы заказа, после которых бэкенд разрешает оставить отзыв. */
+/** Order statuses, after which the backend allows you to leave a review. */
 export const REVIEW_ELIGIBLE_ORDER_STATUSES = new Set(["delivered", "return"]);
 
 /**
- * Проверяет, есть ли в заказе товар с указанным productId или variantId.
+ * Checks whether the order contains a product with the specified productId or variantId.
  * @param {object} order
  * @param {string|number|null|undefined} productId
  * @param {string|number|null|undefined} variantId
@@ -162,7 +162,7 @@ export const orderContainsProduct = (order, productId, variantId) => {
 };
 
 /**
- * Находит доставленный заказ с товаром, по которому можно оставить отзыв.
+ * Finds a delivered order with a product for which you can leave a review.
  * @param {Array<object>} orders
  * @param {string|number|null|undefined} productId
  * @param {string|number|null|undefined} variantId
@@ -180,7 +180,7 @@ export const findEligibleReviewOrderForProduct = (
   );
 
 /**
- * Может ли пользователь оставить отзыв на товар со страницы товара.
+ * Can a user leave a review for a product from the product page.
  * @param {Array<object>} orders
  * @param {string|number|null|undefined} productId
  * @param {string|number|null|undefined} variantId
@@ -190,7 +190,7 @@ export const canUserReviewProduct = (orders, productId, variantId) =>
   Boolean(findEligibleReviewOrderForProduct(orders, productId, variantId));
 
 /**
- * Возвращает id кнопок действий, доступных для заказов на вкладке с данным статусом.
+ * Returns the id of action buttons available for orders on a tab with a given status.
  * @param {string} tab
  * @returns {Array<string>}
  */

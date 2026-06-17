@@ -1,4 +1,4 @@
-/* Swiper-лента миниатюр для мобильной галереи товара. */
+/* Swiper feed of thumbnails for a mobile product gallery. */
 import { useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
@@ -7,7 +7,7 @@ const THUMB_SLIDES_PER_VIEW = 4;
 const THUMB_AUTOPLAY_DELAY = 2800;
 
 /**
- * Мобильная swiper-лента миниатюр изображений товара.
+ * Mobile swiper feed of product image thumbnails.
  * @param {{ productId: string|number, images: string[], title: string, activeIndex: number, onSelect: (index: number) => void }} props
  */
 const ProductDetailThumbsSlider = ({
@@ -22,7 +22,7 @@ const ProductDetailThumbsSlider = ({
   const canAutoplay = images.length > 1;
 
   /**
-   * Перемещает swiper к указанному слайду, если он отличается от активного индекса.
+   * Moves swiper to the specified slide if it is different from the active index.
    * @param {number} index
    * @param {number} [speed]
    */
@@ -38,7 +38,7 @@ const ProductDetailThumbsSlider = ({
   }, [activeIndex]);
 
   /**
-   * Выбирает миниатюру и уведомляет родительскую галерею о новом индексе.
+   * Selects a thumbnail and notifies the parent gallery of the new index.
    * @param {number} index
    */
   const handleThumbClick = (index) => {

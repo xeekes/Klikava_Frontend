@@ -1,6 +1,6 @@
 /*
- * Корзина покупок: всегда сохраняется через cartApi (localStorage).
- * Показывает кратковременные toast-уведомления при добавлении или изменении товаров.
+ * Shopping cart: always saved via cartApi (localStorage).
+ * Shows short-term toast notifications when products are added or changed.
  */
 import {
   createContext,
@@ -13,18 +13,19 @@ import {
 } from "react";
 import { cartApi } from "../api/cart";
 
-/** React-контекст для сохранённых позиций корзины и обработчиков действий. */
+/** React context for saved cart items and action handlers. */
 const CartContext = createContext(null);
 const FEEDBACK_DURATION_MS = 6500;
 
 /**
- * Преобразует товар каталога и опции в форму строки корзины для хранения.
+ * Converts catalog item and options into cart line form for storage.
  * @param {object} product
  * @param {{ quantity?: number, color?: string|null }} [options]
  * @returns {object}
  */
 const normalizeItem = (product, options = {}) => ({
   productId: product.id,
+  slug: product.slug ?? null,
   title: product.title,
   price: Number(product.price),
   image: product.image,
@@ -38,7 +39,7 @@ const normalizeItem = (product, options = {}) => ({
 });
 
 /**
- * Предоставляет состояние корзины, сохранение и toast-уведомления дереву компонентов.
+ * Provides cart status, saves, and toast notifications to the component tree.
  * @param {{ children: import("react").ReactNode }} props
  */
 export const CartProvider = ({ children }) => {
@@ -47,7 +48,7 @@ export const CartProvider = ({ children }) => {
   const [cartFeedback, setCartFeedback] = useState(null);
   const feedbackTimerRef = useRef(null);
 
-  /** Сбрасывает отложенный таймер toast и скрывает активное уведомление корзины. */
+  /** Resets the toast snooze timer and hides the active trash notification. */
   const dismissCartFeedback = useCallback(() => {
     if (feedbackTimerRef.current) {
       clearTimeout(feedbackTimerRef.current);
@@ -57,7 +58,7 @@ export const CartProvider = ({ children }) => {
   }, []);
 
   /**
-   * Показывает кратковременный toast после добавления или изменения количества.
+   * Shows a brief toast after adding or changing quantities.
    * @param {object} payload
    */
   const showCartFeedback = useCallback(
@@ -77,11 +78,11 @@ export const CartProvider = ({ children }) => {
   );
 
   /**
-   * Загружает позиции из хранилища при монтировании и очищает таймеры уведомлений при размонтировании.
+   * Loads positions from storage when mounted and clears notification timers when unmounted.
    */
   useEffect(() => {
     /**
-     * Загружает сохранённые позиции и завершает начальное состояние загрузки.
+     * Loads saved positions and ends the initial loading state.
      */
     const loadCart = async () => {
       try {
@@ -102,7 +103,7 @@ export const CartProvider = ({ children }) => {
   }, []);
 
   /**
-   * Обновляет позиции в памяти и синхронизирует снимок с хранилищем.
+   * Updates positions in memory and synchronizes the snapshot with storage.
    * @param {object[]} nextItems
    */
   const persistItems = useCallback(async (nextItems) => {
@@ -111,7 +112,7 @@ export const CartProvider = ({ children }) => {
   }, []);
 
   /**
-   * Добавляет товар или увеличивает количество, если такой товар уже есть.
+   * Adds a product or increases the quantity if such a product already exists.
    * @param {object} product
    * @param {{ quantity?: number, color?: string|null }} [options]
    */
@@ -119,7 +120,7 @@ export const CartProvider = ({ children }) => {
     async (product, options) => {
       const entry = normalizeItem(product, options);
       const existing = items.find((item) => item.productId === entry.productId);
-      /* Обновлённый снимок корзины после слияния или добавления. */
+      /* Updated cart snapshot after merging or adding. */
       let nextItems;
       let action = "added";
       if (existing) {
@@ -155,7 +156,7 @@ export const CartProvider = ({ children }) => {
   );
 
   /**
-   * Устанавливает количество для позиции или удаляет её при нулевом или отрицательном значении.
+   * Sets the quantity for an item or removes it if the value is zero or negative.
    * @param {string|number} productId
    * @param {number} quantity
    */
@@ -177,7 +178,7 @@ export const CartProvider = ({ children }) => {
   );
 
   /**
-   * Удаляет одну позицию по id товара.
+   * Deletes one position by product id.
    * @param {string|number} productId
    */
   const removeItem = useCallback(
@@ -187,7 +188,7 @@ export const CartProvider = ({ children }) => {
     [items, persistItems],
   );
 
-  /** Очищает хранилище и сбрасывает позиции в памяти в пустой список. */
+  /** Clears storage and resets memory positions to an empty list. */
   const clearCart = useCallback(async () => {
     await cartApi.clearCart();
     setItems([]);
@@ -227,7 +228,7 @@ export const CartProvider = ({ children }) => {
 };
 
 /**
- * Читает состояние корзины и действия из ближайшего провайдера.
+ * Reads cart status and activities from the nearest provider.
  * @returns {object}
  */
 export const useCart = () => {

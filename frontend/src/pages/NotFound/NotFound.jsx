@@ -1,9 +1,9 @@
-/* Fallback 404 для неизвестных маршрутов внутри MainLayout. */
+/* Fallback 404 for unknown routes inside MainLayout. */
 import { Link } from "react-router-dom";
 import "./NotFound.scss";
 
 /**
- * Fallback UI для несовпадающих маршрутов приложения.
+ * Fallback UI for mismatched application routes.
  */
 const NotFound = () => (
   <section className="not-found">

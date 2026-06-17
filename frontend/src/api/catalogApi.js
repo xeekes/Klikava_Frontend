@@ -1,8 +1,10 @@
 /*
- * HTTP-клиент каталога: категории, товары, скидки, отзывы.
- * Сырые ответы преобразуются в модели UI через хелперы mapCatalogItem.
+ * Catalog HTTP client: categories, products, discounts, reviews.
+ * Raw responses are converted into UI models via mapCatalogItem helpers.
+ * Mock HTTP methods are loaded dynamically when VITE_API_BASE_URL is empty.
  */
 import { apiRequest } from "./client";
+import { createLazyMockApi } from "./createLazyMockApi";
 import { getListItems } from "./listUtils";
 import {
   mapBackendCategory,
@@ -12,12 +14,12 @@ import {
   mapVariantFeaturesToSpecs,
 } from "./mapCatalogItem";
 
-/* Ограничение клиентской пагинации при загрузке полного каталога. */
+/* Limiting client pagination when downloading a full catalog. */
 const MAX_PRODUCT_PAGES = 20;
 
-export const catalogApi = {
+const realCatalogApi = {
   /**
-   * Загружает страницу категорий и преобразует каждую запись в модель UI.
+   * Loads the category page and converts each entry into a UI model.
    * @param {{ page?: number, perPage?: number }} [params]
    * @returns {Promise<Array<object>>}
    */
@@ -29,7 +31,7 @@ export const catalogApi = {
   },
 
   /**
-   * Загружает справочник характеристик для подписей и порядка фильтров.
+   * Loads a reference book of characteristics for captions and filter order.
    * @param {{ page?: number, perPage?: number }} [params]
    * @returns {Promise<Array<{ id: string, title: string, isPrimary: boolean }>>}
    */
@@ -45,7 +47,7 @@ export const catalogApi = {
   },
 
   /**
-   * Загружает одну страницу сырых товаров и метаданные пагинации сервера.
+   * Loads one page of raw products and server pagination metadata.
    * @param {{ page?: number, perPage?: number, q?: string|null, categoryId?: string|number|null, sortBy?: string|null, sortDir?: string|null, hasDiscount?: boolean|null }} [params]
    * @returns {Promise<{ items: Array<object>, pagination: object|null }>}
    */
@@ -85,7 +87,7 @@ export const catalogApi = {
   },
 
   /**
-   * Загружает id популярных товаров для блоков top/popular.
+   * Loads the ids of popular products for the top/popular blocks.
    * @param {{ perPage?: number }} [params]
    * @returns {Promise<Set<string|number>>}
    */
@@ -102,7 +104,7 @@ export const catalogApi = {
   },
 
   /**
-   * Загружает все страницы товаров до MAX_PRODUCT_PAGES, следуя подсказкам пагинации.
+   * Loads all product pages up to MAX_PRODUCT_PAGES, following pagination hints.
    * @returns {Promise<Array<object>>}
    */
   async listAllProducts() {
@@ -127,7 +129,7 @@ export const catalogApi = {
   },
 
   /**
-   * Ищет товары через GET /products?q=...
+   * Searches for products via GET /products?q=...
    * @param {string} query
    * @param {{ page?: number, perPage?: number, categoryId?: string|number|null, hasDiscount?: boolean|null }} [params]
    * @returns {Promise<Array<object>>}
@@ -141,7 +143,7 @@ export const catalogApi = {
   },
 
   /**
-   * Получает один товар по числовому id или URL-slug (сырая форма бэкенда).
+   * Retrieves one product by numeric id or URL-slug (raw backend form).
    * @param {string|number} idOrSlug
    * @returns {Promise<object>}
    */
@@ -150,7 +152,7 @@ export const catalogApi = {
   },
 
   /**
-   * Загружает страницу правил скидок с бэкенда.
+   * Loads the discount rules page from the backend.
    * @param {{ page?: number, perPage?: number }} [params]
    * @returns {Promise<Array<object>>}
    */
@@ -162,7 +164,7 @@ export const catalogApi = {
   },
 
   /**
-   * Собирает страницы скидок, пока не вернётся короткая или пустая страница.
+   * Collects discount pages until a short or blank page is returned.
    * @returns {Promise<Array<object>>}
    */
   async listAllDiscounts() {
@@ -178,7 +180,7 @@ export const catalogApi = {
   },
 
   /**
-   * Загружает и преобразует все отзывы для указанного id товара.
+   * Loads and converts all reviews for the specified product id.
    * @param {string|number} productId
    * @returns {Promise<Array<object>>}
    */
@@ -188,7 +190,7 @@ export const catalogApi = {
   },
 
   /**
-   * Отправляет новый отзыв для указанного товара.
+   * Submits a new review for the specified product.
    * @param {string|number} productId
    * @param {object} body
    * @returns {Promise<object>}
@@ -202,7 +204,7 @@ export const catalogApi = {
   },
 
   /**
-   * Обновляет отзыв текущего пользователя.
+   * Updates the current user's review.
    * @param {string|number} productId
    * @param {string|number} reviewId
    * @param {object} body
@@ -220,7 +222,7 @@ export const catalogApi = {
   },
 
   /**
-   * Удаляет отзыв текущего пользователя.
+   * Removes the current user's review.
    * @param {string|number} productId
    * @param {string|number} reviewId
    * @returns {Promise<unknown>}
@@ -232,7 +234,7 @@ export const catalogApi = {
   },
 
   /**
-   * Собирает полное представление товара из сырых данных API, категорий и вложенных отзывов.
+   * Collects a complete product view from raw API data, categories and embedded reviews.
    * @param {object} raw
    * @param {Array<object>} [categories]
    * @param {number} [index]
@@ -269,7 +271,7 @@ export const catalogApi = {
   },
 
   /**
-   * Строит Map id категории бэкенда → преобразованная категория для быстрого поиска товаров.
+   * Builds Map id of backend category → converted category for quick product search.
    * @param {Array<object>} categories
    * @returns {Map<number|string, object>}
    */
@@ -280,7 +282,7 @@ export const catalogApi = {
   },
 
   /**
-   * Преобразует список сырых товаров с использованием переданного lookup категорий.
+   * Converts a list of raw products using the passed category lookup.
    * @param {Array<object>} items
    * @param {Array<object>} [categories]
    * @returns {Array<object>}
@@ -291,7 +293,7 @@ export const catalogApi = {
   },
 
   /**
-   * Преобразует одну сырую запись товара с опциональным контекстом категорий и индексом списка.
+   * Converts one raw product record with optional category context and list index.
    * @param {object} item
    * @param {Array<object>} [categories]
    * @param {number} [index]
@@ -302,3 +304,39 @@ export const catalogApi = {
     return mapBackendProduct(item, index, lookup);
   },
 };
+
+const CATALOG_HTTP_METHODS = [
+  "listCategories",
+  "listFeatures",
+  "listProductsPage",
+  "listPopularProductIds",
+  "listAllProducts",
+  "searchProducts",
+  "getProductByIdOrSlug",
+  "listDiscounts",
+  "listAllDiscounts",
+  "listProductReviews",
+  "createReview",
+  "updateReview",
+  "deleteReview",
+];
+
+const catalogTransforms = {
+  buildProductDetail: realCatalogApi.buildProductDetail.bind(realCatalogApi),
+  buildCategoryLookup: realCatalogApi.buildCategoryLookup.bind(realCatalogApi),
+  mapProducts: realCatalogApi.mapProducts.bind(realCatalogApi),
+  mapProduct: realCatalogApi.mapProduct.bind(realCatalogApi),
+};
+
+/**
+ * Catalog API facade: real backend with VITE_API_BASE_URL at build stage;
+ * otherwise - lazy mock HTTP methods plus shared DTO mappers.
+ */
+export const catalogApi = import.meta.env.VITE_API_BASE_URL
+  ? realCatalogApi
+  : {
+      ...catalogTransforms,
+      ...createLazyMockApi(CATALOG_HTTP_METHODS, () =>
+        import("./catalog.mock.js").then((module) => module.mockCatalogApi),
+      ),
+    };

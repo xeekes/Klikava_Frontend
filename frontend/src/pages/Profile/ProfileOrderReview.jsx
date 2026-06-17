@@ -1,4 +1,4 @@
-/* Отправка отзыва о товаре из доставленного заказа. */
+/* Sending a review of a product from a delivered order. */
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "../../iconComponents";
@@ -16,7 +16,7 @@ import "../../styles/profile-page.scss";
 import "./ProfileOrderFormPage.scss";
 
 /**
- * Создаёт пустые черновики отзывов для каждой позиции заказа.
+ * Creates empty draft reviews for each order item.
  * @param {Array<object>} products
  * @returns {Array<object>}
  */
@@ -28,7 +28,7 @@ const createInitialReviews = (products) =>
   }));
 
 /**
- * Поток отправки отзывов для каждого товара в доставленном заказе.
+ * Feedback flow for each product in a delivered order.
  */
 const ProfileOrderReview = () => {
   const { orderId } = useParams();
@@ -41,7 +41,7 @@ const ProfileOrderReview = () => {
   const [reviewErrors, setReviewErrors] = useState({});
 
   /**
-   * Объединяет частичные данные отзыва для одного товара и сбрасывает ошибки полей.
+   * Merges partial review data for one product and resets field errors.
    * @param {number} index
    * @param {object} patch
    */
@@ -61,7 +61,7 @@ const ProfileOrderReview = () => {
   };
 
   /**
-   * Проверяет рейтинг и текст черновика отзыва для одного товара.
+   * Checks the rating and draft review text for one product.
    * @param {number} index
    * @returns {boolean}
    */
@@ -131,7 +131,7 @@ const ProfileOrderReview = () => {
                     });
                   }
                 } catch {
-                  /* Сохраняем локальный отзыв, даже если отправка через API не удалась. */
+                  /* We save local feedback even if sending via API fails. */
                 }
               }
               addFeedback({

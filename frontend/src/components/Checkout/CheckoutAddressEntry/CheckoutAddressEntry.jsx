@@ -1,9 +1,9 @@
-/* Строка адреса только для чтения с действиями выбора/редактирования. */
+/* Read-only address bar with select/edit actions. */
 import FormField from "../../FormField/FormField";
 import "./CheckoutAddressEntry.scss";
 
 /**
- * Разделяет строки адреса на улицу и остаток для отображения.
+ * Separates address lines into street and rest for display.
  */
 const getAddressDisplay = (lines) => {
   if (!lines?.length) {
@@ -16,7 +16,7 @@ const getAddressDisplay = (lines) => {
 };
 
 /**
- * Строка адреса только для чтения с действиями выбора и редактирования при оформлении заказа.
+ * Read-only address bar with select and edit actions at checkout.
  */
 const CheckoutAddressEntry = ({
   address,

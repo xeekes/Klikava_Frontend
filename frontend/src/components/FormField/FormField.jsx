@@ -1,9 +1,9 @@
-/* Переиспользуемая обёртка поля с меткой и слотом ошибки для форм профиля. */
+/* Reusable field wrapper with label and error slot for profile forms. */
 import { useId } from "react";
 import "./FormField.scss";
 
 /**
- * Переиспользуемая обёртка поля с меткой и слотом ошибки для форм профиля.
+ * Reusable field wrapper with label and error slot for profile forms.
  */
 const FormField = ({
   label,

@@ -1,6 +1,6 @@
 /*
- * Доступная оболочка модального окна с блокировкой прокрутки и анимацией закрытия.
- * Экспортирует useModalClose, чтобы вложенные панели могли вызывать тот же поток закрытия.
+ * Accessible modal window wrapper with scroll lock and closing animation.
+ * Exports useModalClose so that nested panels can call the same closing flow.
  */
 import {
   createContext,
@@ -15,7 +15,7 @@ const CLOSE_DURATION_MS = 280;
 const ModalCloseContext = createContext(null);
 
 /**
- * Возвращает общий обработчик закрытия из ближайшего провайдера модального окна.
+ * Returns the generic close handler from the closest modal window provider.
  */
 export const useModalClose = () => {
   const close = useContext(ModalCloseContext);
@@ -23,7 +23,7 @@ export const useModalClose = () => {
 };
 
 /**
- * Доступная оболочка модального окна с блокировкой прокрутки и анимацией закрытия.
+ * Accessible modal window wrapper with scroll lock and closing animation.
  */
 const Modal = ({
   children,
@@ -34,7 +34,7 @@ const Modal = ({
 }) => {
   const [phase, setPhase] = useState("closed");
   /**
-   * Проигрывает анимацию закрытия, затем вызывает родительский callback onClose.
+   * Plays the closing animation, then calls the parent callback onClose.
    */
   const requestClose = useCallback(() => {
     setPhase("closing");

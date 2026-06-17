@@ -1,12 +1,12 @@
-/* Идентификаторы сценариев авторизации и ключи localStorage для сессии и верификации. */
+/* Authorization script identifiers and localStorage keys for session and verification. */
 
-/** Именованные режимы авторизации при регистрации и восстановлении пароля. */
+/** Named authorization modes for registration and password recovery. */
 export const AUTH_FLOW = {
   REGISTER: "register",
   RECOVER: "recover",
 };
 
-/** Ключи localStorage для токена авторизации и состояния верификации. */
+/** localStorage keys for authorization token and verification state. */
 export const AUTH_STORAGE_KEYS = {
   TOKEN: "auth_token",
   VERIFICATION_ID: "auth_verification_id",

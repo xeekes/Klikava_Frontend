@@ -1,6 +1,6 @@
 /*
- * Единые dynamic import для React.lazy и prefetch.
- * Строки import() должны совпадать, иначе Vite создаст отдельные чанки.
+ * Single dynamic imports for React.lazy and prefetch.
+ * The import() lines must match, otherwise Vite will create separate chunks.
  */
 
 export const loadCatalog = () => import("../pages/Catalog/Catalog");
@@ -67,7 +67,7 @@ export const loadSupportLandingPage = () =>
     default: module.SupportLandingPage,
   }));
 
-/** Высокий приоритет: пункты меню и частые переходы с любой страницы витрины. */
+/** High priority: menu items and frequent transitions from any page of the storefront. */
 export const PREFETCH_TIER1 = [
   { skip: (path) => path.startsWith("/top-products"), load: loadTopProductsPage },
   { skip: (path) => path === "/catalog" || path.startsWith("/catalog?"), load: loadCatalog },
@@ -75,7 +75,7 @@ export const PREFETCH_TIER1 = [
   { skip: (path) => path === "/cart", load: loadCart },
 ];
 
-/** Второй волной — после tier1, без profile/checkout. */
+/** The second wave - after tier1, without profile/checkout. */
 export const PREFETCH_TIER2 = [
   { skip: (path) => path.startsWith("/categories"), load: loadCategoriesPage },
   { skip: (path) => path.startsWith("/search"), load: loadSearchPage },
@@ -83,7 +83,7 @@ export const PREFETCH_TIER2 = [
 ];
 
 /**
- * Фоновая подгрузка чанков маршрутов, кроме текущего pathname.
+ * Background loading of route chunks, except for the current pathname.
  * @param {string} pathname
  * @param {{ tier?: 1 | 2 }} [options]
  */

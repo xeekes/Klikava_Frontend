@@ -1,9 +1,9 @@
-/* Обёртка поля формы авторизации с отображением ошибок валидации inline. */
+/* A wrapper for the authorization form field with inline validation errors displayed. */
 import { cloneElement, isValidElement, useId } from "react";
 import "./AuthFormField.scss";
 
 /**
- * Оборачивает поля авторизации в доступные метки и inline-ошибки валидации.
+ * Wraps authorization fields in accessible labels and inline validation errors.
  */
 const AuthFormField = ({ error, className = "", label, children }) => {
   const generatedId = useId();

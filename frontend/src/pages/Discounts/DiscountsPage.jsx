@@ -1,11 +1,11 @@
-/* Товары с активными скидками (требуется авторизованная загрузка каталога). */
+/* Products with active discounts (authorized catalog download required). */
 import CatalogListing from "../../components/CatalogListing/CatalogListing";
 import PageSearchHero from "../../components/PageSearchHero/PageSearchHero";
 import { useCatalog } from "../../context/CatalogContext";
 import "./DiscountsPage.scss";
 
 /**
- * Все товары с активным промо-ценообразованием.
+ * All products with active promotional pricing.
  */
 const DiscountsPage = () => {
   const { getDiscountProducts, POPULAR_SEARCHES } = useCatalog();
@@ -19,7 +19,7 @@ const DiscountsPage = () => {
         popularTerms={POPULAR_SEARCHES}
         searchScope={{ scope: "discounts" }}
       />
-      {/* Карусель Discounts с главной опущена — полный CatalogListing ниже покрывает страницу. */}
+      {/* The Discounts carousel from the main page is omitted - the full CatalogListing below covers the page. */}
       <CatalogListing
         title="All discounted products"
         subtitle="Catch the best deals before they are gone."

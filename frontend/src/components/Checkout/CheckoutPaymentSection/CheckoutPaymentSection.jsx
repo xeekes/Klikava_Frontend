@@ -1,10 +1,10 @@
-/* Выбор сохранённой карты и форма новой карты при оформлении заказа. */
+/* Select a saved card and form a new card when placing an order. */
 import CheckoutPaymentCard from "../CheckoutPaymentCard/CheckoutPaymentCard";
 import CheckoutCardForm from "../CheckoutCardForm/CheckoutCardForm";
 import "./CheckoutPaymentSection.scss";
 
 /**
- * Секция выбора сохранённой карты и формы новой карты при оформлении заказа.
+ * Section for selecting a saved card and a new card form when placing an order.
  */
 const CheckoutPaymentSection = ({
   cards,

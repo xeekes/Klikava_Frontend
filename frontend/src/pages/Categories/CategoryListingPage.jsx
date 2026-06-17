@@ -1,4 +1,4 @@
-/* Товары, отфильтрованные по :categoryId и необязательному параметру маршрута :subcategory. */
+/* Products filtered by :categoryId and optional route parameter :subcategory. */
 import { Navigate, useParams } from "react-router-dom";
 import CatalogListing from "../../components/CatalogListing/CatalogListing";
 import PageSearchHero from "../../components/PageSearchHero/PageSearchHero";
@@ -6,7 +6,7 @@ import { useCatalog } from "../../context/CatalogContext";
 import "./CategoryListingPage.scss";
 
 /**
- * Листинг товаров одной категории из параметров маршрута.
+ * Listing of products of one category from the route parameters.
  */
 const CategoryListingPage = () => {
   const { categories, getProductsByCategory } = useCatalog();
@@ -31,7 +31,7 @@ const CategoryListingPage = () => {
           categoryId: category.id,
         }}
       />
-      {/* TODO: вернуть навигацию, когда на бэке появятся нормальные сабкатегории.
+      {/* TODO: return navigation when normal subcategories appear on the backend.
       <div className="container category-listing-page__nav">
         <Link to="/categories" className="category-listing-page__back">
           All categories

@@ -1,12 +1,12 @@
 /*
- * Кодирование/декодирование сущностей профиля для бэкенда.
- * Адреса и карты сериализуются в одно поле API (обход ограниченной схемы).
+ * Encoding/decoding profile entities for the backend.
+ * Addresses and maps are serialized into a single API field (bypassing the restricted schema).
  */
 import { resolveMediaUrl } from "./client";
 const ADDRESS_META_PREFIX = "klikava_addr:";
 
 /**
- * Сериализует форму адреса доставки в поле бэкенда `address_line` с вложенными метаданными.
+ * Serializes the shipping address form into a backend `address_line` field with embedded metadata.
  * @param {object} form
  * @returns {{ address_line: string }}
  */
@@ -15,7 +15,7 @@ export const encodeAddressForm = (form) => ({
 });
 
 /**
- * Восстанавливает объект адреса UI из записи адреса доставки бэкенда.
+ * Restores the UI address object from the backend shipping address record.
  * @param {{ id: string|number, address_line?: string }} item
  * @returns {object}
  */
@@ -35,7 +35,7 @@ export const decodeAddressItem = (item) => {
         postalCode: form.postalCode || "",
       };
     } catch {
-      /* переход к запасному варианту с простой строкой */
+      /* fallback to simple string fallback */
     }
   }
   return {
@@ -51,7 +51,7 @@ export const decodeAddressItem = (item) => {
 };
 
 /**
- * Упаковывает поля отображения карты в поле API `card_info_encrypted`, разделённое через |.
+ * Packs the card display fields into an API field `card_info_encrypted`, separated by |.
  * @param {object} card
  * @returns {{ card_info_encrypted: string, order_in_list: number|null }}
  */
@@ -67,7 +67,7 @@ export const encodeCardPayload = (card) => ({
 });
 
 /**
- * Разбирает сохранённую запись карты в поля brand, expiry и label для UI.
+ * Parses the saved map record into the brand, expiry and label fields for the UI.
  * @param {{ id: string|number, card_info_encrypted?: string }} item
  * @returns {object}
  */
@@ -106,7 +106,7 @@ const readMediaValue = (value) => {
 };
 
 /**
- * Достаёт URL аватара пользователя из разных полей ответа API.
+ * Gets the user's avatar URL from various API response fields.
  * @param {object|null|undefined} user
  * @returns {string}
  */
@@ -136,7 +136,7 @@ export const pickUserAvatar = (user) => {
 };
 
 /**
- * URL эндпоинта аватара пользователя на API.
+ * URL of the user avatar endpoint on the API.
  * @param {string|number} userId
  * @returns {string}
  */
@@ -144,7 +144,7 @@ export const buildUserAvatarEndpoint = (userId) =>
   resolveMediaUrl(`/pictures/users/${userId}`);
 
 /**
- * Объединяет поля авторизованного пользователя в форму личных данных для UI профиля.
+ * Combines authorized user fields into a personal data form for the UI profile.
  * @param {object|null|undefined} user
  * @param {object} [current]
  * @returns {object}
@@ -167,7 +167,7 @@ export const mapAuthUserToPersonalInfo = (user, current = {}) => {
 };
 
 /**
- * Поля профиля, которые синхронизируются с API пользователя.
+ * Profile fields that sync with the user's API.
  */
 export const PERSONAL_INFO_API_FIELDS = new Set([
   "firstName",
@@ -184,7 +184,7 @@ export const isPersonalInfoApiField = (fieldId) =>
   PERSONAL_INFO_API_FIELDS.has(fieldId);
 
 /**
- * Формирует PATCH payload для одного поля личных данных.
+ * Generates a PATCH payload for one personal data field.
  * @param {string} fieldId
  * @param {object} info
  * @returns {object|null}
@@ -209,7 +209,7 @@ export const mapPersonalInfoFieldToUserUpdate = (fieldId, info) => {
 };
 
 /**
- * Формирует частичный payload обновления пользователя из значений формы личных данных.
+ * Generates a partial user update payload from the personal data form values.
  * @param {object} info
  * @returns {object}
  */
@@ -223,7 +223,7 @@ export const mapPersonalInfoToUserUpdate = (info) => {
 };
 
 /**
- * Определяет бренд и подпись карты по первым цифрам номера.
+ * Determines the brand and signature of the card by the first digits of the number.
  * @param {string} [cardNumber]
  * @returns {{ brand: string, label: string }}
  */
@@ -239,7 +239,7 @@ export const detectCardBrand = (cardNumber = "") => {
 };
 
 /**
- * Формирует сводку карты для хранения (бренд, последние 4 цифры, срок) из данных формы.
+ * Generates a storage card summary (brand, last 4 digits, expiration date) from form data.
  * @param {{ cardNumber: string, month: string, year: string }} params
  * @returns {object}
  */

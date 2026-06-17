@@ -1,4 +1,4 @@
-/* Недавно просмотренные товары, сгруппированные по дате. */
+/* Recently viewed items grouped by date. */
 import ProductCard from "../../components/ProductCard/ProductCard";
 import SeeMoreButton from "../../components/SeeMoreButton/SeeMoreButton";
 import { useBrowsingHistory } from "../../context/BrowsingHistoryContext";
@@ -7,7 +7,7 @@ import "../../styles/profile-page.scss";
 import "./ProfileBrowsingHistory.scss";
 
 /**
- * Рендерит одну группу недавно просмотренных товаров по дате с пагинацией.
+ * Renders one group of recently viewed products by date with pagination.
  * @param {{ group: { date: string, products: Array<object> } }} props
  */
 const BrowsingHistoryGroup = ({ group }) => {
@@ -39,7 +39,7 @@ const BrowsingHistoryGroup = ({ group }) => {
 };
 
 /**
- * Недавно просмотренные товары, сгруппированные по дате посещения.
+ * Recently viewed items grouped by date of visit.
  */
 const ProfileBrowsingHistory = () => {
   const { groups } = useBrowsingHistory();

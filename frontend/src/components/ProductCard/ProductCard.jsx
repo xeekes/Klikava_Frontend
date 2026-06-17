@@ -1,17 +1,18 @@
-/* Плитка одного товара: цена, переключатель избранного, ссылка на детали. */
+/* Single product tile: price, favorites switch, link to details. */
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useFavorites } from "../../context/FavoritesContext";
+import { getProductPath } from "../../utils/productPaths";
 import "./ProductCard.scss";
 import { Cart, Clock, Heart, Star } from "../../iconComponents";
 
 /**
- * Плитка одного товара с ценой, переключателем избранного и ссылкой на детали.
+ * Single product tile with price, favorites toggle and link to details.
  */
 const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
   const { addItem } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
-  const { id, title, price, image, originalPrice, discountPercent } = product;
+  const { id, title, price, image, originalPrice, discountPercent, slug } = product;
   const sold = product.sold;
   const favorite = isFavorite(id);
   const hasDiscount =
@@ -26,7 +27,7 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
     .filter(Boolean)
     .join(" ");
   /**
-   * Добавляет товар в корзину из варианта разметки с корзиной.
+   * Adds an item to the cart from the cart layout option.
    */
   const handleAddToBasket = (event) => {
     event.preventDefault();
@@ -34,7 +35,7 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
     addItem(product);
   };
   /**
-   * Переключает членство в избранном без перехода по ссылке карточки.
+   * Switches favorite membership without clicking the card link.
    */
   const handleToggleFavorite = (event) => {
     event.preventDefault();
@@ -42,7 +43,7 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
     toggleFavorite(id);
   };
   /**
-   * Добавляет товар в корзину из компактной строки действий.
+   * Adds an item to the cart from a compact action bar.
    */
   const handleQuickAdd = (event) => {
     event.preventDefault();
@@ -72,14 +73,15 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
       </span>
     </div>
   );
+  const productPath = getProductPath({ id, slug });
   if (showAddToBasket) {
     return (
       <article className={cardClassName}>
-        <Link to={`/product/${id}`} className="product-card__image-link">
+        <Link to={productPath} className="product-card__image-link">
           <img src={image} alt={title} className="product-card__image" />
         </Link>
         <div className="product-card__content">
-          <Link to={`/product/${id}`} className="product-card__title">
+          <Link to={productPath} className="product-card__title">
             {title}
           </Link>
           {summary}
@@ -95,7 +97,7 @@ const ProductCard = ({ product, rounded = false, showAddToBasket = false }) => {
     );
   }
   return (
-    <Link to={`/product/${id}`} className={cardClassName}>
+    <Link to={productPath} className={cardClassName}>
       <div className="product-card__image-wrap">
         <img src={image} alt={title} className="product-card__image" />
         {hasDiscount ? (

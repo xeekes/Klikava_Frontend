@@ -1,4 +1,4 @@
-/* Горизонтальный скроллер чипов/тегов для фильтров и подсказок. */
+/* Horizontal scroller of chips/tags for filters and tips. */
 import { Children } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper/modules";
@@ -6,7 +6,7 @@ import "swiper/css";
 import "./TagSlider.scss";
 
 /**
- * Горизонтальный скроллер чипов или тегов для фильтров и подсказок.
+ * Horizontal scroller of chips or tags for filters and tips.
  */
 const TagSlider = ({
   children,

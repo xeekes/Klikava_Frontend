@@ -1,4 +1,4 @@
-/* Форма адреса при оформлении заказа со схемой валидации. */
+/* Address form when placing an order with a validation scheme. */
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
 import { formatAddressFieldInput, MAX_PHONE_DIGITS } from "../../../utils/inputFormatters";
@@ -25,7 +25,7 @@ const FIELDS = [
 ];
 
 /**
- * Преобразует сущность сохранённого адреса в плоские значения полей формы.
+ * Converts the stored address entity into flat form field values.
  */
 const addressToFormValues = (address) => {
   if (!address) {
@@ -43,7 +43,7 @@ const addressToFormValues = (address) => {
 };
 
 /**
- * Форма адреса с валидацией для добавления или редактирования при оформлении заказа.
+ * Address form with validation for adding or editing when placing an order.
  */
 const CheckoutAddressForm = ({
   initialAddress = null,
@@ -57,14 +57,14 @@ const CheckoutAddressForm = ({
     schemas.address,
   );
   /**
-   * Возвращает обработчик изменения одного поля формы адреса.
+   * Returns a handler for changing one field of the address form.
    */
   const handleChange = (field) => (e) => {
     const nextValue = formatAddressFieldInput(field, e.target.value);
     setForm((prev) => ({ ...prev, [field]: nextValue }));
   };
   /**
-   * Проверяет форму и передаёт значения в родительский callback сохранения.
+   * Validates the form and passes values ​​to the parent save callback.
    */
   const handleSubmit = (e) => {
     e.preventDefault();

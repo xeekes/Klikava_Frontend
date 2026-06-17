@@ -1,6 +1,6 @@
 /*
- * Состояние каталога: загружает товары/категории/скидки из API при настройке.
- * Предоставляет хелперы поиска и fetchProductDetail для страницы товара.
+ * Catalog state: loads products/categories/discounts from the API during setup.
+ * Provides search and fetchProductDetail helpers for the product page.
  */
 import {
   createContext,
@@ -15,11 +15,11 @@ import { hasApiBaseUrl } from "../api/client";
 import { applyCatalogDiscounts } from "../api/mapCatalogItem";
 import { createCatalogHelpers, mergeProductDetailView } from "../utils/catalogHelpers";
 
-/** React-контекст для состояния списка товаров и хелперов поиска. */
+/** React context for the state of the product list and search helpers. */
 const CatalogContext = createContext(null);
 
 /**
- * Предоставляет данные каталога, хелперы поиска и загрузку деталей дереву компонентов.
+ * Provides catalog data, search helpers, and part loading to the component tree.
  * @param {{ children: import("react").ReactNode }} props
  */
 export const CatalogProvider = ({ children }) => {
@@ -32,7 +32,7 @@ export const CatalogProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   /**
-   * Загружает товары, категории и скидки из публичного API витрины.
+   * Loads products, categories and discounts from the public storefront API.
    */
   const loadCatalog = useCallback(async () => {
     if (!hasApiBaseUrl()) {
@@ -93,7 +93,7 @@ export const CatalogProvider = ({ children }) => {
   );
 
   /**
-   * Находит товар по id или slug, объединяя кэш списка с деталями из API.
+   * Finds a product by id or slug, combining the list cache with details from the API.
    * @param {string|number} idOrSlug
    * @returns {Promise<object|undefined>}
    */
@@ -124,7 +124,7 @@ export const CatalogProvider = ({ children }) => {
   );
 
   /**
-   * Ищет товары через API и возвращает нормализованный список.
+   * Searches for products via the API and returns a normalized list.
    * @param {string} query
    * @param {{ scope?: string, categoryId?: string, topCategoryId?: string }} [scope]
    * @returns {Promise<Array<object>>}
@@ -194,7 +194,7 @@ export const CatalogProvider = ({ children }) => {
 };
 
 /**
- * Читает состояние каталога и действия из ближайшего провайдера.
+ * Reads directory state and activities from the nearest provider.
  * @returns {object}
  */
 export const useCatalog = () => {

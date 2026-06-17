@@ -1,9 +1,9 @@
-/* UI чата поддержки; сообщения сохраняются локально для каждого пользователя. */
+/* Support chat UI; messages are saved locally for each user. */
 import ProfileChatPanel from "../../components/Profile/ProfileChatPanel/ProfileChatPanel";
 import "../../styles/profile-page.scss";
 
 /**
- * UI чата поддержки с локально сохранёнными сообщениями для каждого пользователя.
+ * Support chat UI with locally saved messages for each user.
  */
 const ProfileChat = () => (
   <section className="profile-page profile-chat">

@@ -1,6 +1,6 @@
 /*
- * Боковая панель итогов заказа: применяет стоимость доставки и активный купон, сохраняет заказ
- * через API или localStorage и очищает корзину при оформлении заказа.
+ * Order summary sidebar: applies shipping cost and active coupon, saves order
+ * via API or localStorage and clears the cart at checkout.
  */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import { DELIVERY_FEE } from "../../../constants/delivery";
 import "./CheckoutSummary.scss";
 
 /**
- * Боковая панель итогов заказа, сохраняющая заказ и очищающая корзину при оформлении.
+ * Order summary sidebar that saves the order and clears the cart at checkout.
  */
 const CheckoutSummary = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const CheckoutSummary = () => {
   const orderTotal = Math.max(total + deliveryTotal - couponDiscount, 0);
 
   /**
-   * Сохраняет заказ в API или localStorage, очищает корзину и купон, затем выполняет навигацию.
+   * Saves the order to API or localStorage, clears the cart and coupon, then navigates.
    */
   const handlePlaceOrder = async () => {
     setSubmitError("");

@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/arrow_forward2.svg";
 
 /**
- * Стрелка вперёд для ссылок на странице товара.
+ * Forward arrow for links on a product page.
  * @param {object} props
  */
 const ArrowForward = (props) => <IconMask src={icon} {...props} />;

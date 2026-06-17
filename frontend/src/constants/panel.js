@@ -1,11 +1,11 @@
-/* Ссылка на панель продавца (отдельное приложение, не часть этого SPA). */
+/* Link to seller panel (separate application, not part of this SPA). */
 
-/** Базовый URL страницы входа во внешнюю панель продавца (из env или localhost по умолчанию). */
+/** The base URL of the merchant's front-end login page (from env or localhost by default). */
 const SELLER_PANEL_BASE_URL =
   import.meta.env.VITE_SELLER_PANEL_URL || "http://localhost:3001/seller/login";
 
 /**
- * Формирует URL входа в панель продавца с origin витрины и опциональной подстановкой email.
+ * Generates the login URL to the seller panel with the origin of the storefront and an optional email substitution.
  * @param {string} [email]
  * @returns {string}
  */
@@ -27,5 +27,5 @@ export const getSellerPanelLoginUrl = (email) => {
   }
 };
 
-/** URL входа в панель продавца по умолчанию без query-параметров. */
+/** The default login URL to the seller panel without query parameters. */
 export const SELLER_PANEL_LOGIN_URL = SELLER_PANEL_BASE_URL;

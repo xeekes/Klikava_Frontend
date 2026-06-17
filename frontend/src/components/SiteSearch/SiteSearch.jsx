@@ -1,6 +1,6 @@
 /*
- * Глобальный комбобокс поиска: подсказки из CatalogContext, область задаётся пропом searchScope.
- * Используется в Header и на SearchPage; навигация с query-параметрами buildSearchUrl.
+ * Global search combobox: hints from the CatalogContext, the area is set by the searchScope prop.
+ * Used in Header and SearchPage; navigation with query parameters buildSearchUrl.
  */
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -9,10 +9,11 @@ import { useCatalog } from "../../context/CatalogContext";
 import { useMotionPresence } from "../../hooks/useMotionPresence";
 import TagSlider from "../TagSlider/TagSlider";
 import { buildSearchUrl } from "../../utils/searchScope";
+import { getProductPath } from "../../utils/productPaths";
 import "./SiteSearch.scss";
 
 /**
- * Глобальный комбобокс поиска с областью подсказок и навигацией.
+ * Global search combobox with hints area and navigation.
  */
 const SiteSearch = ({
   variant = "header",
@@ -67,7 +68,7 @@ const SiteSearch = ({
   const showDropdown = isOpen && (hasQuery ? hasResults : true);
   const dropdownMotion = useMotionPresence(showDropdown);
   /**
-   * Переходит к поиску в области или странице листинга для заданного запроса.
+   * Jumps to a search within an area or listing page for a given query.
    */
   const goToSearch = (value) => {
     const nextQuery = value.trim();
@@ -90,28 +91,28 @@ const SiteSearch = ({
     setIsOpen(false);
   };
   /**
-   * Отправляет текущее значение поля через маршрутизатор поиска в области.
+   * Sends the current value of a field through the scope's lookup router.
    */
   const handleSubmit = (event) => {
     event.preventDefault();
     goToSearch(query);
   };
   /**
-   * Обновляет запрос и открывает выпадающий список подсказок.
+   * Updates the query and opens a dropdown list of hints.
    */
   const handleInputChange = (event) => {
     setQuery(event.target.value);
     setIsOpen(true);
   };
   /**
-   * Заполняет поле популярным термином и выполняет поиск в области.
+   * Populates the field with a popular term and searches the area.
    */
   const handlePopularClick = (term) => {
     setQuery(term);
     goToSearch(term);
   };
   /**
-   * Формирует URL листинга категории с необязательным сегментом подкатегории.
+   * Generates a category listing URL with an optional subcategory segment.
    */
   const getCategoryLink = (category) => {
     if (category.subcategory) {
@@ -175,7 +176,7 @@ const SiteSearch = ({
                 {suggestions.products.map((product) => (
                   <li key={product.id}>
                     <Link
-                      to={`/product/${product.id}`}
+                      to={getProductPath(product)}
                       className="site-search__item site-search__item--product"
                       onClick={() => setIsOpen(false)}
                     >

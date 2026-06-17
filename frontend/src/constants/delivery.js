@@ -1,4 +1,4 @@
-/* Фиксированная стоимость доставки в итогах оформления (UAH). */
+/* Fixed delivery cost as a result of registration (UAH). */
 
-/** Фиксированная плата за доставку в итогах оформления заказа. */
+/** Fixed delivery fee upon checkout. */
 export const DELIVERY_FEE = 1;

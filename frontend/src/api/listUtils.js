@@ -1,5 +1,5 @@
 /**
- * Нормализует ответы списков бэкенда: массив или обёртка `{ items }`.
+ * Normalizes backend list responses: array or wrapper `{ items }`.
  * @param {Array<object>|{ items?: Array<object> }|null|undefined} payload
  * @returns {Array<object>}
  */

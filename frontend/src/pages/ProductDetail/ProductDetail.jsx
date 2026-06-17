@@ -1,6 +1,6 @@
 /*
- * Страница товара: загружает обогащённые данные через fetchProductDetail при включённом API,
- * записывает просмотр в историю, обрабатывает добавление в корзину и похожие товары.
+ * Product page: loads rich data via fetchProductDetail with API enabled,
+ * records browsing history, processes adding to cart and similar products.
  */
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -18,7 +18,7 @@ import "./ProductDetail.scss";
 const MOBILE_THUMBS_MAX = 768;
 
 /**
- * Страница одного товара с галереей, характеристиками, отзывами и похожими позициями.
+ * A page of one product with a gallery, characteristics, reviews and similar items.
  */
 const ProductDetail = () => {
   const { id } = useParams();
@@ -55,11 +55,11 @@ const ProductDetail = () => {
   );
   usePageMetaOverride(pageMeta);
   useEffect(() => {
-    /* Защита от обновления state после отмены запроса деталей товара. */
+    /* Protection against updating state after canceling a request for product details. */
     let cancelled = false;
 
     /**
-     * Загружает обогащённые данные товара из API или статического каталога.
+     * Loads rich product data from an API or static catalog.
      */
     const loadProduct = async () => {
       if (usesApi) {
@@ -97,7 +97,7 @@ const ProductDetail = () => {
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_THUMBS_MAX}px)`);
 
-    /** Синхронизирует режим карусели миниатюр с шириной viewport. */
+    /** Synchronizes the thumbnail carousel mode with the viewport width. */
     const updateThumbSlider = () => setUseThumbSlider(mediaQuery.matches);
     updateThumbSlider();
     mediaQuery.addEventListener("change", updateThumbSlider);
@@ -128,7 +128,7 @@ const ProductDetail = () => {
   );
 
   /**
-   * Синхронизирует активный индекс галереи и выбранный swatch при выборе миниатюры.
+   * Synchronizes the active gallery index and the selected swatch when selecting a thumbnail.
    * @param {number} index
    */
   const handleThumbSelect = (index) => {
@@ -139,7 +139,7 @@ const ProductDetail = () => {
   };
 
   /**
-   * Добавляет текущий вариант в корзину и показывает краткое подтверждение.
+   * Adds the current option to the cart and displays a brief confirmation.
    */
   const handleAddToBag = async () => {
     await addItem(

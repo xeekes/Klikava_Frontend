@@ -1,16 +1,16 @@
-/* Подсчёт ссылок блокировки прокрутки для стека модалок; фиксация body без сдвига layout. */
+/* Scroll lock reference counting for modal stack; fixing the body without shifting the layout. */
 
-/** Число активных вызовов lockScroll; стили сбрасываются только при достижении нуля. */
+/** Number of active calls to lockScroll; styles are reset only when they reach zero. */
 let lockCount = 0;
 
-/** Позиция прокрутки до блокировки — восстанавливается при unlock. */
+/** The scroll position before locking is restored when unlocked. */
 let savedScrollY = 0;
 
-/** Фиксированные элементы вне потока документа — им нужен отдельный padding-right. */
+/** Fixed elements are outside the document flow - they need a separate padding-right. */
 const FIXED_PADDING_SELECTORS = [".header"];
 
 /**
- * Надёжно измеряет ширину скроллбара viewport.
+ * Reliably measures the width of the viewport scrollbar.
  * @returns {number}
  */
 const getScrollbarWidth = () => {
@@ -37,7 +37,7 @@ const getScrollbarWidth = () => {
 };
 
 /**
- * Компенсирует исчезновение скроллбара у фиксированных элементов.
+ * Compensates for the disappearance of the scrollbar on fixed elements.
  * @param {number} scrollbarWidth
  */
 const applyFixedPadding = (scrollbarWidth) => {
@@ -52,7 +52,7 @@ const applyFixedPadding = (scrollbarWidth) => {
 };
 
 /**
- * Убирает переопределения scroll-lock.
+ * Removes scroll-lock overrides.
  */
 const clearScrollLockStyles = () => {
   document.documentElement.style.overflow = "";
@@ -73,7 +73,7 @@ const clearScrollLockStyles = () => {
 };
 
 /**
- * Сбрасывает счётчик блокировки и очищает стили scroll-lock (например, при полном монтировании приложения).
+ * Resets the lock counter and clears scroll-lock styles (for example, when the application is fully mounted).
  */
 export const resetScrollLock = () => {
   lockCount = 0;
@@ -82,7 +82,7 @@ export const resetScrollLock = () => {
 };
 
 /**
- * Увеличивает счётчик блокировки и фиксирует body на текущей позиции прокрутки.
+ * Increments the lock counter and locks the body at the current scroll position.
  */
 export const lockScroll = () => {
   if (lockCount === 0) {
@@ -106,7 +106,7 @@ export const lockScroll = () => {
 };
 
 /**
- * Уменьшает счётчик блокировки и восстанавливает прокрутку, когда блокировок не осталось.
+ * Decrements the lock count and restores scrolling when there are no locks left.
  */
 export const unlockScroll = () => {
   lockCount = Math.max(0, lockCount - 1);

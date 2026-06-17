@@ -1,5 +1,5 @@
 /*
- * Глобальные toast-уведомления и диалог подтверждения для действий вне корзины/избранного.
+ * Global toast notifications and confirmation dialog for actions outside the cart/favorites.
  */
 import {
   createContext,
@@ -34,7 +34,7 @@ const normalizeConfirmOptions = (message) => {
 };
 
 /**
- * Предоставляет showSuccess, showError и confirm для дерева компонентов.
+ * Provides showSuccess, showError and confirm for the component tree.
  * @param {{ children: import("react").ReactNode }} props
  */
 export const ActionFeedbackProvider = ({ children }) => {

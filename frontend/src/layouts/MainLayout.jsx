@@ -1,4 +1,4 @@
-/* Оболочка витрины: шапка, анимированный outlet страниц, подвал, тосты корзины/избранного. */
+/* Showcase shell: header, animated outlet pages, footer, basket/favorites toasts. */
 import ShoppingFeedback from "../components/ShoppingFeedback/ShoppingFeedback";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
@@ -7,7 +7,7 @@ import { useRouteChunkPrefetch } from "../hooks/useRouteChunkPrefetch";
 import "./MainLayout.scss";
 
 /**
- * Оболочка страницы витрины: шапка, анимированный outlet, подвал и тосты покупок.
+ * Showcase page skin: header, animated outlet, footer and shopping toasts.
  */
 const MainLayout = () => {
   useRouteChunkPrefetch();

@@ -1,13 +1,14 @@
 /*
- * API авторизации с переключением mock / реальный бэкенд.
- * Mock подгружается динамически, чтобы prod-сборки могли исключить auth.mock.js.
+ * Authorization API with mock/real backend switching.
+ * The mock is loaded dynamically so that prod builds can exclude auth.mock.js.
  */
 import { apiRequest } from "./client";
+import { createLazyMockApi } from "./createLazyMockApi";
 import { ApiError } from "./errors";
 import { pickUserAvatar } from "./mapUserData";
 
 /**
- * Преобразует payload пользователя FastAPI в плоскую структуру для AuthContext.
+ * Converts a FastAPI user's payload into a flat structure for the AuthContext.
  * @param {object|null|undefined} user
  * @returns {object|null}
  */
@@ -30,7 +31,7 @@ const mapMarketplaceUser = (user) => {
 };
 
 /**
- * Нормализует ответ бэкенда авторизации в token и поля пользователя.
+ * Normalizes the authorization backend response to token and user fields.
  * @param {{ access_token: string, user: object }} payload
  * @returns {{ token: string, user: object|null }}
  */
@@ -40,7 +41,7 @@ const mapAuthResponse = (payload) => ({
 });
 
 /**
- * Очищает строку и приводит к безопасному для бэкенда login-slug (нижний регистр, буквы, цифры, _).
+ * Clears the string and results in a backend-safe login-slug (lower case, letters, numbers, _).
  * @param {string} value
  * @returns {string}
  */
@@ -53,7 +54,7 @@ const sanitizeLogin = (value) =>
     .slice(0, 32);
 
 /**
- * Формирует уникальный login из явного login, префикса email, имени или метки времени.
+ * Forms a unique login from an explicit login, email prefix, name, or timestamp.
  * @param {{ emailOrPhone: string, name?: string, login?: string }} params
  * @returns {string}
  */
@@ -78,7 +79,7 @@ const resolveLogin = ({ emailOrPhone, name, login }) => {
 };
 
 /**
- * Бросает ApiError 501 — функция недоступна на текущем бэкенде.
+ * Throws ApiError 501 - the function is not available on the current backend.
  * @param {string} feature
  * @returns {never}
  */
@@ -91,7 +92,7 @@ const unsupportedApiFlow = (feature) => {
 
 const realAuthApi = {
   /**
-   * Аутентификация на бэкенде и маппинг ответа для сессии приложения.
+   * Authentication on the backend and response mapping for the application session.
    * @param {{ emailOrPhone: string, password: string }} params
    * @returns {Promise<{ token: string, user: object|null }>}
    */
@@ -107,7 +108,7 @@ const realAuthApi = {
   },
 
   /**
-   * Регистрация нового пользователя с немедленным входом для возврата сессии.
+   * Register a new user with immediate login to return the session.
    * @param {{ emailOrPhone: string, password: string, name?: string, login?: string }} params
    * @returns {Promise<{ token: string, user: object|null }>}
    */
@@ -171,7 +172,7 @@ const realAuthApi = {
   },
 
   /**
-   * Выход на клиенте; для JWT не требуется инвалидация сессии на бэкенде.
+   * Exit on the client; JWT does not require session invalidation on the backend.
    * @returns {Promise<{ success: boolean }>}
    */
   async logout() {
@@ -179,7 +180,7 @@ const realAuthApi = {
   },
 
   /**
-   * Загрузка профиля авторизованного пользователя с бэкенда.
+   * Loading an authorized user profile from the backend.
    * @returns {Promise<object|null>}
    */
   async getCurrentUser() {
@@ -201,38 +202,11 @@ const AUTH_METHODS = [
 ];
 
 /**
- * Прокси с ленивой загрузкой auth.mock.js при первом вызове (dev без API URL).
- * @returns {typeof realAuthApi}
- */
-const createLazyMockAuthApi = () => {
-  /** @type {Promise<typeof realAuthApi>|null} */
-  let mockImplPromise = null;
-
-  /**
-   * Однократно резолвит динамически импортированную mock-реализацию за сессию.
-   * @returns {Promise<typeof realAuthApi>}
-   */
-  const resolveMockImpl = async () => {
-    if (!mockImplPromise) {
-      mockImplPromise = import("./auth.mock.js").then(
-        (module) => module.mockAuthApi,
-      );
-    }
-    return mockImplPromise;
-  };
-
-  return Object.fromEntries(
-    AUTH_METHODS.map((methodName) => [
-      methodName,
-      async (...args) => (await resolveMockImpl())[methodName](...args),
-    ]),
-  );
-};
-
-/**
- * Фасад Auth API: реальный бэкенд при VITE_API_BASE_URL на этапе сборки;
- * иначе — ленивый mock-прокси в отдельном чанке.
+ * Auth API facade: real backend with VITE_API_BASE_URL at build stage;
+ * otherwise - a lazy mock proxy in a separate chunk.
  */
 export const authApi = import.meta.env.VITE_API_BASE_URL
   ? realAuthApi
-  : createLazyMockAuthApi();
+  : createLazyMockApi(AUTH_METHODS, () =>
+      import("./auth.mock.js").then((module) => module.mockAuthApi),
+    );

@@ -1,9 +1,9 @@
-/* Страница контактов/опций поддержки в разделе профиля. */
+/* Contact/support options page in the profile section. */
 import ProfileChatPanel from "../../components/Profile/ProfileChatPanel/ProfileChatPanel";
 import "../../styles/profile-page.scss";
 
 /**
- * Страница вариантов связи с поддержкой в разделе профиля.
+ * Support contact options page in the profile section.
  */
 const ProfileSupport = () => (
   <section className="profile-page profile-chat profile-support">

@@ -3,7 +3,7 @@ export const CARD_NUMBER_DIGITS = 16;
 export const MAX_POSTAL_CODE_LENGTH = 12;
 
 /**
- * Удаляет нецифровые символы и ограничивает длину.
+ * Removes non-numeric characters and limits length.
  * @param {unknown} value
  * @param {number} maxLength
  * @returns {string}
@@ -14,7 +14,7 @@ export const digitsOnly = (value, maxLength) =>
     .slice(0, maxLength);
 
 /**
- * Оставляет только цифры телефона (до 15).
+ * Leaves only phone numbers (up to 15).
  * @param {unknown} value
  * @returns {string}
  */
@@ -22,7 +22,7 @@ export const formatPhoneInput = (value) =>
   digitsOnly(value, MAX_PHONE_DIGITS);
 
 /**
- * Форматирует номер карты: до 16 цифр, группы по 4.
+ * Formats the card number: up to 16 digits, groups of 4.
  * @param {unknown} value
  * @returns {string}
  */
@@ -32,7 +32,7 @@ export const formatCardNumberInput = (value) => {
 };
 
 /**
- * Почтовый индекс: буквы, цифры, пробел и дефис.
+ * Postal code: letters, numbers, space and hyphen.
  * @param {unknown} value
  * @returns {string}
  */
@@ -42,7 +42,7 @@ export const formatPostalCodeInput = (value) =>
     .slice(0, MAX_POSTAL_CODE_LENGTH);
 
 /**
- * Санитизирует значение поля формы адреса при вводе.
+ * Sanitizes the address form field value as it is entered.
  * @param {string} field
  * @param {unknown} value
  * @returns {string}

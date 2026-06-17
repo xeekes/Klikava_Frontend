@@ -1,18 +1,18 @@
 /*
- * Mock-реализация авторизации для локальной разработки без VITE_API_BASE_URL.
- * Подгружается через dynamic import, чтобы prod-бандлы могли исключить этот модуль.
+ * Mock authorization implementation for local development without VITE_API_BASE_URL.
+ * Loaded via dynamic import so that prod bundles can exclude this module.
  */
 import { getPasswordError, isEmailOrPhone } from "../utils/validation";
 
 /**
- * Ждёт указанное число миллисекунд (имитация сетевой задержки).
+ * Waits the specified number of milliseconds (simulating network latency).
  * @param {number} ms
  * @returns {Promise<void>}
  */
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
- * Создаёт минимальную mock-запись пользователя по email или телефону.
+ * Creates a minimal mock user record by email or phone.
  * @param {string} emailOrPhone
  * @returns {{ id: string, emailOrPhone: string, displayName: string }}
  */
@@ -23,7 +23,7 @@ const mockUser = (emailOrPhone) => ({
 });
 
 /**
- * Формирует mock-ответ авторизации с токеном по времени и профилем пользователя.
+ * Generates a mock authorization response with a time token and user profile.
  * @param {string} emailOrPhone
  * @returns {{ token: string, user: object }}
  */
@@ -32,10 +32,10 @@ const mockAuthResponse = (emailOrPhone) => ({
   user: mockUser(emailOrPhone),
 });
 
-/** Mock Auth API с тем же набором методов, что и realAuthApi. */
+/** Mock Auth API with the same set of methods as realAuthApi. */
 export const mockAuthApi = {
   /**
-   * Проверяет учётные данные локально и возвращает имитированную сессию.
+   * Validates credentials locally and returns a simulated session.
    * @param {{ emailOrPhone: string, password: string }} params
    * @returns {Promise<{ token: string, user: object }>}
    */
@@ -51,7 +51,7 @@ export const mockAuthApi = {
   },
 
   /**
-   * Запускает mock-регистрацию: выдаёт verification id без создания сессии.
+   * Launches a mock registration: issues a verification id without creating a session.
    * @param {{ emailOrPhone: string }} params
    * @returns {Promise<{ verificationId: string }>}
    */
@@ -67,7 +67,7 @@ export const mockAuthApi = {
   },
 
   /**
-   * Имитирует отправку кода подтверждения для потока register или reset.
+   * Simulates sending a confirmation code to the register or reset stream.
    * @param {{ emailOrPhone: string, flow: string }} params
    * @returns {Promise<{ verificationId: string }>}
    */
@@ -77,7 +77,7 @@ export const mockAuthApi = {
   },
 
   /**
-   * Проверяет код подтверждения по минимальным правилам длины в mock-режиме.
+   * Checks confirmation code against minimum length rules in mock mode.
    * @param {{ verificationId: string, code: string }} params
    * @returns {Promise<{ verified: boolean, verificationId: string }>}
    */
@@ -90,7 +90,7 @@ export const mockAuthApi = {
   },
 
   /**
-   * Устанавливает новый пароль после верификации и завершает mock-вход.
+   * Sets a new password after verification and completes the mock login.
    * @param {{ verificationId: string, password: string, confirmPassword: string }} params
    * @returns {Promise<{ token: string, user: object }>}
    */
@@ -109,7 +109,7 @@ export const mockAuthApi = {
   },
 
   /**
-   * Применяет новый пароль после сброса без выдачи нового токена.
+   * Applies the new password after reset without issuing a new token.
    * @param {{ verificationId: string, password: string, confirmPassword: string }} params
    * @returns {Promise<{ success: boolean }>}
    */
@@ -126,7 +126,7 @@ export const mockAuthApi = {
   },
 
   /**
-   * Имитирует OAuth-вход с фиксированным профилем Google-пользователя.
+   * Simulates OAuth login with a fixed Google user profile.
    * @returns {Promise<{ token: string, user: object }>}
    */
   async loginWithGoogle() {
@@ -135,7 +135,7 @@ export const mockAuthApi = {
   },
 
   /**
-   * Пустой logout в mock-режиме; клиент отдельно очищает сохранённые учётные данные.
+   * Empty logout in mock mode; the client separately clears the stored credentials.
    * @returns {Promise<{ success: boolean }>}
    */
   async logout() {
@@ -144,7 +144,7 @@ export const mockAuthApi = {
   },
 
   /**
-   * Восстанавливает mock-пользователя сессии из sessionStorage при наличии токена.
+   * Restores a mock session user from sessionStorage if a token is available.
    * @returns {Promise<object|null>}
    */
   async getCurrentUser() {

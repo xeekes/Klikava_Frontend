@@ -1,4 +1,4 @@
-/* Меню пользователя с учётом авторизации: ссылка входа или выпадающий профиль. */
+/* User menu taking into account authorization: login link or drop-down profile. */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -25,7 +25,7 @@ const LANGUAGES = [
 ];
 
 /**
- * Меню пользователя с учётом авторизации: ссылка входа или выпадающий профиль.
+ * User menu taking into account authorization: login link or drop-down profile.
  */
 const HeaderUserMenu = () => {
   const navigate = useNavigate();
@@ -52,14 +52,14 @@ const HeaderUserMenu = () => {
     return fullName || "User Name";
   }, [user, personalInfo.firstName, personalInfo.lastName]);
   /**
-   * Сворачивает выпадающий список и вложенное подменю языка.
+   * Collapses the language drop-down list and nested submenu.
    */
   const closeMenu = () => {
     setIsOpen(false);
     setIsLanguagesOpen(false);
   };
   /**
-   * Открывает модальное окно авторизации для гостей или переключает выпадающий профиль.
+   * Opens a modal login window for guests or toggles a drop-down profile.
    */
   const handleToggle = () => {
     if (!isAuthenticated) {
@@ -70,7 +70,7 @@ const HeaderUserMenu = () => {
     setIsLanguagesOpen(false);
   };
   /**
-   * Выходит из аккаунта и возвращает на главную страницу.
+   * Logs out of the account and returns to the main page.
    */
   const handleLogout = async () => {
     closeMenu();
@@ -78,7 +78,7 @@ const HeaderUserMenu = () => {
     navigate("/");
   };
   /**
-   * Сохраняет выбранный язык интерфейса и закрывает подменю.
+   * Saves the selected interface language and closes the submenu.
    */
   const handleLanguageSelect = (languageId) => {
     setActiveLanguage(languageId);

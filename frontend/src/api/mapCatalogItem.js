@@ -1,14 +1,25 @@
 /*
- * Антикоррупционный слой: преобразует вложенные структуры product/category FastAPI
- * в плоскую модель товара, используемую в UI каталога.
+ * Anti-corruption layer: converts nested product/category FastAPI structures
+ * into a flat product model used in the catalog UI.
  */
 import {
   pickPlaceholderGallery,
   pickPlaceholderImage,
 } from "../assets/productPlaceholderImages";
+import { resolveMediaUrl } from "./client";
 
 /**
- * Определяет URL изображения товара из вложенных полей picture или локальных заглушек.
+ * Normalizes the product image URL via the origin API.
+ * @param {string|null|undefined} url
+ * @returns {string}
+ */
+const normalizeProductImageUrl = (url) => {
+  const resolved = resolveMediaUrl(url);
+  return typeof resolved === "string" ? resolved : "";
+};
+
+/**
+ * Determines the product image URL from nested picture fields or local stubs.
  * @param {object} item
  * @param {number} index
  * @returns {string}
@@ -30,14 +41,14 @@ export const pickImage = (item, index) => {
     item?.image_url ||
     item?.image;
   if (typeof url === "string" && url.length > 0) {
-    return url;
+    return normalizeProductImageUrl(url);
   }
   const seed = item?.id ?? item?.product_id ?? index;
   return pickPlaceholderImage(seed);
 };
 
 /**
- * Собирает галерею товара из API или локальных webp-заглушек.
+ * Collects a product gallery from the API or local webp stubs.
  * @param {object} item
  * @param {number} [index]
  * @param {number} [count]
@@ -60,7 +71,8 @@ export const pickProductImages = (item, index = 0, count = 3) => {
         picture?.preview_url ||
         picture?.original_url,
     )
-    .filter((url) => typeof url === "string" && url.length > 0);
+    .map((pictureUrl) => normalizeProductImageUrl(pictureUrl))
+    .filter((url) => url.length > 0);
   if (apiImages.length) {
     return apiImages;
   }
@@ -69,7 +81,7 @@ export const pickProductImages = (item, index = 0, count = 3) => {
 };
 
 /**
- * Извлекает отображаемое название из вложенных полей version или name.
+ * Retrieves the display name from the version or name nested fields.
  * @param {object} item
  * @returns {string}
  */
@@ -81,7 +93,7 @@ export const pickTitle = (item) =>
   `Product ${item?.id ?? "?"}`;
 
 /**
- * Читает актуальную цену продажи из первого доступного варианта или полей price верхнего уровня.
+ * Reads the current sale price from the first available option or top-level price fields.
  * @param {object} item
  * @returns {number}
  */
@@ -101,7 +113,7 @@ const pickPrice = (item) => {
 };
 
 /**
- * Вычисляет цену со скидкой, зачёркнутую оригинальную и процент скидки из данных варианта.
+ * Calculates the discounted price, the original strikethrough, and the discount percentage from the variant data.
  * @param {object} item
  * @param {number} price
  * @returns {{ price: number, originalPrice?: number, discountPercent?: number }}
@@ -119,7 +131,7 @@ const pickDiscount = (item, price) => {
       discountPercent: undefined,
     };
   }
-  /* Бэкенд отдаёт финальную цену и % скидки; выводим зачёркнутую оригинальную для UI. */
+  /* The backend gives the final price and % discount; We display the crossed out original one for the UI. */
   const originalPrice = Number((price / (1 - discount / 100)).toFixed(2));
   return {
     price,
@@ -129,7 +141,7 @@ const pickDiscount = (item, price) => {
 };
 
 /**
- * Преобразует произвольный текст в URL-safe slug для маршрутов товара.
+ * Converts arbitrary text into a URL-safe slug for product routes.
  * @param {string} value
  * @returns {string}
  */
@@ -140,7 +152,7 @@ const slugify = (value) =>
     .replace(/(^-|-$)/g, "");
 
 /**
- * Преобразует запись категории бэкенда в плоскую модель для навигации и фильтров.
+ * Converts a backend category entry into a flat model for navigation and filters.
  * @param {object} category
  * @returns {object}
  */
@@ -154,7 +166,7 @@ export const mapBackendCategory = (category) => ({
 });
 
 /**
- * Преобразует вложенный товар бэкенда в форму карточки каталога с ценой и категорией.
+ * Converts the attached backend product into the form of a catalog card with price and category.
  * @param {object} item
  * @param {number} [index]
  * @param {Map<number|string, object>} [categoryLookup]
@@ -187,7 +199,11 @@ export const mapBackendProduct = (
   const images = pickProductImages(item, index);
   return {
     id: item?.id ?? item?.product_id ?? `api-${index}`,
-    slug: item?.slug || item?.current_version?.slug || slugify(title),
+    slug:
+      item?.slug ||
+      item?.current_version?.slug ||
+      item?.versions?.[0]?.slug ||
+      slugify(title),
     title,
     image: pickImage(item, index),
     images,
@@ -214,7 +230,7 @@ export const mapBackendProduct = (
 };
 
 /**
- * Преобразует массив товаров бэкенда с общим lookup категорий и индексами списка.
+ * Converts an array of backend products with a general lookup of categories and list indexes.
  * @param {Array<object>} [items]
  * @param {Map<number|string, object>} [categoryLookup]
  * @returns {Array<object>}
@@ -223,7 +239,7 @@ export const mapBackendProductList = (items = [], categoryLookup = new Map()) =>
   items.map((item, index) => mapBackendProduct(item, index, categoryLookup));
 
 /**
- * Преобразует запись отзыва бэкенда в формат страницы товара.
+ * Converts a backend review record to a product page format.
  * @param {object} review
  * @returns {object}
  */
@@ -237,7 +253,7 @@ export const mapBackendReview = (review) => ({
 });
 
 /**
- * Достаёт нормализованные характеристики варианта из сырого ответа API.
+ * Retrieves the normalized characteristics of a variant from the raw API response.
  * @param {object|null|undefined} raw
  * @returns {Array<{ featureId: string|number, label: string, value: string, isPrimary: boolean }>}
  */
@@ -266,7 +282,7 @@ export const getProductFeatures = (product) => {
 };
 
 /**
- * Разворачивает features варианта в строки характеристик label/value для страницы товара.
+ * Expands the variant's features into label/value characteristic lines for the product page.
  * @param {object|null|undefined} variant
  * @returns {Array<{ label: string, value: string }>}
  */
@@ -277,7 +293,7 @@ export const mapVariantFeaturesToSpecs = (variant) =>
   }));
 
 /**
- * Достаёт характеристики из сырого ответа списка/детали товара.
+ * Extracts characteristics from the raw list response/product details.
  * @param {object|null|undefined} raw
  * @returns {Array<{ label: string, value: string }>}
  */
@@ -288,7 +304,7 @@ export const extractSpecsFromBackendRaw = (raw) => {
 };
 
 /**
- * Применяет отдельные правила скидок (категория, продавец, товар) к ценам товаров.
+ * Applies individual discount rules (category, seller, product) to product prices.
  * @param {Array<object>} products
  * @param {Array<object>} [discounts]
  * @returns {Array<object>}

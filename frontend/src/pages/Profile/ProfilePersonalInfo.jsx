@@ -1,4 +1,4 @@
-/* Форма профиля: все поля редактируются сразу, Save сохраняет только изменения. */
+/* Profile form: all fields are edited at once, Save saves only changes. */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { hasApiBaseUrl } from "../../api/client";
@@ -47,7 +47,7 @@ const getChangedFieldIds = (form, baseline) =>
   ).map((field) => field.id);
 
 /**
- * Редактируемая форма личных данных с одной кнопкой Save.
+ * Editable personal data form with one Save button.
  */
 const ProfilePersonalInfo = () => {
   const navigate = useNavigate();
@@ -81,7 +81,7 @@ const ProfilePersonalInfo = () => {
     let cancelled = false;
 
     /**
-     * Освобождает предыдущий blob:-URL аватара.
+     * Frees the previous blob:-URL of the avatar.
      */
     const revokeAvatarBlob = () => {
       if (avatarBlobRef.current?.startsWith("blob:")) {
@@ -91,7 +91,7 @@ const ProfilePersonalInfo = () => {
     };
 
     /**
-     * Подставляет src для <img>: внешний URL напрямую, API-медиа — через blob + JWT.
+     * Substitutes src for <img>: external URL directly, media API via blob + JWT.
      */
     const resolveAvatar = async () => {
       const avatarUrl =

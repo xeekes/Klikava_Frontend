@@ -2,7 +2,7 @@ import IconImg from "./IconImg";
 import icon from "../assets/icons/silder_arrow_left.svg";
 
 /**
- * Стрелка карусели влево для мобильного меню шапки и слайдера скидок.
+ * Carousel left arrow for mobile header menu and discount slider.
  * @param {object} props
  */
 const SliderArrowLeft = (props) => <IconImg src={icon} {...props} />;

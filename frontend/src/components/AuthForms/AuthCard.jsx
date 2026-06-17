@@ -1,7 +1,7 @@
-/* Оболочка карточной разметки, общая для форм модального окна авторизации. */
+/* Card markup wrapper, common to login modal window forms. */
 
 /**
- * Общая оболочка карточной разметки для форм модального окна авторизации.
+ * A general card markup wrapper for login modal window forms.
  */
 const AuthCard = ({ title, titleUppercase = false, children }) => (
   <div className="auth-form">

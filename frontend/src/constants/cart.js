@@ -1,4 +1,4 @@
-/* Ключ localStorage для позиций корзины (бэкенд корзины пока отсутствует). */
+/* localStorage key for cart items (no cart backend yet). */
 
-/** Ключ localStorage для сохранения позиций корзины до появления бэкенда. */
+/** The localStorage key to save cart positions until the backend appears. */
 export const CART_STORAGE_KEY = "cart_items";

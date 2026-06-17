@@ -1,8 +1,8 @@
-/* Адаптивное число колонок ProductGrid по брейкпоинтам viewport. */
+/* Adaptive number of ProductGrid columns based on viewport breakpoints. */
 import { useEffect, useState } from "react";
 
 /**
- * Определяет число колонок по брейкпоинтам viewport с запасным значением при SSR.
+ * Defines the number of columns by viewport breakpoints with a fallback value for SSR.
  * @param {number} columns
  * @returns {number}
  */
@@ -23,7 +23,7 @@ const getEffectiveColumns = (columns) => {
 };
 
 /**
- * Подписывается на брейкпоинты viewport и возвращает эффективное число колонок.
+ * Subscribes to viewport breakpoints and returns the effective number of columns.
  * @param {number} columns
  * @returns {number}
  */
@@ -33,7 +33,7 @@ const useProductGridColumns = (columns) => {
   );
 
   /**
-   * Пересчитывает колонки при монтировании и при изменении media query брейкпоинтов.
+   * Recalculates columns when mounting and when changing media query breakpoints.
    */
   useEffect(() => {
     const mediaQueries = [
@@ -43,7 +43,7 @@ const useProductGridColumns = (columns) => {
     ];
 
     /**
-     * Применяет актуальные правила брейкпоинтов к заданному числу колонок.
+     * Applies the current breakpoint rules to the specified number of columns.
      */
     const updateColumns = () => {
       setEffectiveColumns(getEffectiveColumns(columns));

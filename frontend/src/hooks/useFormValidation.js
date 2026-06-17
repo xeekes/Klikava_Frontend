@@ -1,12 +1,12 @@
 /*
- * Лёгкий хук валидации форм на основе схем из utils/validation.
- * Ошибки показываются при blur или после отправки (не при каждом нажатии клавиши).
+ * A lightweight form validation hook based on schemas from utils/validation.
+ * Errors are shown when blurring or after sending (not every keypress).
  */
 import { useCallback, useState } from "react";
 import { hasValidationErrors, validateForm } from "../utils/validation";
 
 /**
- * Отслеживает состояние валидации полей по карте схемы.
+ * Monitors field validation status across the schema map.
  * @param {object} schema
  * @returns {object}
  */
@@ -15,7 +15,7 @@ export const useFormValidation = (schema) => {
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
-  /** Сбрасывает ошибки, флаги touched и флаг submitted. */
+  /** Resets errors, touched flags and submitted flag. */
   const resetValidation = useCallback(() => {
     setErrors({});
     setTouched({});
@@ -23,7 +23,7 @@ export const useFormValidation = (schema) => {
   }, []);
 
   /**
-   * Помечает одно поле как touched для условия показа ошибок.
+   * Marks one field as touched for error condition.
    * @param {string} field
    */
   const touch = useCallback((field) => {
@@ -31,7 +31,7 @@ export const useFormValidation = (schema) => {
   }, []);
 
   /**
-   * Валидирует все поля схемы и помечает форму как отправленную.
+   * Validates all schema fields and marks the form as submitted.
    * @param {object} values
    * @returns {boolean}
    */
@@ -46,7 +46,7 @@ export const useFormValidation = (schema) => {
   );
 
   /**
-   * Валидирует только указанные поля и объединяет результат с существующими ошибками.
+   * Validates only the specified fields and merges the result with existing errors.
    * @param {object} values
    * @param {string[]} fields
    * @returns {boolean}
@@ -77,7 +77,7 @@ export const useFormValidation = (schema) => {
   );
 
   /**
-   * Возвращает ошибку поля только после blur или отправки.
+   * Returns a field error only after blur or submit.
    * @param {string} field
    * @returns {string|undefined}
    */
@@ -92,7 +92,7 @@ export const useFormValidation = (schema) => {
   );
 
   /**
-   * Помечает поле touched и перевалидирует его при blur.
+   * Marks the touched field and re-validates it when blurred.
    * @param {object} values
    * @param {string} field
    */

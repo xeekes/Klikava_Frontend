@@ -1,4 +1,4 @@
-/* Форма входа; отправка через AuthContext.login. */
+/* Login form; sending via AuthContext.login. */
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { hasApiBaseUrl } from "../../api/client";
@@ -13,7 +13,7 @@ import { Google } from "../../iconComponents";
 import "./AuthForms.scss";
 
 /**
- * Форма учётных данных с отправкой через AuthContext login и Google OAuth.
+ * Credential form submitted via AuthContext login and Google OAuth.
  */
 const LoginForm = () => {
   const location = useLocation();
@@ -27,7 +27,7 @@ const LoginForm = () => {
     schemas.login,
   );
   /**
-   * Проверяет поля, вызывает login и закрывает модальное окно при успехе.
+   * Validates the fields, calls login and closes the modal window if successful.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,11 +39,11 @@ const LoginForm = () => {
       await login({ emailOrPhone, password });
       closeAuth();
     } catch {
-      // ошибка отображается через контекст
+      // the error is displayed through the context
     }
   };
   /**
-   * Запускает поток Google OAuth и закрывает модальное окно при успехе.
+   * Starts a Google OAuth flow and closes the modal window on success.
    */
   const handleGoogleLogin = async () => {
     clearError();
@@ -51,7 +51,7 @@ const LoginForm = () => {
       await loginWithGoogle();
       closeAuth();
     } catch {
-      // ошибка отображается через контекст
+      // the error is displayed through the context
     }
   };
   return (

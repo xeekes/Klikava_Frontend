@@ -1,10 +1,10 @@
-/* Подтверждение после оформления заказа; orderId читается из state навигации. */
+/* Confirmation after placing an order; orderId is read from the navigation state. */
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import "./OrderSuccess.scss";
 
 /**
- * Экран подтверждения после успешного оформления заказа.
+ * Confirmation screen after successful ordering.
  */
 const OrderSuccess = () => {
   const location = useLocation();

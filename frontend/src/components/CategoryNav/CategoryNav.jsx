@@ -1,17 +1,17 @@
-/* Горизонтальная навигация чипами категорий для страниц листинга. */
+/* Horizontal navigation with category chips for listing pages. */
 import { useState } from "react";
 import TagSlider from "../TagSlider/TagSlider";
 import "./CategoryNav.scss";
 
 /**
- * Горизонтальная навигация чипами категорий для страниц листинга.
+ * Horizontal navigation with category chips for listing pages.
  */
 const CategoryNav = ({ categories, onCategoryChange }) => {
   const [activeCategory, setActiveCategory] = useState(
     categories[0]?.id || null,
   );
   /**
-   * Обновляет активный чип и уведомляет родителя о выборе.
+   * Updates the active chip and notifies the parent of the selection.
    */
   const handleCategoryClick = (categoryId) => {
     setActiveCategory(categoryId);

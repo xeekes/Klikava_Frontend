@@ -1,10 +1,10 @@
-/* Список сообщений чата и поле ввода, привязанные к UserDataContext. */
+/* A list of chat messages and an input field bound to the UserDataContext. */
 import { useMemo, useState } from "react";
 import { useUserData } from "../../../context/UserDataContext";
 import "./ProfileChatPanel.scss";
 
 /**
- * Список сообщений чата и поле ввода, привязанные к UserDataContext.
+ * A list of chat messages and an input field bound to the UserDataContext.
  */
 const ProfileChatPanel = ({
   threads,

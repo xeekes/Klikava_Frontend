@@ -1,5 +1,5 @@
 /*
- * Toast success/error и модальный confirm для ActionFeedbackContext.
+ * Toast success/error and modal confirm for ActionFeedbackContext.
  */
 import { useEffect } from "react";
 import "./ActionFeedback.scss";

@@ -1,4 +1,4 @@
-/* Промо-пузырёк поверх карточек товаров. */
+/* Promotional bubble on top of product cards. */
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useCatalog } from "../../context/CatalogContext";
@@ -7,7 +7,7 @@ import { formatBubblePrice } from "../../utils/formatPrice";
 import "./OfferBubble.scss";
 
 /**
- * Промо-пузырёк поверх карточек товаров с необязательным действием корзины.
+ * Promotional bubble on top of product cards with optional cart action.
  */
 const OfferBubble = ({
   image,
@@ -24,7 +24,7 @@ const OfferBubble = ({
   const backgroundClass =
     background === "white" ? "offer-bubble--white" : "offer-bubble--gray";
   /**
-   * Добавляет связанный товар каталога в корзину без перехода со страницы.
+   * Adds a related catalog product to the cart without navigating from the page.
    */
   const handleAddToCart = (event) => {
     event.preventDefault();

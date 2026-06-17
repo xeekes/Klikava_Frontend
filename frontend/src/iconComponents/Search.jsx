@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/search.svg";
 
 /**
- * Иконка лупы для оверлея и поля поиска по сайту.
+ * Magnifying glass icon for the overlay and site search field.
  * @param {object} props
  */
 const Search = (props) => <IconMask src={icon} {...props} />;

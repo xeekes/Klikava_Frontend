@@ -1,6 +1,6 @@
 /*
- * Корневое приложение: дерево провайдеров, таблица маршрутов, паттерн модального окна авторизации.
- * Порядок провайдеров важен — Catalog зависит от Auth, Favorites от Catalog и т.д.
+ * Root application: provider tree, route table, authorization modal window pattern.
+ * The order of the providers is important - Catalog depends on Auth, Favorites on Catalog, etc.
  */
 import { lazy, Suspense, useEffect } from "react";
 import {
@@ -71,6 +71,7 @@ const ProfileOrderTrack = lazy(loadProfileOrderTrack);
 const ProfileOrderReview = lazy(loadProfileOrderReview);
 const ProfileOrderReturn = lazy(loadProfileOrderReturn);
 const ProfileFavorites = lazy(loadProfileFavorites);
+
 const ProfileBrowsingHistory = lazy(loadProfileBrowsingHistory);
 const ProfileCoupons = lazy(loadProfileCoupons);
 const ProfileChat = lazy(loadProfileChat);
@@ -92,19 +93,19 @@ const SellPage = lazy(loadSellPage);
 const SupportLandingPage = lazy(loadSupportLandingPage);
 
 /**
- * Отображается во время загрузки ленивого чанка маршрута.
+ * Displayed while loading a lazy route chunk.
  */
 const RouteLoadingFallback = () => (
   <LoadingSpinner variant="overlay" label="Loading..." />
 );
 
 /**
- * Рендерит основную таблицу маршрутов и модальное окно авторизации на auth-пути.
- * Сохраняет фоновую страницу, когда авторизация открывается как модалка через backgroundLocation.
+ * Renders the main route table and authorization modal window on the auth path.
+ * Saves the background page when the login is opened as a modal via backgroundLocation.
  */
 const AppRoutes = () => {
   const location = useLocation();
-  /* Когда auth открывается поверх страницы, продолжаем рендерить страницу, с которой пришли. */
+  /* When auth opens on top of the page, we continue to render the page we came from. */
   const backgroundLocation = location.state?.backgroundLocation;
   const mainLocation =
     backgroundLocation ||
@@ -185,7 +186,7 @@ const AppRoutes = () => {
 };
 
 /**
- * Корневой компонент приложения: дерево провайдеров, роутер и сброс scroll-lock при монтировании.
+ * Root application component: provider tree, router and scroll-lock reset when mounted.
  */
 function App() {
   useEffect(() => {

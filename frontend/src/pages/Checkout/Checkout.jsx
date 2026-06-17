@@ -1,6 +1,6 @@
 /*
- * Поток оформления заказа: требует авторизации и непустой корзины; управляет выбором адреса/карты
- * и делегирует размещение заказа CheckoutSummary.
+ * Checkout flow: requires authorization and a non-empty cart; controls address/map selection
+ * and delegates order placement to CheckoutSummary.
  */
 import { useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
@@ -17,7 +17,7 @@ import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import "./Checkout.scss";
 
 /**
- * Многошаговое оформление заказа для авторизованных пользователей с непустой корзиной.
+ * Multi-step ordering for authorized users with a non-empty cart.
  */
 const Checkout = () => {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
@@ -48,7 +48,7 @@ const Checkout = () => {
   }
 
   /**
-   * Сохраняет новый или обновлённый адрес доставки и сбрасывает UI формы адреса.
+   * Saves the new or updated shipping address and resets the address form UI.
    * @param {object} form
    * @param {string} [addressId]
    */
@@ -72,7 +72,7 @@ const Checkout = () => {
   };
 
   /**
-   * Регистрирует платёжную карту и выбирает её для текущего заказа.
+   * Registers a payment card and selects it for the current order.
    * @param {object} form
    */
   const handleAddCard = async (form) => {

@@ -1,4 +1,4 @@
-/* Страница результатов поиска; парсит q и scope из query-параметров URL. */
+/* Search results page; parses q and scope from URL query parameters. */
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import CatalogListing from "../../components/CatalogListing/CatalogListing";
@@ -15,7 +15,7 @@ import {
 import "./SearchPage.scss";
 
 /**
- * Результаты полнотекстового поиска с необязательными фильтрами из URL.
+ * Full text search results with optional filters from the URL.
  */
 const SearchPage = () => {
   const {

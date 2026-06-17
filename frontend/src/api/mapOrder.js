@@ -1,5 +1,5 @@
 /*
- * Маппинг заказов и отгрузок бэкенда в модель UI профиля.
+ * Mapping backend orders and shipments into the profile UI model.
  */
 import { pickImage, pickTitle } from "./mapCatalogItem";
 
@@ -22,7 +22,7 @@ const STATUS_MAP = {
 };
 
 /**
- * Нормализует статус заказа бэкенда во вкладку профиля.
+ * Normalizes the backend order status to the profile tab.
  * @param {string|undefined|null} status
  * @returns {string}
  */
@@ -32,7 +32,7 @@ export const mapOrderStatusToTab = (status) => {
 };
 
 /**
- * Извлекает URL картинки из позиции заказа.
+ * Retrieves the image URL from the order item.
  * @param {object} item
  * @param {number} index
  * @returns {string}
@@ -47,7 +47,7 @@ const pickOrderItemImage = (item, index) => {
 };
 
 /**
- * Преобразует позицию заказа бэкенда в продукт для UI.
+ * Converts a backend order item into a UI product.
  * @param {object} item
  * @param {string|number} orderId
  * @param {number} index
@@ -74,7 +74,7 @@ export const mapBackendOrderItem = (item, orderId, index) => {
 };
 
 /**
- * Преобразует заказ бэкенда в карточку профиля.
+ * Converts a backend order into a profile card.
  * @param {object} order
  * @returns {object}
  */
@@ -111,7 +111,7 @@ export const mapBackendOrder = (order) => {
 };
 
 /**
- * Преобразует отгрузку бэкенда в шаг таймлайна.
+ * Converts backend shipment into a timeline step.
  * @param {object} shipment
  * @returns {object}
  */

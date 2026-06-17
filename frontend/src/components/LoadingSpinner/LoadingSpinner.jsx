@@ -1,9 +1,9 @@
-/* Общий индикатор загрузки (inline или полноэкранный оверлей). */
+/* General loading indicator (inline or full-screen overlay). */
 import { useEffect, useState } from "react";
 import "./LoadingSpinner.scss";
 
 /**
- * Общий индикатор загрузки как inline-блок или полноэкранный оверлей.
+ * General loading indicator as an inline block or full-screen overlay.
  */
 const LoadingSpinner = ({
   label = "Loading...",

@@ -1,4 +1,4 @@
-/* Редактирование срока действия/номера сохранённой карты в профиле. */
+/* Editing the validity period/number of a saved card in your profile. */
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
 import { schemas } from "../../../utils/validation";
@@ -14,7 +14,7 @@ const editCardSchema = {
 };
 
 /**
- * Форма редактирования срока действия сохранённой карты в разделе профиля.
+ * Form for editing the validity period of a saved card in the profile section.
  */
 const ProfileEditCardForm = ({ card, onSubmit, onClose }) => {
   const { addresses } = useUserData();
@@ -24,7 +24,7 @@ const ProfileEditCardForm = ({ card, onSubmit, onClose }) => {
   const { getError, validateAll, handleBlur } =
     useFormValidation(editCardSchema);
   /**
-   * Проверяет поля срока действия и передаёт изменения в родительский callback.
+   * Checks expiration fields and passes changes to the parent callback.
    */
   const handleSubmit = (event) => {
     event.preventDefault();

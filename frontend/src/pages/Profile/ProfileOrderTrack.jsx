@@ -1,4 +1,4 @@
-/* Просмотр отслеживания одного заказа через API shipments. */
+/* View tracking of a single order via the shipments API. */
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft } from "../../iconComponents";
@@ -11,7 +11,7 @@ import "../../styles/profile-page.scss";
 import "./ProfileOrderTrack.scss";
 
 /**
- * Просмотр отслеживания одного заказа с данными shipments API.
+ * View tracking of one order with shipments API data.
  */
 const ProfileOrderTrack = () => {
   const { orderId } = useParams();

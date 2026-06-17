@@ -1,4 +1,4 @@
-/* Общая группа полей адреса для форм профиля и оформления заказа. */
+/* A common group of address fields for profile and checkout forms. */
 import { useMemo, useState } from "react";
 import { useUserData } from "../../../context/UserDataContext";
 import { useFormValidation } from "../../../hooks/useFormValidation";
@@ -26,7 +26,7 @@ const FIELDS = [
 ];
 
 /**
- * Общая группа полей адреса для режимов создания и редактирования в профиле.
+ * A common group of address fields for creating and editing modes in a profile.
  */
 const ProfileAddressFormFields = ({
   addressId,
@@ -57,14 +57,14 @@ const ProfileAddressFormFields = ({
     schemas.address,
   );
   /**
-   * Возвращает обработчик изменения одного поля формы адреса.
+   * Returns a handler for changing one field of the address form.
    */
   const handleChange = (field) => (event) => {
     const nextValue = formatAddressFieldInput(field, event.target.value);
     setForm((prev) => ({ ...prev, [field]: nextValue }));
   };
   /**
-   * Проверяет форму и передаёт значения в родительский callback отправки.
+   * Validates the form and passes values ​​to the parent submit callback.
    */
   const handleSubmit = (event) => {
     event.preventDefault();

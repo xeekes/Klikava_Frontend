@@ -1,4 +1,4 @@
-/** Бренд и дефолтные SEO-значения витрины. */
+/** Brand and default SEO values ​​of the storefront. */
 export const SITE_NAME = "KlikAVA";
 export const SITE_TAGLINE = "Online Marketplace";
 export const SITE_DESCRIPTION =

@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/images/clock.svg";
 
 /**
- * Иконка часов для метаданных доставки и наличия на карточках товаров и в корзине.
+ * Clock icon for delivery and availability metadata on product cards and in the cart.
  * @param {object} props
  */
 const Clock = (props) => <IconMask src={icon} {...props} />;

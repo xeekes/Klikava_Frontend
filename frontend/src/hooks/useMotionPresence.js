@@ -1,10 +1,10 @@
-/* Удерживает DOM модалки/выпадающего списка смонтированным во время анимации закрытия (open → closing → closed). */
+/* Keeps the modal/dropdown list's DOM mounted during the closing animation (open → closing → closed). */
 import { useEffect, useState } from "react";
 
 export const MOTION_DURATION_MS = 280;
 
 /**
- * Откладывает размонтирование до завершения анимации закрытия и возвращает классы фазы.
+ * Delays unmounting until the close animation completes and returns the phase classes.
  * @param {boolean} isVisible
  * @param {number} [duration]
  * @returns {{ rendered: boolean, phase: string, className: string }}
@@ -14,7 +14,7 @@ export const useMotionPresence = (isVisible, duration = MOTION_DURATION_MS) => {
   const [phase, setPhase] = useState(isVisible ? "open" : "closed");
 
   /**
-   * Переключает фазы open, closing и closed в зависимости от видимости.
+   * Switches the open, closing and closed phases depending on visibility.
    */
   useEffect(() => {
     if (isVisible) {

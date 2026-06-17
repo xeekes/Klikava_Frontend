@@ -1,5 +1,5 @@
 /**
- * Отображает SVG-ресурс как элемент img для слайдера и навигационных иконок.
+ * Displays an SVG resource as an img element for slider and navigation icons.
  * @param {object} props
  */
 const IconImg = ({ src, className, alt = "", ...props }) => (

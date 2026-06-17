@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/filter.svg";
 
 /**
- * Иконка фильтра для фильтров каталога и меню пользователя шапки.
+ * Filter icon for catalog filters and header user menu.
  * @param {object} props
  */
 const Filter = (props) => <IconMask src={icon} {...props} />;

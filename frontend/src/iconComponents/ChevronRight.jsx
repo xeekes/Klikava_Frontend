@@ -1,7 +1,7 @@
 import ArrowLeft from "./ArrowLeft";
 
 /**
- * Шеврон вправо для навигации карусели на карточке товара.
+ * Chevron to the right for carousel navigation on the product card.
  * @param {object} props
  */
 const ChevronRight = ({ className, style, ...props }) => (

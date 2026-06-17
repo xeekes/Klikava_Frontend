@@ -1,11 +1,11 @@
-/* Мега-меню категорий в шапке из CatalogContext. */
+/* Mega menu of categories in the header from CatalogContext. */
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCatalog } from "../../context/CatalogContext";
 import "./CategoriesDropdown.scss";
 
 /**
- * Мега-меню категорий в шапке, заполняемое из CatalogContext.
+ * Mega menu of categories in the header, filled from CatalogContext.
  */
 const CategoriesDropdown = () => {
   const { categories } = useCatalog();

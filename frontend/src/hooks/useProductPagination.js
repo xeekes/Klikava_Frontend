@@ -1,4 +1,4 @@
-/* Клиентская пагинация «загрузить ещё» для сеток товаров (срез, не серверные страницы). */
+/* Client-side “load more” pagination for product grids (slice, not server-side pages). */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   PRODUCTS_INITIAL_PAGE_SIZE,
@@ -6,7 +6,7 @@ import {
 } from "../constants/productListing";
 
 /**
- * Предоставляет растущий срез элементов с управлением «загрузить ещё» для клиентских сеток.
+ * Provides a growing slice of elements with a "load more" control for client grids.
  * @param {object[]} items
  * @param {string|number} resetKey
  * @param {{ initialPageSize?: number, loadMoreSize?: number }} [options]
@@ -23,7 +23,7 @@ const useProductPagination = (
   const [visibleCount, setVisibleCount] = useState(initialPageSize);
 
   /**
-   * Сбрасывает видимое окно при изменении исходного списка или ключа сброса.
+   * Resets the visible window when the original list or reset key changes.
    */
   useEffect(() => {
     setVisibleCount(initialPageSize);
@@ -35,7 +35,7 @@ const useProductPagination = (
   );
   const hasMore = visibleCount < items.length;
 
-  /** Расширяет видимый срез на одну страницу «загрузить ещё» до полной длины списка. */
+  /** Extends the visible slice by one "load more" page to the full length of the list. */
   const loadMore = useCallback(() => {
     setVisibleCount((current) =>
       Math.min(current + loadMoreSize, items.length),

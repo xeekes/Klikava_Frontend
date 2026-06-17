@@ -1,6 +1,6 @@
 /*
- * Чистые хелперы запросов каталога поверх нормализованного списка товаров
- * из CatalogContext (поиск, фильтры, связанные товары, обогащение карточки).
+ * Pure catalog query helpers on top of a normalized product list
+ * from CatalogContext (search, filters, related products, card enrichment).
  */
 import {
   filterProducts,
@@ -44,7 +44,7 @@ export const resolveProductShipping = (shipping) => ({
 export const buildDetailTabs = () => DETAIL_TABS;
 
 /**
- * Собирает view model страницы товара из кэша списка и деталей API.
+ * Collects the view model of the product page from the list cache and API details.
  * @param {object|null|undefined} base
  * @param {object} detailed
  * @returns {object}
@@ -80,14 +80,14 @@ export const mergeProductDetailView = (base, detailed) => {
 };
 
 /**
- * Создаёт API хелперов каталога над списком товаров и опциональными метаданными категорий.
+ * Creates a catalog helper API over a product list and optional category metadata.
  * @param {Array<object>} products
  * @param {Array<{ id: string|number, name: string }>} [categories]
  * @returns {object}
  */
 export const createCatalogHelpers = (products, categories = []) => {
   /**
-   * Находит запись категории по id.
+   * Finds a category entry by id.
    * @param {string|number} categoryId
    * @returns {object|null}
    */
@@ -95,15 +95,19 @@ export const createCatalogHelpers = (products, categories = []) => {
     categories.find((item) => String(item.id) === String(categoryId)) || null;
 
   /**
-   * Находит товар по id в привязанном списке товаров.
-   * @param {string|number} id
+   * Finds a product by id or slug in the linked list of products.
+   * @param {string|number} idOrSlug
    * @returns {object|null}
    */
-  const findProduct = (id) =>
-    products.find((item) => String(item.id) === String(id)) || null;
+  const findProduct = (idOrSlug) =>
+    products.find(
+      (item) =>
+        String(item.id) === String(idOrSlug) ||
+        (item.slug && String(item.slug) === String(idOrSlug)),
+    ) || null;
 
   /**
-   * Возвращает товары с положительным discountPercent.
+   * Returns items with a positive discountPercent.
    * @returns {Array<object>}
    */
   const getDiscountProducts = () =>
@@ -114,7 +118,7 @@ export const createCatalogHelpers = (products, categories = []) => {
     );
 
   /**
-   * Возвращает до шести топ-товаров, опционально фильтруя по topCategoryId с добором.
+   * Returns up to six top products, optionally filtering by topCategoryId with additional ones.
    * @param {string} [topCategoryId]
    * @returns {Array<object>}
    */
@@ -139,7 +143,7 @@ export const createCatalogHelpers = (products, categories = []) => {
   };
 
   /**
-   * Возвращает товары категории, опционально сужая по подкатегории.
+   * Returns products of a category, optionally narrowing by subcategory.
    * @param {string|number} categoryId
    * @param {string} [subcategory]
    * @returns {Array<object>}
@@ -155,7 +159,7 @@ export const createCatalogHelpers = (products, categories = []) => {
   };
 
   /**
-   * Определяет пул товаров для scope поиска или листинга (скидки, топ, категория или все).
+   * Defines a pool of products for the search scope or listing (discounts, top, category or all).
    * @param {{ scope?: string, topCategoryId?: string, categoryId?: string, subcategory?: string }} [scope]
    * @returns {Array<object>}
    */
@@ -176,7 +180,7 @@ export const createCatalogHelpers = (products, categories = []) => {
   };
 
   /**
-   * Поиск по токенам в названии/категории внутри опционального scope листинга.
+   * Search by tokens in the name/category within the optional scope of the listing.
    * @param {string} query
    * @param {{ scope?: string, topCategoryId?: string, categoryId?: string, subcategory?: string }} [scope]
    * @returns {Array<object>}
@@ -202,7 +206,7 @@ export const createCatalogHelpers = (products, categories = []) => {
   };
 
   /**
-   * Сопоставляет названия категорий с запросом для подсказок автодополнения.
+   * Matches category names with the query for autocompletion suggestions.
    * @param {string} query
    * @param {Array<{ id: string|number, name: string }>} [categories]
    * @returns {Array<{ categoryId: string|number, label: string, subcategory: null }>}
@@ -224,7 +228,7 @@ export const createCatalogHelpers = (products, categories = []) => {
   };
 
   /**
-   * Формирует подсказки товаров, категорий и популярных запросов для выпадающего поиска.
+   * Generates suggestions for products, categories and popular queries for a drop-down search.
    * @param {string} query
    * @param {{ productLimit?: number, categoryLimit?: number, categories?: Array<object>, scope?: string, topCategoryId?: string, categoryId?: string, subcategory?: string }} [options]
    * @returns {{ products: Array<object>, categories: Array<object>, popular: Array<string> }}
@@ -252,12 +256,12 @@ export const createCatalogHelpers = (products, categories = []) => {
   };
 
   /**
-   * Возвращает view model карточки товара с вкладками, характеристиками и заглушками галереи по умолчанию.
-   * @param {string|number} id
+   * Returns the view model of the product card with default gallery tabs, characteristics and placeholders.
+   * @param {string|number} idOrSlug
    * @returns {object|null}
    */
-  const getProductById = (id) => {
-    const product = findProduct(id);
+  const getProductById = (idOrSlug) => {
+    const product = findProduct(idOrSlug);
     if (!product) {
       return null;
     }
@@ -281,7 +285,7 @@ export const createCatalogHelpers = (products, categories = []) => {
   };
 
   /**
-   * Возвращает связанные товары из той же категории с добором из полного каталога при необходимости.
+   * Returns related products from the same category with additional items from the full catalog if necessary.
    * @param {string|number} id
    * @param {number} [limit]
    * @returns {Array<object>}
@@ -315,9 +319,9 @@ export const createCatalogHelpers = (products, categories = []) => {
     getSearchSuggestions,
     getProductById,
     getRelatedProducts,
-    /** Применяет фильтры цены/рейтинга/скидки к привязанному списку товаров. */
+    /** Applies price/rating/discount filters to a linked product list. */
     filterProducts: (options) => filterProducts(products, options),
-    /** Сортирует привязанный список товаров по заданному ключу. */
+    /** Sorts the linked list of products by the given key. */
     sortProducts: (sortBy) => sortProducts(products, sortBy),
     POPULAR_SEARCHES,
   };

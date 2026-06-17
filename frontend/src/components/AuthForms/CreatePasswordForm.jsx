@@ -1,4 +1,4 @@
-/* Установка нового пароля после верификации или сброса. */
+/* Setting a new password after verification or reset. */
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -14,7 +14,7 @@ const PASSWORD_HINT =
   "It must contain at least one digit and two Latin letters of each case. Use 8 to 20 characters.";
 
 /**
- * Устанавливает новый пароль после верификации или при восстановлении пароля.
+ * Sets a new password after verification or when recovering a password.
  */
 const CreatePasswordForm = ({ isNewPassword = false }) => {
   const location = useLocation();
@@ -29,7 +29,7 @@ const CreatePasswordForm = ({ isNewPassword = false }) => {
     schemas.password,
   );
   /**
-   * Сохраняет новый пароль через поток создания или сброса в зависимости от состояния авторизации.
+   * Stores a new password through a creation or reset flow depending on the authorization state.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +48,7 @@ const CreatePasswordForm = ({ isNewPassword = false }) => {
       await createPassword({ password, confirmPassword });
       closeAuth();
     } catch {
-      // ошибка отображается через контекст
+      // the error is displayed through the context
     }
   };
   return (

@@ -1,10 +1,10 @@
-/* Выбор адреса и inline-формы добавления/редактирования при оформлении заказа. */
+/* Selecting an address and inline form for adding/editing when placing an order. */
 import CheckoutAddressEntry from "../CheckoutAddressEntry/CheckoutAddressEntry";
 import CheckoutAddressForm from "../CheckoutAddressForm/CheckoutAddressForm";
 import "./CheckoutAddressSection.scss";
 
 /**
- * Выбор адреса с inline-формами добавления и редактирования при оформлении заказа.
+ * Selecting an address with inline forms for adding and editing when placing an order.
  */
 const CheckoutAddressSection = ({
   addresses,

@@ -1,11 +1,11 @@
-/* Утилиты сортировки и фильтрации для страниц каталога. */
+/* Sorting and filtering utilities for catalog pages. */
 import { getProductFeatures } from "../api/mapCatalogItem";
 
-/** Популярные быстрые поисковые запросы при пустом поле ввода. */
+/** Popular quick search queries with an empty input field. */
 export const POPULAR_SEARCHES = ["phone", "bag", "ring", "lamp", "bear", "car"];
 
 /**
- * Собирает доступные значения характеристик из набора товаров.
+ * Collects available characteristic values ​​from a set of products.
  * @param {Array<object>} products
  * @param {Array<{ id: string|number, title?: string, isPrimary?: boolean }>} [featureCatalog]
  * @returns {Array<{ id: string, label: string, options: Array<{ value: string, count: number }> }>}
@@ -66,7 +66,7 @@ export const buildFeatureFacets = (products, featureCatalog = []) => {
 };
 
 /**
- * Фильтрует товары по выбранным значениям характеристик.
+ * Filters products by selected characteristic values.
  * @param {Array<object>} products
  * @param {Record<string, string[]>} selectedFeatures
  * @returns {Array<object>}
@@ -93,7 +93,7 @@ export const filterProductsByFeatures = (products, selectedFeatures = {}) => {
 };
 
 /**
- * Возвращает новый массив, отсортированный по выбранному ключу каталога.
+ * Returns a new array sorted by the selected directory key.
  * @param {Array<{ price: number, rating: number, sold: number }>} products
  * @param {string} sortBy
  * @returns {Array<object>}
@@ -119,7 +119,7 @@ export const sortProducts = (products, sortBy) => {
 };
 
 /**
- * Фильтрует товары по диапазону цены, минимальному рейтингу и флагу «только со скидкой».
+ * Filters products by price range, minimum rating, and “discount only” flag.
  * @param {Array<{ price: number, rating: number, discountPercent?: number }>} products
  * @param {{ minPrice?: string|number, maxPrice?: string|number, minRating?: string|number, discountedOnly?: boolean }} [options]
  * @returns {Array<object>}

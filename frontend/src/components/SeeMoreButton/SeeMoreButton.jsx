@@ -1,9 +1,9 @@
-/* Триггер «загрузить ещё» для постраничных сеток товаров. */
+/* “Load more” trigger for page grids of products. */
 import { Link } from "react-router-dom";
 import "./SeeMoreButton.scss";
 
 /**
- * Триггер «загрузить ещё», рендерящийся как кнопка или ссылка роутера для постраничных сеток.
+ * A “load more” trigger rendered as a button or router link for page grids.
  */
 const SeeMoreButton = ({
   onClick,

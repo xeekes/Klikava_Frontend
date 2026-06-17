@@ -2,7 +2,7 @@ import IconImg from "./IconImg";
 import icon from "../assets/icons/silder_arrow_right.svg";
 
 /**
- * Стрелка карусели вправо для слайдера скидок и карточек заказов в профиле.
+ * Carousel arrow to the right for the discount slider and order cards in the profile.
  * @param {object} props
  */
 const SliderArrowRight = (props) => <IconImg src={icon} {...props} />;

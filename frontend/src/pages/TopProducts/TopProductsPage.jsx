@@ -1,4 +1,4 @@
-/* Подборка топ-продаж с необязательными вкладками фильтра по категориям. */
+/* A selection of top sales with optional filter tabs by category. */
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import CatalogListing from "../../components/CatalogListing/CatalogListing";
@@ -7,7 +7,7 @@ import { useCatalog } from "../../context/CatalogContext";
 import "./TopProductsPage.scss";
 
 /**
- * Подборка бестселлеров с необязательными вкладками фильтра по топ-категориям.
+ * A selection of bestsellers with optional filter tabs by top categories.
  */
 const TopProductsPage = () => {
   const { getTopProducts, POPULAR_SEARCHES } = useCatalog();

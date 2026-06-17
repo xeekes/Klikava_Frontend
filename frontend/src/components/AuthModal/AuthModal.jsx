@@ -1,6 +1,6 @@
 /*
- * Оверлей авторизации: вложенные Routes для потоков входа/регистрации/верификации.
- * Перенаправляет авторизованных пользователей обратно на backgroundLocation (или домой).
+ * Authorization overlay: nested Routes for login/registration/verification flows.
+ * Redirects authorized users back to backgroundLocation (or home).
  */
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -16,7 +16,7 @@ import { useAuthModal } from "../../hooks/useAuthModal";
 import "./AuthModal.scss";
 
 /**
- * Оверлей авторизации с вложенными маршрутами; перенаправляет вошедших пользователей на фоновую страницу.
+ * Authorization overlay with nested routes; redirects logged-in users to the background page.
  */
 const AuthModal = () => {
   const location = useLocation();

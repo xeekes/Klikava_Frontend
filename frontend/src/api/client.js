@@ -1,14 +1,15 @@
 /*
- * HTTP-клиент для бэкенда маркетплейса на FastAPI.
- * Два режима: при пустом VITE_API_BASE_URL верхние слои используют mock/localStorage.
+ * HTTP client for the marketplace backend on FastAPI.
+ * Two modes: when VITE_API_BASE_URL is empty, the upper layers use mock/localStorage.
  */
 import { ApiError } from "./errors";
 
-/** Нормализованный origin API без завершающего слэша. */
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+/** Normalized origin API without trailing slash. */
+export const getApiBaseUrl = () =>
+  (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
 /**
- * Превращает относительный путь медиа в абсолютный URL API.
+ * Converts a relative media path to an absolute API URL.
  * @param {string|null|undefined} url
  * @returns {string}
  */
@@ -16,28 +17,38 @@ export const resolveMediaUrl = (url) => {
   if (!url || typeof url !== "string") {
     return "";
   }
-  if (/^(https?:|data:|blob:)/i.test(url)) {
+  if (/^(data:|blob:)/i.test(url)) {
     return url;
   }
-  if (!BASE_URL) {
+  const baseUrl = getApiBaseUrl();
+  if (/^https?:\/\//i.test(url)) {
+    if (!baseUrl) {
+      return url;
+    }
+    try {
+      const parsed = new URL(url);
+      if (parsed.pathname.startsWith("/static/")) {
+        return `${baseUrl}${parsed.pathname}${parsed.search}${parsed.hash}`;
+      }
+    } catch {
+      return url;
+    }
     return url;
   }
-  return `${BASE_URL}${url.startsWith("/") ? url : `/${url}`}`;
+  if (!baseUrl) {
+    return url;
+  }
+  return `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
 };
 
 /**
- * @returns {string}
- */
-export const getApiBaseUrl = () => BASE_URL;
-
-/**
- * Читает bearer-токен, сохранённый после успешного входа.
+ * Reads the bearer token saved after a successful login.
  * @returns {string|null}
  */
 const getAuthToken = () => localStorage.getItem("auth_token");
 
 /**
- * Извлекает читаемое сообщение из разнородных payload ошибок.
+ * Extracts a readable message from heterogeneous payload errors.
  * @param {unknown} payload
  * @param {string} fallback
  * @returns {string}
@@ -46,7 +57,7 @@ const getErrorMessage = (payload, fallback) => {
   if (!payload || typeof payload !== "object") {
     return fallback;
   }
-  /* Ошибки валидации FastAPI: detail[] с полями loc и msg. */
+  /* FastAPI validation errors: detail[] with loc and msg fields. */
   if (Array.isArray(payload.detail) && payload.detail.length > 0) {
     const first = payload.detail[0];
     const field = Array.isArray(first?.loc)
@@ -59,7 +70,7 @@ const getErrorMessage = (payload, fallback) => {
 };
 
 /**
- * Возвращает внутренние data или бросает ошибку, если envelope маркетплейса сообщает о сбое.
+ * Returns internal data or throws an error if the marketplace envelope reports a failure.
  * @param {unknown} payload
  * @returns {unknown}
  */
@@ -83,7 +94,7 @@ const unwrapMarketplacePayload = (payload) => {
 };
 
 /**
- * Выполняет авторизованный JSON-запрос к настроенному origin API.
+ * Performs an authorized JSON request to the configured origin API.
  * @param {string} path
  * @param {RequestInit & { body?: unknown }} [options]
  * @returns {Promise<unknown>}
@@ -100,7 +111,7 @@ export const apiRequest = async (path, options = {}) => {
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
-  const response = await fetch(`${BASE_URL}${path}`, {
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
     ...rest,
     headers,
     body:
@@ -122,7 +133,7 @@ export const apiRequest = async (path, options = {}) => {
 };
 
 /**
- * Выполняет запрос с FormData или без тела (upload/delete).
+ * Executes a request with FormData or without a body (upload/delete).
  * @param {string} path
  * @param {FormData|null} [formData]
  * @param {RequestInit} [options]
@@ -135,7 +146,7 @@ export const apiUpload = async (path, formData = null, options = {}) =>
   });
 
 /**
- * Указывает, нужно ли делать реальные HTTP-вызовы вместо mock-адаптеров.
+ * Specifies whether to make real HTTP calls instead of mock adapters.
  * @returns {boolean}
  */
-export const hasApiBaseUrl = () => Boolean(BASE_URL);
+export const hasApiBaseUrl = () => Boolean(getApiBaseUrl());

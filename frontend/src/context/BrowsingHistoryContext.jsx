@@ -1,5 +1,5 @@
 /*
- * Недавно просмотренные товары (макс. 40 записей), сгруппированные по дате для страницы профиля.
+ * Recently viewed items (max. 40 entries), grouped by date for profile page.
  */
 import {
   createContext,
@@ -12,11 +12,11 @@ import {
 import { useCatalog } from "./CatalogContext";
 import { readStorage, STORAGE_KEYS, writeStorage } from "../utils/storage";
 
-/** React-контекст для недавно просмотренных товаров и обработчиков отслеживания. */
+/** React context for recently viewed products and tracking handlers. */
 const BrowsingHistoryContext = createContext(null);
 
 /**
- * Форматирует ISO-дату в короткую английскую метку для группировки.
+ * Formats an ISO date into a short English date stamp for grouping.
  * @param {Date} date
  * @returns {string}
  */
@@ -28,7 +28,7 @@ const formatDateLabel = (date) =>
   });
 
 /**
- * Группирует записи просмотров по календарному дню, дедуплицируя товары внутри дня.
+ * Groups browsing records by calendar day, deduplicating products within a day.
  * @param {object[]} entries
  * @returns {object[]}
  */
@@ -51,7 +51,7 @@ const groupProductsByDate = (entries) => {
 };
 
 /**
- * Подмешивает актуальные данные каталога (в т.ч. image) в снимок товара из истории.
+ * Mixes current catalog data (including image) into a product snapshot from history.
  * @param {object} snapshot
  * @param {Array<object>} catalogProducts
  * @returns {object}
@@ -72,7 +72,7 @@ const mergeWithCatalogProduct = (snapshot, catalogProducts) => {
 };
 
 /**
- * Предоставляет сгруппированную историю просмотров и отслеживание дереву компонентов.
+ * Provides grouped browsing history and tracking to the component tree.
  * @param {{ children: import("react").ReactNode }} props
  */
 export const BrowsingHistoryProvider = ({ children }) => {
@@ -82,14 +82,14 @@ export const BrowsingHistoryProvider = ({ children }) => {
   );
 
   /**
-   * Синхронизирует записи просмотров с хранилищем при изменении списка в памяти.
+   * Synchronizes view records with storage when the list in memory changes.
    */
   useEffect(() => {
     writeStorage(STORAGE_KEYS.browsingHistory, entries);
   }, [entries]);
 
   /**
-   * Записывает просмотр товара, выносит его в начало и ограничивает длину списка.
+   * Records product views, moves them to the top and limits the length of the list.
    * @param {object} product
    */
   const trackProduct = useCallback((product) => {
@@ -102,6 +102,7 @@ export const BrowsingHistoryProvider = ({ children }) => {
           viewedAt: new Date().toISOString(),
           product: {
             id: product.id,
+            slug: product.slug ?? null,
             title: product.title,
             price: product.price,
             image: product.image,
@@ -137,7 +138,7 @@ export const BrowsingHistoryProvider = ({ children }) => {
 };
 
 /**
- * Читает состояние истории просмотров и действия из ближайшего провайдера.
+ * Reads browsing history status and activity from the nearest provider.
  * @returns {object}
  */
 export const useBrowsingHistory = () => {

@@ -1,5 +1,5 @@
 /**
- * Цена в пузырьках OfferBubble — только целое число (без копеек).
+ * The price in OfferBubble is a whole number only (no kopecks).
  * @param {number|string} price
  * @returns {string}
  */

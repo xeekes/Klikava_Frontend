@@ -1,4 +1,4 @@
-/* Hero-блок страницы со встроенным SiteSearch (скидки, топ-товары и т.д.). */
+/* Hero-block page with built-in SiteSearch (discounts, top products, etc.). */
 import { useNavigate } from "react-router-dom";
 import SiteSearch from "../SiteSearch/SiteSearch";
 import TagSlider from "../TagSlider/TagSlider";
@@ -6,7 +6,7 @@ import { buildSearchUrl } from "../../utils/searchScope";
 import "./PageSearchHero.scss";
 
 /**
- * Hero-блок страницы со встроенным поиском в области и необязательными популярными терминами.
+ * Hero-block page with built-in search in the area and optional popular terms.
  */
 const PageSearchHero = ({
   eyebrow,
@@ -23,7 +23,7 @@ const PageSearchHero = ({
   const navigate = useNavigate();
   const scope = searchScope || {};
   /**
-   * Переходит к результатам поиска по популярному термину в текущей области.
+   * Jumps to search results for a popular term in the current area.
    */
   const handlePopularClick = (term) => {
     navigate(buildSearchUrl(term, scope));

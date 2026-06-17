@@ -1,13 +1,13 @@
 /*
- * Маршрутизация модального окна авторизации: открывает /login и т.п. как оверлей-маршруты,
- * сохраняя backgroundLocation, чтобы базовая страница оставалась смонтированной под ним.
+ * Routing the authorization modal window: opens /login, etc. like overlay routes,
+ * keeping the backgroundLocation so that the base page remains mounted underneath it.
  */
 import { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { isAuthPath } from "../constants/authRoutes";
 
 /**
- * Управляет оверлей-маршрутами авторизации и сохранением background location.
+ * Manages authorization overlay routes and saving background location.
  * @returns {object}
  */
 export const useAuthModal = () => {
@@ -16,7 +16,7 @@ export const useAuthModal = () => {
   const backgroundLocation = location.state?.backgroundLocation;
 
   /**
-   * Переходит на auth-путь, сохраняя текущую страницу как фон.
+   * Goes to the auth path, saving the current page as the background.
    * @param {string} path
    * @param {object} [options]
    */
@@ -35,7 +35,7 @@ export const useAuthModal = () => {
   );
 
   /**
-   * Возвращается к фоновому маршруту или на главную, если фон не сохранён.
+   * Returns to the background route or to the main route if the background is not saved.
    */
   const closeAuth = useCallback(() => {
     if (backgroundLocation) {

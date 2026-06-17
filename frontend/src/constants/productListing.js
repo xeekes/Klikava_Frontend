@@ -1,7 +1,7 @@
-/* Размеры страниц для клиентской пагинации сетки товаров. */
+/* Page sizes for client pagination of the product grid. */
 
-/** Количество товаров при первой загрузке страницы каталога. */
+/** The number of products when the catalog page is first loaded. */
 export const PRODUCTS_INITIAL_PAGE_SIZE = 24;
 
-/** Количество дополнительных товаров при действии «загрузить ещё». */
+/** The number of additional products during the “load more” action. */
 export const PRODUCTS_LOAD_MORE_SIZE = 24;

@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/arrow_forward.svg";
 
 /**
- * Стрелка вперёд для CTA-ссылок в hero-секции.
+ * Forward arrow for CTA links in the hero section.
  * @param {object} props
  */
 const ArrowRight = (props) => <IconMask src={icon} {...props} />;

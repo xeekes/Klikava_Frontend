@@ -1,11 +1,11 @@
 /*
- * Построители и парсеры URL поиска: query-параметры scope связывают SiteSearch
- * со скидками, топ-товарами или конкретной категорией каталога.
+ * Search URL builders and parsers: scope query parameters link SiteSearch
+ * with discounts, top products or a specific catalog category.
  */
 import { TOP_PRODUCT_CATEGORIES } from "../data/topCategories";
 
 /**
- * Находит узел категории по id в плоском массиве категорий.
+ * Finds a category node by id in a flat array of categories.
  * @param {Array<{ id: string|number, name: string }>} categories
  * @param {string|number} categoryId
  * @returns {object|null}
@@ -14,7 +14,7 @@ const findCategory = (categories, categoryId) =>
   categories.find((item) => String(item.id) === String(categoryId)) || null;
 
 /**
- * Формирует URL /search с текстом запроса и опциональными параметрами scope листинга.
+ * Generates the URL /search with the request text and optional scope listing parameters.
  * @param {string} query
  * @param {{ scope?: string, topCategoryId?: string, categoryId?: string, subcategory?: string }} [scope]
  * @returns {string}
@@ -44,7 +44,7 @@ export const buildSearchUrl = (query, scope = {}) => {
 };
 
 /**
- * Парсит search-параметры scope из URLSearchParams в объект scope.
+ * Parses scope search parameters from URLSearchParams into a scope object.
  * @param {URLSearchParams} searchParams
  * @returns {{ scope?: string, topCategoryId?: string, categoryId?: string, subcategory?: string }}
  */
@@ -77,7 +77,7 @@ export const parseSearchScope = (searchParams) => {
 };
 
 /**
- * Возвращает человекочитаемую подпись активного scope поиска для подсказок UI.
+ * Returns a human-readable signature of the active search scope for UI tooltips.
  * @param {{ scope?: string, topCategoryId?: string, categoryId?: string, subcategory?: string }} [scope]
  * @param {Array<{ id: string|number, name: string }>} [categories]
  * @returns {string}
@@ -109,7 +109,7 @@ export const getSearchScopeLabel = (scope = {}, categories = []) => {
 };
 
 /**
- * Возвращает true, если активен неглобальный scope поиска.
+ * Returns true if a non-global search scope is active.
  * @param {{ scope?: string }} [scope]
  * @returns {boolean}
  */

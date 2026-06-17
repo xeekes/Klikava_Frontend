@@ -1,7 +1,7 @@
-/* Inline-баннер успеха/ошибки для форм авторизации. */
+/* Inline success/error banner for authorization forms. */
 
 /**
- * Inline-баннер успеха или ошибки для форм авторизации.
+ * Inline success or error banner for authorization forms.
  */
 const AuthFormMessage = ({ error, success }) => {
   if (!error && !success) return null;

@@ -1,4 +1,4 @@
-/* Боковая панель итогов корзины; оформление для гостя через модальное окно авторизации. */
+/* Cart totals sidebar; registration for the guest through a modal authorization window. */
 import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -9,7 +9,7 @@ import "./CartSidebar.scss";
 import { DELIVERY_FEE } from "../../constants/delivery";
 
 /**
- * Боковая панель итогов корзины, ограничивающая оформление модальным окном авторизации для гостей.
+ * Cart summary sidebar, limiting the design to a modal authorization window for guests.
  */
 const CartSidebar = ({ className = "" }) => {
   const navigate = useNavigate();

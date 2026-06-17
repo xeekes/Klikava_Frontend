@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/arrow-next.svg";
 
 /**
- * Стрелка назад для страниц заказов профиля и каруселей товаров.
+ * Back arrow for profile order pages and product carousels.
  * @param {object} props
  */
 const ArrowLeft = (props) => <IconMask src={icon} {...props} />;

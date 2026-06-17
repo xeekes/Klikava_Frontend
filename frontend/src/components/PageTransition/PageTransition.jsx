@@ -1,17 +1,17 @@
-/* Анимированная обёртка Outlet для переходов между маршрутами. */
+/* Animated Outlet wrapper for transitions between routes. */
 import { useLocation, useOutlet } from "react-router-dom";
 import { isAuthPath } from "../../constants/authRoutes";
 import { useDefaultPageMeta } from "../../hooks/usePageMeta";
 import "./PageTransition.scss";
 
 /**
- * Анимированная обёртка Outlet, перемонтирующая маршруты при смене pathname.
+ * Animated Outlet wrapper that remounts routes when the pathname is changed.
  */
 const PageTransition = () => {
   const location = useLocation();
   const outlet = useOutlet();
   useDefaultPageMeta();
-  /* Маршруты оверлея авторизации не должны перемонтировать фоновую страницу через смену key. */
+  /* Authorization overlay routes should not remount the background page via key change. */
   if (isAuthPath(location.pathname)) {
     return outlet;
   }

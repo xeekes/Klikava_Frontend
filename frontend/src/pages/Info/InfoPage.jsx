@@ -1,9 +1,9 @@
-/* Переиспользуемый макет для статических информационных/маркетинговых страниц. */
+/* Reusable layout for static information/marketing pages. */
 import { Link } from "react-router-dom";
 import "./InfoPage.scss";
 
 /**
- * Общая обёртка макета для статического маркетингового и информационного контента.
+ * A common layout wrapper for static marketing and informational content.
  * @param {{ eyebrow?: string, title: string, children: import("react").ReactNode, actions?: Array<{ to: string, label: string }> }} props
  */
 const InfoPage = ({ eyebrow, title, children, actions = [] }) => {

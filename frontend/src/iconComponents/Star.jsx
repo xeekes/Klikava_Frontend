@@ -1,5 +1,5 @@
 /**
- * Заливная звезда для рейтинга товаров в карточках, каталоге и профиле.
+ * Filled star for rating products in cards, catalog and profile.
  * @param {object} props
  */
 const Star = (props) => (

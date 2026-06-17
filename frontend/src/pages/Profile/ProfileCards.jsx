@@ -1,4 +1,4 @@
-/* CRUD сохранённых платёжных карт (API или локальный mock). */
+/* CRUD of saved payment cards (API or local mock). */
 import { useMemo } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import CheckoutPaymentCard from "../../components/Checkout/CheckoutPaymentCard/CheckoutPaymentCard";
@@ -19,7 +19,7 @@ const DELETE_CARD_CONFIRM = {
 };
 
 /**
- * Сохранённые платёжные карты с модальными маршрутами добавления и редактирования.
+ * Saved payment cards with modal routes for adding and editing.
  */
 const ProfileCards = () => {
   const navigate = useNavigate();
@@ -34,13 +34,13 @@ const ProfileCards = () => {
     return cards.find((card) => card.id === editMatch.params.cardId);
   }, [cards, editMatch?.params.cardId]);
 
-  /** Закрывает модальное окно карты и возвращает к списку карт. */
+  /** Closes the modal map window and returns to the list of maps. */
   const closeModal = () => {
     navigate("/profile/cards");
   };
 
   /**
-   * Удаляет карту после подтверждения.
+   * Deletes the card after confirmation.
    * @param {string} cardId
    */
   const handleDeleteCard = async (cardId) => {

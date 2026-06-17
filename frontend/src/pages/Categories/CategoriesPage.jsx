@@ -1,11 +1,11 @@
-/* Индексная сетка категорий со ссылками на маршруты листинга категорий. */
+/* Category index grid with links to category listing routes. */
 import { Link } from "react-router-dom";
 import PageSearchHero from "../../components/PageSearchHero/PageSearchHero";
 import { useCatalog } from "../../context/CatalogContext";
 import "./CategoriesPage.scss";
 
 /**
- * Индекс категорий со ссылками на маршруты листинга отделов.
+ * Index of categories with links to department listing routes.
  */
 const CategoriesPage = () => {
   const { categories, getProductsByCategory, POPULAR_SEARCHES } = useCatalog();

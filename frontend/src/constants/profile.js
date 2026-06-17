@@ -1,6 +1,6 @@
-/* Структура боковой навигации профиля и вкладки списка заказов. */
+/* Structure of profile side navigation and order list tabs. */
 
-/** Ссылки боковой панели и пункт выхода в разделе профиля. */
+/** Sidebar links and exit point in profile section. */
 export const PROFILE_NAV_ITEMS = [
   { id: "orders", label: "Orders", path: "/profile/orders" },
   { id: "favorites", label: "Favorites", path: "/profile/favorites" },
@@ -25,7 +25,7 @@ export const PROFILE_NAV_ITEMS = [
   { id: "logout", label: "Log out", type: "logout" },
 ];
 
-/** Вкладки статусов для фильтрации заказов на странице заказов профиля. */
+/** Status tabs for filtering orders on the profile orders page. */
 export const ORDER_TABS = [
   { id: "all", label: "Orders" },
   { id: "processing", label: "Processing" },

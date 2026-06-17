@@ -1,6 +1,6 @@
 /*
- * Шапка витрины: навигация, выпадающий список категорий, поиск, бейдж корзины, мобильное меню.
- * Настройки языка/валюты только для UI (хранятся локально, не отправляются в API).
+ * Showcase header: navigation, drop-down list of categories, search, cart badge, mobile menu.
+ * Language/currency settings are for UI only (stored locally, not sent to API).
  */
 import { Link } from "react-router-dom";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -29,7 +29,7 @@ const MOBILE_CURRENCIES = [
 ];
 
 /**
- * Шапка витрины с навигацией, поиском, бейджем корзины и мобильным меню.
+ * Showcase header with navigation, search, cart badge and mobile menu.
  */
 const Header = () => {
   const { itemCount } = useCart();
@@ -46,7 +46,7 @@ const Header = () => {
   );
   const categoriesCloseTimerRef = useRef(null);
   /**
-   * Открывает выпадающий список категорий и отменяет отложенный таймер закрытия.
+   * Opens a drop-down list of categories and cancels the delayed close timer.
    */
   const openCategoriesMenu = () => {
     if (categoriesCloseTimerRef.current) {
@@ -56,7 +56,7 @@ const Header = () => {
     setIsCategoriesOpen(true);
   };
   /**
-   * Откладывает закрытие выпадающего списка категорий для перемещения указателя.
+   * Delays closing the category dropdown list to move the pointer.
    */
   const scheduleCloseCategoriesMenu = () => {
     categoriesCloseTimerRef.current = setTimeout(() => {
@@ -64,14 +64,14 @@ const Header = () => {
     }, 200);
   };
   /**
-   * Возвращает мобильное меню к корневому виду и сбрасывает состояние вложенной навигации.
+   * Returns the mobile menu to the root view and resets the nested navigation state.
    */
   const resetMobileMenuView = () => {
     setMobileMenuView("root");
     setActiveMobileCategoryId(null);
   };
   /**
-   * Закрывает мобильную панель и сбрасывает стек навигации.
+   * Closes the mobile panel and resets the navigation stack.
    */
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
@@ -81,14 +81,14 @@ const Header = () => {
     categories.find((category) => category.id === activeMobileCategoryId) ??
     null;
   /**
-   * Сохраняет выбранный язык интерфейса в локальное хранилище.
+   * Saves the selected interface language to local storage.
    */
   const handleLanguageSelect = (languageId) => {
     setActiveLanguage(languageId);
     writeStorage(STORAGE_KEYS.language, languageId);
   };
   /**
-   * Сохраняет выбранную валюту отображения в локальное хранилище.
+   * Saves the selected display currency to local storage.
    */
   const handleCurrencySelect = (currencyId) => {
     setActiveCurrency(currencyId);

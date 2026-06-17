@@ -1,4 +1,4 @@
-/* Внутренняя витрина UI-компонентов (dev/demo-маршрут /components). */
+/* Internal showcase of UI components (dev/demo route /components). */
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import CategoryNav from "../../components/CategoryNav/CategoryNav";
@@ -8,7 +8,7 @@ import ProductCardDetailed from "../../components/ProductCardDetailed/ProductCar
 import "./ComponentsDemo.scss";
 
 /**
- * Внутренний демо-маршрут для переиспользуемых UI-блоков.
+ * Internal demo route for reusable UI blocks.
  */
 const ComponentsDemo = () => {
   const location = useLocation();
@@ -151,7 +151,7 @@ const ComponentsDemo = () => {
     <div className="components-demo">
       <div className="demo-container">
         <h1 className="demo-title">UI Components</h1>
-        {/* Демо CategoryNav */}
+        {/* Demo CategoryNav */}
         <section className="demo-section">
           <h2 className="section-title">
             CategoryNav - Навигация по категориям
@@ -171,7 +171,7 @@ const ComponentsDemo = () => {
             )}
           </div>
         </section>
-        {/* Демо CategoryProducts */}
+        {/* Demo CategoryProducts */}
         <section className="demo-section">
           <h2 className="section-title">
             CategoryProducts - Круглые карточки товаров
@@ -180,7 +180,7 @@ const ComponentsDemo = () => {
             <CategoryProducts products={categoryProducts} />
           </div>
         </section>
-        {/* Демо ProductGrid */}
+        {/* ProductGrid Demo */}
         <section className="demo-section">
           <h2 className="section-title">
             ProductGrid - Сетка товаров с каруселью
@@ -189,14 +189,14 @@ const ComponentsDemo = () => {
             <ProductGrid products={gridProducts} columns={3} />
           </div>
         </section>
-        {/* ProductGrid с 2 колонками */}
+        {/* ProductGrid with 2 columns */}
         <section className="demo-section">
           <h2 className="section-title">ProductGrid - 2 колонки</h2>
           <div className="demo-content">
             <ProductGrid products={gridProducts.slice(0, 4)} columns={2} />
           </div>
         </section>
-        {/* Демо ProductCardDetailed */}
+        {/* Demo ProductCardDetailed */}
         <section className="demo-section">
           <h2 className="section-title">
             ProductCardDetailed - Детальная карточка товара
@@ -225,7 +225,7 @@ const ComponentsDemo = () => {
             </div>
           </div>
         </section>
-        {/* Демо форм авторизации */}
+        {/* Demo of authorization forms */}
         <section className="demo-section">
           <h2 className="section-title">Формы авторизации</h2>
           <div className="demo-content">

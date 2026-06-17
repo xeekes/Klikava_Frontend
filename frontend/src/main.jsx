@@ -1,5 +1,5 @@
 /**
- * Точка входа SPA: монтирует App в #root внутри StrictMode и подключает глобальные стили.
+ * SPA Entry Point: Mounts the App at #root inside StrictMode and includes global styles.
  */
 import React from "react";
 import ReactDOM from "react-dom/client";

@@ -1,4 +1,4 @@
-/* Поля формы отзыва/возврата, привязанные к конкретному товару заказа. */
+/* Feedback/return form fields linked to a specific product of the order. */
 import { useRef } from "react";
 import { Star } from "../../../iconComponents";
 import "./ProfileOrderProductForm.scss";
@@ -11,7 +11,7 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 
 /**
- * Читает файл изображения как data URL после проверки MIME-типа.
+ * Reads an image file as a data URL after checking the MIME type.
  */
 const readImageFile = (file) =>
   new Promise((resolve, reject) => {
@@ -26,7 +26,7 @@ const readImageFile = (file) =>
   });
 
 /**
- * Поля формы отзыва или возврата, привязанные к конкретному товару заказа.
+ * Fields of the review or return form associated with a specific product of the order.
  */
 const ProfileOrderProductForm = ({
   product,
@@ -49,13 +49,13 @@ const ProfileOrderProductForm = ({
   const canUploadPhotos = typeof onPhotosChange === "function";
   const remainingSlots = Math.max(0, maxPhotos - photos.length);
   /**
-   * Открывает скрытое поле выбора файла для загрузки фото.
+   * Opens a hidden file selection field for uploading a photo.
    */
   const handleAddPhotosClick = () => {
     fileInputRef.current?.click();
   };
   /**
-   * Читает выбранные файлы изображений и добавляет data URL до лимита фото.
+   * Reads selected image files and adds data URL up to photo limit.
    */
   const handleFileChange = async (event) => {
     const files = Array.from(event.target.files || []);
@@ -68,11 +68,11 @@ const ProfileOrderProductForm = ({
       const urls = await Promise.all(filesToAdd.map(readImageFile));
       onPhotosChange([...photos, ...urls]);
     } catch {
-      // пока игнорируем некорректные файлы
+      // ignore incorrect files for now
     }
   };
   /**
-   * Удаляет одно загруженное превью фото по индексу в списке.
+   * Deletes one loaded preview photo by index in the list.
    */
   const handleRemovePhoto = (index) => {
     if (!canUploadPhotos) {

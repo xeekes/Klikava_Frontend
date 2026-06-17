@@ -1,18 +1,18 @@
-/* Навигация профиля из constants/profile. */
+/* Profile navigation from constants/profile. */
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { PROFILE_NAV_ITEMS } from "../../../constants/profile";
 import { useAuth } from "../../../context/AuthContext";
 import "./ProfileSidebar.scss";
 
 /**
- * Навигация раздела профиля на основе общих констант навигации.
+ * Profile section navigation based on common navigation constants.
  */
 const ProfileSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
   /**
-   * Сопоставляет вложенные маршруты профиля с префиксом пути пункта навигации.
+   * Matches the profile's nested routes to the navigation item path prefix.
    */
   const isActivePath = (path) => {
     if (path === "/profile/orders") {
@@ -27,7 +27,7 @@ const ProfileSidebar = () => {
     return location.pathname === path;
   };
   /**
-   * Выходит из аккаунта и возвращает на главную страницу витрины.
+   * Logs out of the account and returns to the main page of the storefront.
    */
   const handleLogout = async () => {
     await logout();

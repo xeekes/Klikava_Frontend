@@ -1,10 +1,10 @@
-/* Модальная обёртка для потоков добавления/редактирования карты в профиле. */
+/* Modal wrapper for flows of adding/editing a map in a profile. */
 import { cloneElement, isValidElement } from "react";
 import Modal, { useModalClose } from "../../Modal/Modal";
 import "./ProfileCardModal.scss";
 
 /**
- * Внедряет обработчик закрытия модального окна в единственный допустимый дочерний элемент.
+ * Injects a modal window close handler into the only valid child element.
  */
 const ProfileCardModalContent = ({ children }) => {
   const close = useModalClose();
@@ -15,7 +15,7 @@ const ProfileCardModalContent = ({ children }) => {
 };
 
 /**
- * Модальная обёртка для потоков добавления или редактирования карты в разделе профиля.
+ * Modal wrapper for flows of adding or editing a map in the profile section.
  */
 const ProfileCardModal = ({ title, children, onClose }) => (
   <Modal

@@ -41,6 +41,9 @@ describe("mapBackendCategory", () => {
 
 describe("mapBackendProduct", () => {
   it("maps nested version payload with discount pricing", () => {
+    const previousBaseUrl = import.meta.env.VITE_API_BASE_URL;
+    import.meta.env.VITE_API_BASE_URL = "http://3.65.169.203:7777";
+
     const categoryLookup = new Map([
       [10, mapBackendCategory({ id: 10, title: "Electronics" })],
     ]);
@@ -50,9 +53,14 @@ describe("mapBackendProduct", () => {
         id: 42,
         current_version: {
           title: "Smartphone X",
+          slug: "smartphone-x",
           category_id: 10,
           variants: [{ id: 501, final_price: 90, discount: 10 }],
-          pictures: [{ url: "https://cdn.example/img.jpg" }],
+          pictures: [
+            {
+              url: "http://63.185.238.30/static/product_pictures/demo/phone.webp",
+            },
+          ],
         },
         is_top: true,
       },
@@ -61,8 +69,11 @@ describe("mapBackendProduct", () => {
     );
 
     expect(result.id).toBe(42);
+    expect(result.slug).toBe("smartphone-x");
     expect(result.title).toBe("Smartphone X");
-    expect(result.image).toBe("https://cdn.example/img.jpg");
+    expect(result.image).toBe(
+      "http://3.65.169.203:7777/static/product_pictures/demo/phone.webp",
+    );
     expect(result.price).toBe(90);
     expect(result.originalPrice).toBe(100);
     expect(result.discountPercent).toBe(10);
@@ -71,6 +82,29 @@ describe("mapBackendProduct", () => {
     expect(result.isTop).toBe(true);
     expect(result.variantId).toBe(501);
     expect(result.features).toEqual([]);
+
+    import.meta.env.VITE_API_BASE_URL = previousBaseUrl;
+  });
+
+  it("resolves relative static media paths through API base URL", () => {
+    const previousBaseUrl = import.meta.env.VITE_API_BASE_URL;
+    import.meta.env.VITE_API_BASE_URL = "http://3.65.169.203:7777";
+
+    const result = mapBackendProduct({
+      id: 1,
+      current_version: {
+        title: "Mouse",
+        slug: "wireless-mouse",
+        pictures: [{ path: "/static/product_pictures/demo/wireless-mouse.webp" }],
+      },
+    });
+
+    expect(result.slug).toBe("wireless-mouse");
+    expect(result.image).toBe(
+      "http://3.65.169.203:7777/static/product_pictures/demo/wireless-mouse.webp",
+    );
+
+    import.meta.env.VITE_API_BASE_URL = previousBaseUrl;
   });
 
   it("maps variant features for catalog filters", () => {

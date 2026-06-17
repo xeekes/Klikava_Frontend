@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/logout.svg";
 
 /**
- * Иконка выхода для действия logout в меню пользователя шапки.
+ * Logout icon for the logout action in the header user menu.
  * @param {object} props
  */
 const Logout = (props) => <IconMask src={icon} {...props} />;

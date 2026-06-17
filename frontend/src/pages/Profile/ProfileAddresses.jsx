@@ -1,4 +1,4 @@
-/* CRUD адресов доставки (API или локальный mock). */
+/* CRUD delivery addresses (API or local mock). */
 import { Navigate, useMatch, useNavigate } from "react-router-dom";
 import ProfileAddressFormFields from "../../components/Profile/ProfileAddressFormFields/ProfileAddressFormFields";
 import { useActionFeedback } from "../../context/ActionFeedbackContext";
@@ -14,7 +14,7 @@ const DELETE_ADDRESS_CONFIRM = {
 };
 
 /**
- * Список адресов доставки с созданием, редактированием, удалением и копированием.
+ * List of delivery addresses with creation, editing, deleting and copying.
  */
 const ProfileAddresses = () => {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const ProfileAddresses = () => {
   const isFormView = Boolean(addMatch || editMatch);
 
   /**
-   * Удаляет адрес после подтверждения.
+   * Deletes the address after confirmation.
    * @param {string} addressId
    */
   const handleDeleteAddress = async (addressId) => {
@@ -44,7 +44,7 @@ const ProfileAddresses = () => {
   };
 
   /**
-   * Копирует отформатированные строки адреса в буфер обмена.
+   * Copies formatted address strings to the clipboard.
    * @param {object} address
    */
   const handleCopy = async (address) => {

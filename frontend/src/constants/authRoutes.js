@@ -1,6 +1,6 @@
-/* Маршруты, отображаемые в оверлее AuthModal вместо полноэкранной навигации. */
+/* Routes displayed in AuthModal overlay instead of full screen navigation. */
 
-/** Пути, открывающие модальное окно авторизации вместо отдельной страницы. */
+/** Paths that open a modal login window instead of a separate page. */
 export const AUTH_PATHS = [
   "/login",
   "/register",
@@ -11,7 +11,7 @@ export const AUTH_PATHS = [
 ];
 
 /**
- * Возвращает true, если pathname совпадает с зарегистрированным маршрутом оверлея авторизации.
+ * Returns true if pathname matches the registered authorization overlay route.
  * @param {string} pathname
  * @returns {boolean}
  */

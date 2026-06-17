@@ -1,4 +1,4 @@
-/* Регистрация: прямая регистрация через API или mock-поток верификации. */
+/* Registration: direct registration via API or mock verification flow. */
 import { useState } from "react";
 import { hasApiBaseUrl } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
@@ -12,7 +12,7 @@ import AuthFormMessage from "./AuthFormMessage";
 import "./AuthForms.scss";
 
 /**
- * Форма регистрации с поддержкой прямой регистрации через API или mock-потока верификации.
+ * Registration form with support for direct registration via API or mock verification flow.
  */
 const CreateAccountForm = () => {
   const { openAuth, closeAuth } = useAuthModal();
@@ -25,7 +25,7 @@ const CreateAccountForm = () => {
     usesApi ? schemas.registerApi : schemas.emailOrPhone,
   );
   /**
-   * Регистрирует пользователя и направляет на верификацию или закрывает форму при входе через API.
+   * Registers the user and directs them to verification or closes the form when logging in via the API.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,7 +38,7 @@ const CreateAccountForm = () => {
     }
     try {
       const data = await register(payload);
-      /* Реальный API регистрирует и сразу входит; mock продолжает на верификацию email. */
+      /* The real API registers and logs in immediately; mock continues on email verification. */
       if (usesApi && data.token) {
         closeAuth();
         return;
@@ -47,7 +47,7 @@ const CreateAccountForm = () => {
         state: { flow: AUTH_FLOW.REGISTER, emailOrPhone },
       });
     } catch {
-      // ошибка отображается через контекст
+      // the error is displayed through the context
     }
   };
   return (

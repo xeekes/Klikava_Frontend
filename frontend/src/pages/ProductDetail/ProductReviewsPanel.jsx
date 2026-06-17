@@ -1,4 +1,4 @@
-/* Блок отзывов на странице товара: только просмотр списка. */
+/* Review block on the product page: list view only. */
 import { useEffect, useState } from "react";
 import { catalogApi } from "../../api/catalogApi";
 import { ApiError } from "../../api/errors";

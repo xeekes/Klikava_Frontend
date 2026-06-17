@@ -1,4 +1,4 @@
-/* Шаг OTP-верификации между регистрацией и установкой пароля. */
+/* OTP verification step between registration and password setting. */
 import { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -12,7 +12,7 @@ import "./AuthForms.scss";
 const CODE_LENGTH = 4;
 
 /**
- * Шаг OTP-верификации между регистрацией и установкой пароля.
+ * OTP verification step between registration and password setting.
  */
 const EnterCodeForm = ({ showResend = true }) => {
   const location = useLocation();
@@ -29,7 +29,7 @@ const EnterCodeForm = ({ showResend = true }) => {
   const inputRefs = useRef([]);
   const { getError, validateAll } = useFormValidation(schemas.verificationCode);
   /**
-   * Принимает одну цифру и переводит фокус на следующую ячейку ввода.
+   * Accepts one digit and moves focus to the next input cell.
    */
   const handleChange = (index, value) => {
     if (!/^\d?$/.test(value)) {
@@ -43,7 +43,7 @@ const EnterCodeForm = ({ showResend = true }) => {
     }
   };
   /**
-   * Переводит фокус на предыдущую ячейку, когда backspace очищает пустой слот.
+   * Moves focus to the previous cell when backspace clears an empty slot.
    */
   const handleKeyDown = (index, e) => {
     if (e.key === "Backspace" && !code[index] && index > 0) {
@@ -51,7 +51,7 @@ const EnterCodeForm = ({ showResend = true }) => {
     }
   };
   /**
-   * Проверяет собранный код и направляет на экран пароля или сброса.
+   * Verifies the collected code and directs you to the password or reset screen.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,11 +67,11 @@ const EnterCodeForm = ({ showResend = true }) => {
         flow === AUTH_FLOW.RECOVER ? "/auth/reset-password" : "/auth/password";
       openAuth(nextPath, { state: { flow } });
     } catch {
-      // ошибка отображается через контекст
+      // the error is displayed through the context
     }
   };
   /**
-   * Запрашивает новый код верификации для текущего email или телефона.
+   * Requests a new verification code for the current email or phone.
    */
   const handleResend = async () => {
     if (!emailOrPhone) {
@@ -83,7 +83,7 @@ const EnterCodeForm = ({ showResend = true }) => {
       await sendVerificationCode({ emailOrPhone, flow });
       setLocalSuccess("Verification code sent again");
     } catch {
-      // ошибка отображается через контекст
+      // the error is displayed through the context
     }
   };
   const codeError = getError("code");

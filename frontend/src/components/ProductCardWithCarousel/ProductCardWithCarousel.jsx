@@ -1,19 +1,20 @@
-/* Карточка товара с каруселью изображений для промо-секций. */
+/* Product card with a carousel of images for promotional sections. */
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ChevronRight, Star } from "../../iconComponents";
+import { getProductPath } from "../../utils/productPaths";
 import "./ProductCardWithCarousel.scss";
 
 /**
- * Карточка товара с каруселью изображений для промо-секций.
+ * Product card with a carousel of images for promotional sections.
  */
 const ProductCardWithCarousel = ({ product }) => {
-  const { id, title, price, images, rating, sold } = product;
+  const { id, title, price, images, rating, sold, slug } = product;
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const productImages = images || [product.image || "/placeholder.jpg"];
   const hasMultipleImages = productImages.length > 1;
   /**
-   * Переходит к следующему изображению в карусели без навигации.
+   * Moves to the next image in the carousel without navigation.
    */
   const nextImage = (e) => {
     e.preventDefault();
@@ -21,7 +22,7 @@ const ProductCardWithCarousel = ({ product }) => {
     setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
   };
   /**
-   * Переходит к предыдущему изображению в карусели без навигации.
+   * Jumps to the previous image in the carousel without navigation.
    */
   const prevImage = (e) => {
     e.preventDefault();
@@ -31,7 +32,7 @@ const ProductCardWithCarousel = ({ product }) => {
     );
   };
   /**
-   * Формирует иконки заполненных, половинных и пустых звёзд для заданного рейтинга.
+   * Generates icons of filled, half and empty stars for a given rating.
    */
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
@@ -50,7 +51,7 @@ const ProductCardWithCarousel = ({ product }) => {
     return stars;
   };
   return (
-    <Link to={`/product/${id}`} className="product-card-carousel">
+    <Link to={getProductPath({ id, slug })} className="product-card-carousel">
       <div className="product-image-carousel-container">
         <img
           src={productImages[currentImageIndex]}
@@ -62,14 +63,14 @@ const ProductCardWithCarousel = ({ product }) => {
             <button
               className="carousel-arrow carousel-arrow-left"
               onClick={prevImage}
-              aria-label="Предыдущее изображение"
+              aria-label="Previous image"
             >
               <ArrowLeft aria-hidden="true" />
             </button>
             <button
               className="carousel-arrow carousel-arrow-right"
               onClick={nextImage}
-              aria-label="Следующее изображение"
+              aria-label="Next image"
             >
               <ChevronRight aria-hidden="true" />
             </button>

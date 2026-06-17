@@ -1,4 +1,4 @@
-/* Указываем box sizing */
+/* Specify box sizing */
 *,
 *::before,
 *::after {
@@ -21,13 +21,13 @@ strong {
   font-weight: bold;
 }
 
-/* Убираем внутренние отступы */
+/* Removing internal padding */
 ul[class],
 ol[class] {
   padding: 0;
 }
 
-/* Убираем внешние отступы */
+/* Removing external padding */
 body,
 h1,
 h2,
@@ -50,7 +50,7 @@ button,
 input[type="submit"] {
   cursor: pointer;
 }
-/* Выставляем основные настройки по-умолчанию для body */
+/* Set the default basic settings for body */
 body {
   min-height: 100vh;
   scroll-behavior: smooth;
@@ -58,7 +58,7 @@ body {
   line-height: 1.5;
 }
 
-/* Удаляем стандартную стилизацию для всех ul и il, у которых есть атрибут class*/
+/* We remove the standard styling for all ul and il that have a class attribute*/
 // ul[class] {
 //   list-style: none;
 //   li {
@@ -66,7 +66,7 @@ body {
 //   }
 // }
 
-/* Элементы a, у которых нет класса, сбрасываем до дефолтных стилей */
+/* Elements a that do not have a class are reset to default styles */
 a:not([class]) {
   text-decoration-skip-ink: auto;
 }
@@ -76,15 +76,15 @@ ol {
   list-style: none;
 }
 
-/* Упрощаем работу с изображениями */
+/* Making it easier to work with images */
 img {
   max-width: 100%;
   display: block;
 }
 
-/* Указываем понятную периодичность в потоке данных у article*/
+/* We indicate a clear periodicity in the data flow of the article*/
 
-/* Наследуем шрифты для инпутов и кнопок */
+/* Inheriting fonts for inputs and buttons */
 input,
 button,
 textarea,
@@ -96,7 +96,7 @@ a {
   text-decoration: none;
 }
 
-/* Удаляем все анимации и переходы для людей, которые предпочитай их не использовать */
+/* Removing all animations and transitions for people who prefer not to use them */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

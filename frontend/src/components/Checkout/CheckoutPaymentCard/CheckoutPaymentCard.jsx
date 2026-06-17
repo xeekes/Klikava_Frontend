@@ -1,8 +1,8 @@
-/* Строка сохранённой карты с состоянием выбора при оформлении заказа. */
+/* Line of the saved card with the selection status when placing an order. */
 import "./CheckoutPaymentCard.scss";
 
 /**
- * Строка сохранённой карты с состоянием выбора при оформлении заказа или в профиле.
+ * The saved card string with the selection status when placing an order or in your profile.
  */
 const CheckoutPaymentCard = ({
   card,

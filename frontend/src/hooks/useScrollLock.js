@@ -2,7 +2,7 @@ import { useLayoutEffect } from "react";
 import { lockScroll, unlockScroll } from "../utils/scrollLock";
 
 /**
- * Блокирует прокрутку страницы до отрисовки (useLayoutEffect), чтобы не было сдвига контента.
+ * Blocks page scrolling before rendering (useLayoutEffect) so that there is no content shifting.
  * @param {boolean} [enabled=true]
  */
 export const useScrollLock = (enabled = true) => {

@@ -1,6 +1,6 @@
 /*
- * Глобальное состояние авторизации: bootstrap сессии, вход/регистрация, обработка ошибок.
- * Токен хранится в localStorage; форма user нормализуется через api/auth.
+ * Global authorization state: bootstrap sessions, login/registration, error handling.
+ * The token is stored in localStorage; The user form is normalized via api/auth.
  */
 import {
   createContext,
@@ -14,11 +14,11 @@ import { authApi } from "../api/auth";
 import { hasApiBaseUrl } from "../api/client";
 import { AUTH_STORAGE_KEYS } from "../constants/auth";
 
-/** React-контекст для авторизованного пользователя и обработчиков auth-действий. */
+/** React context for the authorized user and auth action handlers. */
 const AuthContext = createContext(null);
 
 /**
- * Предоставляет состояние авторизации и сценарии входа дереву компонентов.
+ * Provides authorization state and login scripts to the component tree.
  * @param {{ children: import("react").ReactNode }} props
  */
 export const AuthProvider = ({ children }) => {
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   /**
-   * Записывает bearer-токен в хранилище и синхронизирует пользователя в React-состоянии.
+   * Writes the bearer token to the storage and synchronizes the user in the React state.
    * @param {string} token
    * @param {object} nextUser
    */
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   /**
-   * Удаляет токен, временные данные верификации и снимок пользователя в памяти.
+   * Deletes the token, temporary verification data, and user snapshot in memory.
    */
   const clearSession = useCallback(() => {
     localStorage.removeItem(AUTH_STORAGE_KEYS.TOKEN);
@@ -48,11 +48,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   }, []);
 
-  /** Сбрасывает последнюю ошибку формы auth без изменения данных сессии. */
+  /** Resets the last auth form error without changing the session data. */
   const clearError = useCallback(() => setError(null), []);
 
   /**
-   * Оборачивает async auth-вызов общей обработкой загрузки и ошибок.
+   * Wraps an async auth call with general loading and error handling.
    * @param {() => Promise<unknown>} action
    */
   const runAuthAction = useCallback(async (action) => {
@@ -69,11 +69,11 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   /**
-   * При монтировании восстанавливает сессию, если сохранённый токен ещё действителен.
+   * When mounted, restores the session if the saved token is still valid.
    */
   useEffect(() => {
     /**
-     * Загружает текущего пользователя из API и завершает начальное состояние bootstrap.
+     * Loads the current user from the API and completes the bootstrap initial state.
      */
     const bootstrap = async () => {
       const token = localStorage.getItem(AUTH_STORAGE_KEYS.TOKEN);
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   }, [clearSession]);
 
   /**
-   * Вход по email/телефону и паролю.
+   * Login by email/phone and password.
    * @param {{ emailOrPhone: string, password: string }} credentials
    */
   const login = useCallback(
@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }) => {
   );
 
   /**
-   * Создаёт аккаунт или запускает ветку mock-верификации email.
+   * Creates an account or starts a mock email verification branch.
    * @param {object} credentials
    */
   const register = useCallback(
@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }) => {
   );
 
   /**
-   * Отправляет OTP для сценариев регистрации или восстановления пароля.
+   * Sends OTP for registration or password recovery scenarios.
    * @param {{ emailOrPhone: string, flow: string }} payload
    */
   const sendVerificationCode = useCallback(
@@ -159,7 +159,7 @@ export const AuthProvider = ({ children }) => {
   );
 
   /**
-   * Подтверждает OTP, введённый пользователем, по сохранённому verification id.
+   * Confirms the OTP entered by the user using the saved verification id.
    * @param {string} code
    */
   const verifyCode = useCallback(
@@ -174,7 +174,7 @@ export const AuthProvider = ({ children }) => {
   );
 
   /**
-   * Устанавливает начальный пароль после успешной верификации.
+   * Sets the initial password after successful verification.
    * @param {{ password: string, confirmPassword: string }} payload
    */
   const createPassword = useCallback(
@@ -197,7 +197,7 @@ export const AuthProvider = ({ children }) => {
   );
 
   /**
-   * Применяет новый пароль в сценарии восстановления.
+   * Applies the new password in the recovery script.
    * @param {{ password: string, confirmPassword: string }} payload
    */
   const resetPassword = useCallback(
@@ -216,7 +216,7 @@ export const AuthProvider = ({ children }) => {
   );
 
   /**
-   * Выполняет заглушку социального входа и сохраняет возвращённую сессию.
+   * Stubs the social login and stores the returned session.
    */
   const loginWithGoogle = useCallback(
     () =>
@@ -229,14 +229,14 @@ export const AuthProvider = ({ children }) => {
   );
 
   /**
-   * Завершает удалённую сессию при возможности и всегда очищает локальные учётные данные.
+   * Terminates the remote session when possible and always clears local credentials.
    */
   const logout = useCallback(async () => {
     setIsSubmitting(true);
     try {
       await authApi.logout();
     } catch {
-      /* Локальный выход должен пройти даже при сбое удалённого вызова. */
+      /* The local exit must proceed even if the remote call fails. */
     } finally {
       clearSession();
       setIsSubmitting(false);
@@ -281,7 +281,7 @@ export const AuthProvider = ({ children }) => {
 };
 
 /**
- * Читает состояние авторизации и действия из ближайшего провайдера.
+ * Reads authorization status and actions from the nearest provider.
  * @returns {object}
  */
 export const useAuth = () => {

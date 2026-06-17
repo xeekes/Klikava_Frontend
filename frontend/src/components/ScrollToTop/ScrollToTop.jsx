@@ -1,10 +1,10 @@
-/* Сбрасывает позицию прокрутки при смене маршрута. */
+/* Resets scroll position when changing route. */
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { isAuthPath } from "../../constants/authRoutes";
 
 /**
- * Сбрасывает позицию прокрутки при смене маршрута, пропуская пути оверлея авторизации.
+ * Resets scroll position when changing route, skipping authorization overlay paths.
  */
 const ScrollToTop = () => {
   const location = useLocation();

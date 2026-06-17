@@ -1,12 +1,12 @@
 /*
- * Защита маршрута для /profile/* — гостей перенаправляет в корзину (точка входа в оформление)
- * с сохранением `from` для возможного редиректа после входа.
+ * Route protection for /profile/* - guests are redirected to the cart (entry point to checkout)
+ * with saving `from` for possible redirect after login.
  */
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 /**
- * Защита маршрута, перенаправляющая гостей в корзину с сохранением пути возврата.
+ * Route protection that redirects guests to the cart while preserving the return path.
  */
 const RequireAuth = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();

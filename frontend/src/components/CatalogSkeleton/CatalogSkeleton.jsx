@@ -1,8 +1,8 @@
-/* Скелетоны для блоков каталога на главной и в сетках товаров. */
+/* Skeletons for catalog blocks on the main page and in product grids. */
 import "./CatalogSkeleton.scss";
 
 /**
- * Плейсхолдер карточки товара на время загрузки API.
+ * Placeholder for the product card while the API is loading.
  */
 export const ProductCardSkeleton = ({ rounded = false }) => (
   <div
@@ -18,7 +18,7 @@ export const ProductCardSkeleton = ({ rounded = false }) => (
 );
 
 /**
- * Плейсхолдер круглого OfferBubble на время загрузки API.
+ * Placeholder of the round OfferBubble for the duration of the API loading.
  */
 export const OfferBubbleSkeleton = ({ background = "gray", className = "" }) => (
   <div

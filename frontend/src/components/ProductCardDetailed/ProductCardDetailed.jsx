@@ -1,18 +1,19 @@
-/* Расширенный вариант карточки товара с дополнительной строкой метаданных. */
+/* An extended version of the product card with an additional metadata line. */
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Cart, Heart, Star } from "../../iconComponents";
+import { getProductPath } from "../../utils/productPaths";
 import "./ProductCardDetailed.scss";
 
 /**
- * Расширенный вариант карточки товара с дополнительными метаданными и строкой действий.
+ * An expanded version of the product card with additional metadata and an action line.
  */
 const ProductCardDetailed = ({ product }) => {
-  const { id, title, price, lowestPrice, images, rating, sold } = product;
+  const { id, title, price, lowestPrice, images, rating, sold, slug } = product;
   const [isLiked, setIsLiked] = useState(false);
   const productImages = images || [product.image || "/placeholder.jpg"];
   /**
-   * Формирует иконки заполненных и пустых звёзд для заданного числового рейтинга.
+   * Generates icons of filled and empty stars for a given numerical rating.
    */
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
@@ -27,7 +28,7 @@ const ProductCardDetailed = ({ product }) => {
     return stars;
   };
   /**
-   * Переключает локальное состояние «понравилось» без перехода на страницу товара.
+   * Switches the local “liked” state without going to the product page.
    */
   const handleLike = (e) => {
     e.preventDefault();
@@ -35,15 +36,15 @@ const ProductCardDetailed = ({ product }) => {
     setIsLiked(!isLiked);
   };
   /**
-   * Заглушка действия корзины, пока логирующая id товара.
+   * A stub for the cart action while logging the product id.
    */
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Добавить в корзину:", id);
+    console.log("Add to cart:", id);
   };
   return (
-    <Link to={`/product/${id}`} className="product-card-detailed">
+    <Link to={getProductPath({ id, slug })} className="product-card-detailed">
       <div className="product-image-detailed">
         <img
           src={productImages[0]}
@@ -68,14 +69,14 @@ const ProductCardDetailed = ({ product }) => {
             <button
               className={`action-button like-button ${isLiked ? "liked" : ""}`}
               onClick={handleLike}
-              aria-label="Добавить в избранное"
+              aria-label="Add to favorites"
             >
               <Heart className={isLiked ? "liked" : ""} />
             </button>
             <button
               className="action-button cart-button"
               onClick={handleAddToCart}
-              aria-label="Добавить в корзину"
+              aria-label="Add to cart"
             >
               <Cart />
             </button>

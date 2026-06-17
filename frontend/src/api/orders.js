@@ -1,13 +1,14 @@
 /*
- * API заказов покупателя: создание, список, детали, отгрузки.
+ * Buyer orders API: creation, list, details, shipments.
  */
 import { catalogApi } from "./catalogApi";
-import { apiRequest, hasApiBaseUrl } from "./client";
+import { apiRequest } from "./client";
+import { createLazyMockApi } from "./createLazyMockApi";
 import { getListItems } from "./listUtils";
 import { mapBackendOrder, mapBackendShipment } from "./mapOrder";
 
 /**
- * Собирает payload создания заказа из позиций корзины.
+ * Collects order creation payload from cart items.
  * @param {Array<object>} cartItems
  * @param {{ deliveryPrice?: number, discountItemId?: number|null }} [options]
  * @returns {Promise<object>}
@@ -44,7 +45,7 @@ const buildOrderCreatePayload = async (
 };
 
 /**
- * Подгружает позиции заказа, если список вернулся без items.
+ * Loads order items if the list is returned without items.
  * @param {object} raw
  * @returns {Promise<object>}
  */
@@ -65,7 +66,7 @@ const hydrateRawOrder = async (raw) => {
 };
 
 /**
- * Подставляет картинку первого товара из каталога по productId / variantId.
+ * Substitutes the image of the first product from the catalog by productId / variantId.
  * @param {Array<object>} orders
  * @returns {Promise<Array<object>>}
  */
@@ -129,7 +130,7 @@ const mapOrdersFromPayload = async (payload) => {
 
 const realOrdersApi = {
   /**
-   * Возвращает заказы текущего пользователя.
+   * Returns the current user's orders.
    * @param {{ status?: string, page?: number, perPage?: number }} [params]
    * @returns {Promise<Array<object>>}
    */
@@ -146,7 +147,7 @@ const realOrdersApi = {
   },
 
   /**
-   * Загружает один заказ по id.
+   * Loads one order by id.
    * @param {string|number} orderId
    * @returns {Promise<object>}
    */
@@ -159,7 +160,7 @@ const realOrdersApi = {
   },
 
   /**
-   * Создаёт заказ из позиций корзины.
+   * Creates an order from cart items.
    * @param {Array<object>} cartItems
    * @param {{ deliveryPrice?: number, discountItemId?: number|null }} [options]
    * @returns {Promise<object>}
@@ -177,7 +178,7 @@ const realOrdersApi = {
   },
 
   /**
-   * Возвращает отгрузки заказа.
+   * Returns the shipment of the order.
    * @param {string|number} orderId
    * @returns {Promise<Array<object>>}
    */
@@ -187,13 +188,19 @@ const realOrdersApi = {
   },
 };
 
-const mockOrdersApi = {
-  listOrders: async () => [],
-  getOrder: async () => null,
-  createOrder: async () => {
-    throw new Error("Orders API requires VITE_API_BASE_URL.");
-  },
-  listShipments: async () => [],
-};
+const ORDERS_METHODS = [
+  "listOrders",
+  "getOrder",
+  "createOrder",
+  "listShipments",
+];
 
-export const ordersApi = hasApiBaseUrl() ? realOrdersApi : mockOrdersApi;
+/**
+ * Orders API facade: real backend with VITE_API_BASE_URL at build stage;
+ * otherwise - a lazy mock proxy in a separate chunk.
+ */
+export const ordersApi = import.meta.env.VITE_API_BASE_URL
+  ? realOrdersApi
+  : createLazyMockApi(ORDERS_METHODS, () =>
+      import("./orders.mock.js").then((module) => module.mockOrdersApi),
+    );

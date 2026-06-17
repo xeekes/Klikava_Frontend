@@ -1,4 +1,4 @@
-/* Подвал сайта со ссылками и заглушкой подписки на рассылку. */
+/* Footer of the site with links and a newsletter subscription plugin. */
 import { Link } from "react-router-dom";
 import "./Footer.scss";
 import {
@@ -10,7 +10,7 @@ import {
 } from "../../iconComponents";
 
 /**
- * Подвал сайта с навигационными ссылками и заглушками соцсетей.
+ * Footer of the site with navigation links and social media plugins.
  */
 const Footer = () => {
   return (

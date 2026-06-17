@@ -1,17 +1,17 @@
 /*
- * Общие правила валидации, переиспользуемые схемы и раннер validateForm.
- * Используется useFormValidation и mock-слоем auth API.
+ * General validation rules, reusable schemas and the validateForm runner.
+ * Used by useFormValidation and the auth API mock layer.
  */
 
 /**
- * Обрезает пробелы у строк; нестроковые значения возвращает без изменений.
+ * Trims spaces from strings; non-string values ​​are returned unchanged.
  * @param {unknown} value
  * @returns {string|unknown}
  */
 const trim = (value) => (typeof value === "string" ? value.trim() : "");
 
 /**
- * Проверяет, похоже ли значение на корректный email.
+ * Checks if the value looks like a valid email.
  * @param {unknown} value
  * @returns {boolean}
  */
@@ -19,7 +19,7 @@ export const isEmail = (value) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(trim(value));
 
 /**
- * Проверяет, содержит ли значение 7–15 цифр после удаления нецифровых символов.
+ * Checks whether a value contains 7-15 digits after removing non-digit characters.
  * @param {unknown} value
  * @returns {boolean}
  */
@@ -29,7 +29,7 @@ export const isPhone = (value) => {
 };
 
 /**
- * Принимает корректный email или телефон в зависимости от наличия символа @.
+ * Accepts a valid email or phone number depending on the presence of the @ symbol.
  * @param {unknown} value
  * @returns {boolean}
  */
@@ -45,7 +45,7 @@ export const isEmailOrPhone = (value) => {
 };
 
 /**
- * Принимает имя пользователя, email или телефон для формы входа.
+ * Accepts username, email or phone for the login form.
  * @param {unknown} value
  * @returns {boolean}
  */
@@ -61,7 +61,7 @@ export const isLoginIdentifier = (value) => {
 };
 
 /**
- * Возвращает первое сообщение о нарушении политики пароля или null, если пароль валиден.
+ * Returns the first password policy violation message, or null if the password is valid.
  * @param {unknown} password
  * @returns {string|null}
  */
@@ -89,11 +89,11 @@ export const getPasswordError = (password) => {
 };
 
 /**
- * Фабрики правил полей. Каждая фабрика возвращает валидатор `(value, allValues) => message|null`.
+ * Field rule factories. Each factory returns a validator `(value, allValues) => message|null`.
  */
 export const rules = {
   /**
-   * Фабрика правила обязательного поля с настраиваемым сообщением для пустого значения.
+   * Required field rule factory with custom message for empty value.
    * @param {string} [message]
    * @returns {(value: unknown) => string|null}
    */
@@ -103,7 +103,7 @@ export const rules = {
       trim(value) ? null : message,
 
   /**
-   * Фабрика для полей email или телефона (регистрация и восстановление).
+   * Factory for email or phone fields (registration and recovery).
    * @returns {(value: unknown) => string|null}
    */
   emailOrPhone: () => (value) => {
@@ -117,7 +117,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для идентификатора входа (имя пользователя, email или телефон).
+   * Factory for login ID (username, email or phone).
    * @returns {(value: unknown) => string|null}
    */
   loginIdentifier: () => (value) => {
@@ -131,13 +131,13 @@ export const rules = {
   },
 
   /**
-   * Фабрика, применяющая полную политику пароля регистрации через getPasswordError.
+   * Factory enforcing the full login password policy via getPasswordError.
    * @returns {(value: unknown) => string|null}
    */
   password: () => (value) => getPasswordError(value),
 
   /**
-   * Фабрика, проверяющая совпадение подтверждения пароля с полем password в allValues.
+   * A factory that checks that the password confirmation matches the password field in allValues.
    * @returns {(value: unknown, allValues: Record<string, unknown>) => string|null}
    */
   confirmPassword: () => (value, allValues) => {
@@ -151,7 +151,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика пароля входа с минимальной проверкой длины (4+ символа).
+   * Login password factory with minimum length check (4+ characters).
    * @returns {(value: unknown) => string|null}
    */
   loginPassword: () => (value) => {
@@ -165,7 +165,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для полей имени с поддержкой латиницы и кириллицы.
+   * Factory for name fields with support for Latin and Cyrillic alphabet.
    * @param {string} [label]
    * @returns {(value: unknown) => string|null}
    */
@@ -182,7 +182,7 @@ export const rules = {
     },
 
   /**
-   * Фабрика для обязательных полей телефона с проверкой через isPhone.
+   * Factory for required phone fields validated via isPhone.
    * @returns {(value: unknown) => string|null}
    */
   phone: () => (value) => {
@@ -196,7 +196,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика минимальной длины после trim с фиксированным сообщением об ошибке.
+   * Factory for minimum trimmed length with a fixed error message.
    * @param {number} min
    * @param {string} message
    * @returns {(value: unknown) => string|null}
@@ -212,7 +212,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для почтового индекса (3–12 буквенно-цифровых символов, пробел или дефис).
+   * Factory for postal codes (3–12 alphanumeric characters, space, or hyphen).
    * @returns {(value: unknown) => string|null}
    */
   postalCode: () => (value) => {
@@ -226,7 +226,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для опционального обновления пароля; пропускает валидацию при пустом значении.
+   * Factory for optional password updates; skips validation when the value is empty.
    * @returns {(value: unknown) => string|null}
    */
   optionalPassword: () => (value) => {
@@ -237,7 +237,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для обязательных полей email с проверкой через isEmail.
+   * Factory for required email fields validated via isEmail.
    * @returns {(value: unknown) => string|null}
    */
   email: () => (value) => {
@@ -251,7 +251,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для числовых кодов верификации заданной длины в цифрах.
+   * Factory for numeric verification codes of a fixed digit length.
    * @param {number} [length]
    * @returns {(value: unknown) => string|null}
    */
@@ -266,7 +266,7 @@ export const rules = {
     },
 
   /**
-   * Фабрика для номеров платёжных карт (ровно 16 цифр после удаления пробелов).
+   * Factory for payment card numbers (exactly 16 digits after removing spaces).
    * @returns {(value: unknown) => string|null}
    */
   cardNumber: () => (value) => {
@@ -281,7 +281,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для месяца срока действия карты (01–12).
+   * Factory for card expiry month (01–12).
    * @returns {(value: unknown) => string|null}
    */
   expiryMonth: () => (value) => {
@@ -296,7 +296,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для года срока действия карты (2 или 4 цифры).
+   * Factory for card expiry year (2 or 4 digits).
    * @returns {(value: unknown) => string|null}
    */
   expiryYear: () => (value) => {
@@ -310,7 +310,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для CVV карты (3 или 4 цифры).
+   * Factory for card CVV (3 or 4 digits).
    * @returns {(value: unknown) => string|null}
    */
   cvv: () => (value) => {
@@ -324,7 +324,7 @@ export const rules = {
   },
 
   /**
-   * Фабрика для текста отзыва о товаре с минимальным числом символов.
+   * Factory for product review text with a minimum character count.
    * @param {number} [min]
    * @returns {(value: unknown) => string|null}
    */
@@ -341,7 +341,7 @@ export const rules = {
     },
 
   /**
-   * Фабрика для текста причины возврата заказа с минимальным числом символов.
+   * Factory for order return reason text with a minimum character count.
    * @param {number} [min]
    * @returns {(value: unknown) => string|null}
    */
@@ -358,7 +358,7 @@ export const rules = {
     },
 
   /**
-   * Фабрика, проверяющая, что числовой рейтинг не ниже минимального порога.
+   * Factory that ensures the numeric rating is not below the minimum threshold.
    * @param {number} [min]
    * @returns {(value: unknown) => string|null}
    */
@@ -373,7 +373,7 @@ export const rules = {
 };
 
 /**
- * Валидирует пару min/max цены фильтра каталога; возвращает сообщения об ошибках по полям.
+ * Validates a catalog filter min/max price pair and returns field error messages.
  * @param {string|number} minPrice
  * @param {string|number} maxPrice
  * @returns {Record<string, string>}
@@ -397,16 +397,16 @@ export const validatePriceRange = (minPrice, maxPrice) => {
 };
 
 /**
- * Именованные карты правил полей для validateForm. Ключи совпадают с именами полей формы; значения — массивы правил из фабрик rules.
- * - login — форма входа (идентификатор + пароль входа)
- * - registerApi — payload API регистрации (email/телефон, имя, пароль)
- * - emailOrPhone — шаг только с идентификатором (восстановление/регистрация)
- * - password — установка/сброс пароля с подтверждением
- * - verificationCode — ввод OTP-кода
- * - address — адрес доставки checkout/профиля
- * - personalInfo — личные данные профиля с опциональной сменой пароля
- * - card — платёжная карта checkout
- * - profileCard — редактор сохранённой карты в профиле (порядок полей отличается от checkout)
+ * Named field rule maps for validateForm. Keys match form field names; values are rule arrays from rules factories.
+ * - login — sign-in form (identifier + login password)
+ * - registerApi — registration API payload (email/phone, name, password)
+ * - emailOrPhone — identifier-only step (recovery/registration)
+ * - password — password set/reset with confirmation
+ * - verificationCode — OTP entry
+ * - address — checkout/profile delivery address
+ * - personalInfo — profile personal data with optional password change
+ * - card — checkout payment card
+ * - profileCard — saved card editor in profile (field order differs from checkout)
  */
 export const schemas = {
   login: {
@@ -462,7 +462,7 @@ export const schemas = {
 };
 
 /**
- * Запускает каждое правило схемы для соответствующих значений; останавливается на первой ошибке поля.
+ * Runs each schema rule against the matching values; stops at the first field error.
  * @param {Record<string, unknown>} values
  * @param {Record<string, Array<(value: unknown, allValues: Record<string, unknown>) => string|null>>} schema
  * @returns {Record<string, string>}
@@ -484,7 +484,7 @@ export const validateForm = (values, schema) => {
 };
 
 /**
- * Возвращает true, если хотя бы одно сообщение об ошибке поля truthy.
+ * Returns true when at least one field error message is truthy.
  * @param {Record<string, string|undefined|null>} errors
  * @returns {boolean}
  */

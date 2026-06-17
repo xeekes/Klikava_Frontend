@@ -1,4 +1,4 @@
-/* Список отзывов пользователя о товарах с редактированием и удалением. */
+/* List of user reviews about products with editing and deletion. */
 import { useState } from "react";
 import { Star } from "../../iconComponents";
 import { useActionFeedback } from "../../context/ActionFeedbackContext";
@@ -7,7 +7,7 @@ import "../../styles/profile-page.scss";
 import "./ProfileFeedback.scss";
 
 /**
- * Список опубликованных отзывов о товарах с inline-редактированием и удалением.
+ * List of published product reviews with inline editing and deletion.
  */
 const ProfileFeedback = () => {
   const { feedback, updateFeedback, deleteFeedback } = useUserData();
@@ -16,7 +16,7 @@ const ProfileFeedback = () => {
   const [draftText, setDraftText] = useState("");
 
   /**
-   * Включает режим редактирования для одного отзыва и загружает его текст в черновик.
+   * Enables editing mode for one review and loads its text into a draft.
    * @param {object} item
    */
   const startEdit = (item) => {
@@ -25,7 +25,7 @@ const ProfileFeedback = () => {
   };
 
   /**
-   * Удаляет отзыв после подтверждения.
+   * Deletes the review after confirmation.
    * @param {string} feedbackId
    */
   const handleDelete = async (feedbackId) => {

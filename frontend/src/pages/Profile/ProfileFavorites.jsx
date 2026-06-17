@@ -1,15 +1,16 @@
-/* Страница списка желаний на базе FavoritesContext. */
+/* Wishlist page based on FavoritesContext. */
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useActionFeedback } from "../../context/ActionFeedbackContext";
 import { useFavorites } from "../../context/FavoritesContext";
 import { Clock, Star } from "../../iconComponents";
+import { getProductPath } from "../../utils/productPaths";
 import "../../styles/profile-page.scss";
 import "./ProfileFavorites.scss";
 
 /**
- * Страница избранного на базе контекста favorites с действиями «добавить в корзину».
+ * Favorites page based on favorites context with “add to cart” actions.
  */
 const ProfileFavorites = () => {
   const { favorites, removeFavorite } = useFavorites();
@@ -17,7 +18,7 @@ const ProfileFavorites = () => {
   const { confirm } = useActionFeedback();
 
   /**
-   * Удаляет товар из избранного после подтверждения.
+   * Removes a product from favorites after confirmation.
    * @param {string|number} productId
    */
   const handleRemoveFavorite = async (productId) => {
@@ -41,14 +42,14 @@ const ProfileFavorites = () => {
           favorites.map((item) => (
             <article key={item.id} className="profile-favorites__card">
               <Link
-                to={`/product/${item.id}`}
+                to={getProductPath(item)}
                 className="profile-favorites__image-wrap"
               >
                 <img src={item.image} alt={item.title} />
               </Link>
               <div className="profile-favorites__body">
                 <Link
-                  to={`/product/${item.id}`}
+                  to={getProductPath(item)}
                   className="profile-favorites__title"
                 >
                   {item.title}

@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/user.svg";
 
 /**
- * Иконка пользователя/профиля для триггера меню и заголовка выпадающего списка.
+ * User/profile icon for menu trigger and dropdown title.
  * @param {object} props
  */
 const User = (props) => <IconMask src={icon} {...props} />;

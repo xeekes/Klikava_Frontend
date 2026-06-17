@@ -1,4 +1,4 @@
-/* История заказов с вкладками по статусу; данные из API или localStorage. */
+/* Order history with tabs by status; data from API or localStorage. */
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import ProfileOrderCard from "../../components/Profile/ProfileOrderCard/ProfileOrderCard";
@@ -14,7 +14,7 @@ import "../../styles/profile-page.scss";
 import "./ProfileOrders.scss";
 
 /**
- * История заказов с вкладками по статусу на базе хранилища данных пользователя.
+ * Order history with tabs by status based on the user data warehouse.
  */
 const ProfileOrders = () => {
   const [searchParams] = useSearchParams();

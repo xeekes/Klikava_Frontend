@@ -1,4 +1,4 @@
-/* Форма ввода карты со схемой useFormValidation. */
+/* Card input form with useFormValidation scheme. */
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
@@ -11,7 +11,7 @@ import FormField from "../../FormField/FormField";
 import "./CheckoutCardForm.scss";
 
 /**
- * Разделяет строки платёжного адреса на улицу и остаток для отображения.
+ * Separates the billing address lines into street and balance for display.
  */
 const getBillingDisplay = (lines) => {
   if (!lines?.length) {
@@ -24,7 +24,7 @@ const getBillingDisplay = (lines) => {
 };
 
 /**
- * Форма ввода карты с валидацией и предпросмотром связанного платёжного адреса.
+ * Card entry form with validation and preview of the associated payment address.
  */
 const CheckoutCardForm = ({
   billingLines = [],
@@ -40,7 +40,7 @@ const CheckoutCardForm = ({
   const { street, rest } = getBillingDisplay(billingLines);
   const { getError, validateAll, handleBlur } = useFormValidation(schemas.card);
   /**
-   * Проверяет поля карты и передаёт значения в родительский callback добавления.
+   * Checks the fields of the map and passes the values ​​to the parent callback of the add.
    */
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -1,7 +1,7 @@
 import saleIcon from "../assets/icons/sale.svg";
 
 /**
- * Иконка акции/скидки для промо-заголовка в hero-секции.
+ * Promotion/discount icon for the promotional header in the hero section.
  * @param {object} props
  */
 const Sale = ({ className = "", alt = "", ...props }) => (

@@ -1,4 +1,4 @@
-/* Точка входа восстановления пароля (только mock-поток верификации). */
+/* Password recovery entry point (mock verification flow only). */
 import { useState } from "react";
 import { hasApiBaseUrl } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
@@ -12,7 +12,7 @@ import AuthFormMessage from "./AuthFormMessage";
 import "./AuthForms.scss";
 
 /**
- * Точка входа восстановления пароля, запускающая только mock-поток верификации.
+ * Password recovery entry point that runs only a mock verification flow.
  */
 const RecoverPasswordForm = () => {
   const { openAuth } = useAuthModal();
@@ -23,7 +23,7 @@ const RecoverPasswordForm = () => {
     schemas.emailOrPhone,
   );
   /**
-   * Отправляет код верификации для восстановления и открывает шаг OTP.
+   * Sends a verification code for recovery and opens the OTP step.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,7 +40,7 @@ const RecoverPasswordForm = () => {
         state: { flow: AUTH_FLOW.RECOVER, emailOrPhone },
       });
     } catch {
-      // ошибка отображается через контекст
+      // the error is displayed through the context
     }
   };
   if (usesApi) {

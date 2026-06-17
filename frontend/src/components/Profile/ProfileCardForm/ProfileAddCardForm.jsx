@@ -1,4 +1,4 @@
-/* Форма добавления карты в разделе профиля. */
+/* Form for adding a card in the profile section. */
 import { useState } from "react";
 import { useFormValidation } from "../../../hooks/useFormValidation";
 import {
@@ -14,7 +14,7 @@ const MONTHS = Array.from({ length: 12 }, (_, index) =>
 const YEARS = Array.from({ length: 12 }, (_, index) => String(2026 + index));
 
 /**
- * Предпросмотр платёжного адреса только для чтения из первого сохранённого адреса.
+ * Read-only payment address preview from the first saved address.
  */
 const ProfileBillingAddress = () => {
   const { addresses } = useUserData();
@@ -43,7 +43,7 @@ const ProfileBillingAddress = () => {
 };
 
 /**
- * Форма с валидацией для добавления новой платёжной карты в профиле.
+ * Validation form for adding a new payment card to your profile.
  */
 const ProfileAddCardForm = ({ onSubmit, onClose }) => {
   const [cardNumber, setCardNumber] = useState("");
@@ -54,7 +54,7 @@ const ProfileAddCardForm = ({ onSubmit, onClose }) => {
     schemas.profileCard,
   );
   /**
-   * Проверяет поля карты и передаёт значения в родительский callback отправки.
+   * Checks the fields of the map and passes the values ​​to the parent send callback.
    */
   const handleSubmit = (event) => {
     event.preventDefault();

@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/langauage.svg";
 
 /**
- * Иконка языка/локали для элементов выбора языка в шапке.
+ * Language/locale icon for language selection elements in the header.
  * @param {object} props
  */
 const Language = (props) => <IconMask src={icon} {...props} />;

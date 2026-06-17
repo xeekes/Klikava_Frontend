@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/YouTube.svg";
 
 /**
- * Логотип YouTube для ссылок на соцсети в футере.
+ * YouTube logo for social media links in the footer.
  * @param {object} props
  */
 const YouTube = (props) => <IconMask src={icon} {...props} />;

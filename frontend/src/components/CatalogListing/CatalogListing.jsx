@@ -1,6 +1,6 @@
 /*
- * Переиспользуемая сетка каталога с боковой панелью сортировки/фильтров (desktop) или модальным окном (mobile).
- * Используется страницами Catalog, Search, Discounts, TopProducts и CategoryListing.
+ * Reusable catalog grid with sort/filter sidebar (desktop) or modal window (mobile).
+ * Used by the Catalog, Search, Discounts, TopProducts and CategoryListing pages.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Filter, MenuArrowRight, Star } from "../../iconComponents";
@@ -33,7 +33,7 @@ const RATING_OPTIONS = [
 ];
 
 /**
- * Панель мобильных фильтров, рендерящаяся внутри модального окна листинга каталога.
+ * A mobile filter panel rendered inside a catalog listing modal window.
  */
 const CatalogListingFiltersModalPanel = ({
   activeFilterCount,
@@ -83,7 +83,7 @@ const CatalogListingFiltersModalPanel = ({
 };
 
 /**
- * Переиспользуемая сетка каталога с боковой панелью сортировки или модальным окном фильтров.
+ * Reusable catalog grid with sorting sidebar or filter modal window.
  */
 const CatalogListing = ({
   title,
@@ -166,7 +166,7 @@ const CatalogListing = ({
   const rangeFillRight =
     100 - ((sliderMax - priceBounds.min) / rangeSpan) * 100;
   /**
-   * Синхронизирует текстовые поля цены со значениями двойного range-слайдера.
+   * Synchronizes price text fields with the values ​​of a double range slider.
    */
   const setPriceFromSliders = (nextMinValue, nextMaxValue) => {
     const nextMin = nextMinValue <= priceBounds.min ? "" : String(nextMinValue);
@@ -176,7 +176,7 @@ const CatalogListing = ({
     setFilterErrors(validatePriceRange(nextMin, nextMax));
   };
   /**
-   * Применяет диапазон слайдера к зафиксированному состоянию фильтра после окончания перетаскивания.
+   * Applies the slider range to the filter's frozen state after the end of dragging.
    */
   const commitPriceRange = () => {
     if (!isPriceDraggingRef.current) {
@@ -187,7 +187,7 @@ const CatalogListing = ({
     setPriceFromSliders(min, max);
   };
   /**
-   * Обновляет нижнюю границу при перетаскивании нижнего ползунка диапазона.
+   * Updates the bottom border when you drag the bottom range slider.
    */
   const handleMinSliderChange = (event) => {
     isPriceDraggingRef.current = true;
@@ -198,7 +198,7 @@ const CatalogListing = ({
     }));
   };
   /**
-   * Обновляет верхнюю границу при перетаскивании верхнего ползунка диапазона.
+   * Updates the top border when you drag the top range slider.
    */
   const handleMaxSliderChange = (event) => {
     isPriceDraggingRef.current = true;
@@ -209,7 +209,7 @@ const CatalogListing = ({
     }));
   };
   /**
-   * Сбрасывает все активные фильтры цены, рейтинга и скидки.
+   * Resets all active price, rating and discount filters.
    */
   const clearFilters = () => {
     isPriceDraggingRef.current = false;
@@ -277,7 +277,7 @@ const CatalogListing = ({
   ]);
   const activeFilterCount = activeFilterTags.length;
   /**
-   * Удаляет один активный чип фильтра по его идентификатору.
+   * Removes one active filter chip by its ID.
    */
   const removeFilterTag = (id) => {
     if (id === "minPrice") {
@@ -405,7 +405,7 @@ const CatalogListing = ({
     };
   }, [isSortOpen]);
   /**
-   * Применяет выбранный вариант сортировки и закрывает выпадающий список.
+   * Applies the selected sort option and closes the drop-down list.
    */
   const handleSortSelect = (value) => {
     setSortBy(value);

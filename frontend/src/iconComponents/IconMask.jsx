@@ -1,5 +1,5 @@
 /**
- * Отображает SVG-ресурс через CSS mask для тематизируемых монохромных иконок.
+ * Renders an SVG resource via a CSS mask for themed monochrome icons.
  * @param {object} props
  */
 const IconMask = ({ src, className, style, ...props }) => {

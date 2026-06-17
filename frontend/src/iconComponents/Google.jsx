@@ -1,5 +1,5 @@
 /**
- * Логотип Google для входа через соцсети на форме авторизации.
+ * Google logo for login via social networks on the authorization form.
  * @param {object} props
  */
 const Google = (props) => (

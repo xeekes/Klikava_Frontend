@@ -1,13 +1,13 @@
-/* Типизированная ошибка неудачного HTTP-запроса; содержит код статуса и тело ответа. */
+/* Typed HTTP Request Failed Error; contains the status code and response body. */
 
 /**
- * Представляет ответ API с кодом не 2xx и структурированными метаданными.
+ * Represents an API response with non-2xx code and structured metadata.
  */
 export class ApiError extends Error {
   /**
-   * @param {number} status Код HTTP-статуса
-   * @param {string} message Текст ошибки для пользователя
-   * @param {unknown} [data] Распарсенное тело ответа, если доступно
+   * @param {number} status HTTP status code
+   * @param {string} message Error text for the user
+   * @param {unknown} [data] Parsed response body, if available
    */
   constructor(status, message, data = null) {
     super(message);

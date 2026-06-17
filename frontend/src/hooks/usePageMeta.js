@@ -50,7 +50,7 @@ export const applyPageMeta = (meta) => {
 };
 
 /**
- * Применяет SEO-мета по текущему pathname (базовый слой для маршрута).
+ * Applies SEO meta to the current pathname (the base layer for the route).
  */
 export const useDefaultPageMeta = () => {
   const { pathname } = useLocation();
@@ -61,7 +61,7 @@ export const useDefaultPageMeta = () => {
 };
 
 /**
- * Переопределяет SEO-мета для страниц с динамическим контентом (товар, категория).
+ * Overrides SEO meta for pages with dynamic content (product, category).
  * @param {import("../constants/pageMeta").PageMeta | null | undefined} meta
  */
 export const usePageMetaOverride = (meta) => {

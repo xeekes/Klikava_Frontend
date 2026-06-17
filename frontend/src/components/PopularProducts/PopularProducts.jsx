@@ -1,4 +1,4 @@
-/* Секция главной страницы: сетка товаров каталога. */
+/* Home page section: grid of catalog products. */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,13 +8,14 @@ import { OfferBubbleSkeleton } from "../CatalogSkeleton/CatalogSkeleton";
 import TagSlider from "../TagSlider/TagSlider";
 import { useCatalog } from "../../context/CatalogContext";
 import { TOP_PRODUCT_CATEGORIES } from "../../data/topCategories";
+import { getProductPath } from "../../utils/productPaths";
 import "./PopularProducts.scss";
 
 const POPULAR_PRODUCTS_SLIDER_MAX = 1200;
 const POPULAR_PRODUCTS_COUNT = 6;
 
 /**
- * Секция главной страницы с пузырьками популярных товаров и чипами категорий.
+ * Home page section with bubbles of popular products and category chips.
  */
 const PopularProducts = ({ className = "" }) => {
   const { getTopProducts, isFetchingCatalog } = useCatalog();
@@ -46,7 +47,7 @@ const PopularProducts = ({ className = "" }) => {
       price={product.price}
       background="white"
       productId={product.id}
-      to={`/product/${product.id}`}
+      to={getProductPath(product)}
     />
   );
   return (

@@ -1,4 +1,4 @@
-/* Страница корзины: позиции, управление количеством, ссылка на оформление. */
+/* Cart page: items, quantity management, checkout link. */
 import { useMemo } from "react";
 import { createPortal } from "react-dom";
 import CartItem from "../../components/CartItem/CartItem";
@@ -11,7 +11,7 @@ import { useCatalog } from "../../context/CatalogContext";
 import "./Cart.scss";
 
 /**
- * Корзина с позициями, боковой панелью итогов и рекомендациями.
+ * A shopping cart with items, a summary sidebar and recommendations.
  */
 const Cart = () => {
   const { products, getTopProducts } = useCatalog();
@@ -48,7 +48,7 @@ const Cart = () => {
   );
 
   /**
-   * Рендерит сетки истории просмотров или «подобрано для вас» в зависимости от состояния авторизации.
+   * Renders browsing history or "tailored for you" grids based on login state.
    */
   const renderRecommendations = () => {
     if (isAuthenticated) {

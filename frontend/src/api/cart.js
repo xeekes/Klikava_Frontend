@@ -1,77 +1,18 @@
 /*
- * Слой хранения корзины. На бэкенде пока нет /cart,
- * поэтому товары всегда хранятся в localStorage независимо от режима API.
+ * Basket storage layer. There is no /cart on the backend yet,
+ * therefore products are stored in localStorage in both modes for now.
  */
-import { CART_STORAGE_KEY } from "../constants/cart";
+import { localCartApi } from "./cart.storage";
+import { createLazyMockApi } from "./createLazyMockApi";
+
+const CART_METHODS = ["getCart", "saveCart", "addItem", "clearCart"];
 
 /**
- * Читает позиции корзины из localStorage; при отсутствии или ошибке — пустой массив.
- * @returns {Array<object>}
+ * Cart API facade: local storage until a backend cart endpoint appears.
+ * Mock chunk is used only in dev builds without VITE_API_BASE_URL.
  */
-const readLocalCart = () => {
-  try {
-    const raw = localStorage.getItem(CART_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-};
-
-/**
- * Сохраняет весь список позиций корзины в localStorage как JSON.
- * @param {Array<object>} items
- */
-const writeLocalCart = (items) => {
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-};
-
-const mockCartApi = {
-  /**
-   * Возвращает все позиции корзины, сохранённые локально.
-   * @returns {Promise<{ items: Array<object> }>}
-   */
-  async getCart() {
-    return { items: readLocalCart() };
-  },
-
-  /**
-   * Заменяет всю корзину переданным списком позиций.
-   * @param {Array<object>} items
-   * @returns {Promise<{ items: Array<object> }>}
-   */
-  async saveCart(items) {
-    writeLocalCart(items);
-    return { items };
-  },
-
-  /**
-   * Добавляет или увеличивает количество; при существующем товаре суммирует quantity.
-   * @param {{ productId: string|number, quantity?: number, [key: string]: unknown }} item
-   * @returns {Promise<{ items: Array<object> }>}
-   */
-  async addItem(item) {
-    const items = readLocalCart();
-    const existing = items.find((entry) => entry.productId === item.productId);
-    if (existing) {
-      existing.quantity += item.quantity || 1;
-    } else {
-      items.push({ ...item, quantity: item.quantity || 1 });
-    }
-    writeLocalCart(items);
-    return { items };
-  },
-
-  /**
-   * Удаляет все позиции из корзины.
-   * @returns {Promise<{ items: [] }>}
-   */
-  async clearCart() {
-    writeLocalCart([]);
-    return { items: [] };
-  },
-};
-
-/**
- * Фасад Cart API на localStorage до появления серверного endpoint корзины.
- */
-export const cartApi = mockCartApi;
+export const cartApi = import.meta.env.VITE_API_BASE_URL
+  ? localCartApi
+  : createLazyMockApi(CART_METHODS, () =>
+      import("./cart.mock.js").then((module) => module.mockCartApi),
+    );

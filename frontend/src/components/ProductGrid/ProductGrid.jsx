@@ -1,4 +1,4 @@
-/* Адаптивная сетка карточек товаров с хуком пагинации. */
+/* Adaptive grid of product cards with pagination hook. */
 import ProductCard from "../ProductCard/ProductCard";
 import { ProductCardSkeleton } from "../CatalogSkeleton/CatalogSkeleton";
 import SeeMoreButton from "../SeeMoreButton/SeeMoreButton";
@@ -15,7 +15,7 @@ const ROWS_PER_COLUMN = 10;
 const MAX_RESPONSIVE_PRODUCTS = 40;
 
 /**
- * Адаптивная сетка карточек товаров с режимами пагинации «загрузить ещё» или по ссылке.
+ * Adaptive grid of product cards with pagination modes “load more” or by link.
  */
 const ProductGrid = ({
   columns = 5,

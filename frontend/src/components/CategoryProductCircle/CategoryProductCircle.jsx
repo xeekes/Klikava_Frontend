@@ -1,14 +1,15 @@
-/* Круглая ссылка-иконка категории для сеток главной страницы. */
+/* Round category link icon for home page grids. */
 import { Link } from "react-router-dom";
+import { getProductPath } from "../../utils/productPaths";
 import "./CategoryProductCircle.scss";
 
 /**
- * Круглая ссылка-иконка категории для сеток товаров на главной.
+ * Round category link icon for product grids on the main page.
  */
 const CategoryProductCircle = ({ product }) => {
-  const { id, image, price, title } = product;
+  const { id, image, price, title, slug } = product;
   return (
-    <Link to={`/product/${id}`} className="category-product-circle">
+    <Link to={getProductPath({ id, slug })} className="category-product-circle">
       <div className="circle-image-wrapper">
         <img
           src={image || "/placeholder.jpg"}

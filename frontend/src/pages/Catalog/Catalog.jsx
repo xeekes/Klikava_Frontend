@@ -1,4 +1,4 @@
-/* Полный листинг каталога с сортировкой/фильтрами по умолчанию из CatalogContext. */
+/* Full catalog listing with default sorting/filters from CatalogContext. */
 import { Navigate, useSearchParams } from "react-router-dom";
 import CatalogListing from "../../components/CatalogListing/CatalogListing";
 import PageSearchHero from "../../components/PageSearchHero/PageSearchHero";
@@ -6,7 +6,7 @@ import { useCatalog } from "../../context/CatalogContext";
 import "./Catalog.scss";
 
 /**
- * Страница полного каталога с необязательным фильтром скидок из query-параметров.
+ * Full catalog page with an optional discount filter from query parameters.
  */
 const Catalog = () => {
   const { products, filterProducts, POPULAR_SEARCHES } = useCatalog();

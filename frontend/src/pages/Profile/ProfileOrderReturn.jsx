@@ -1,4 +1,4 @@
-/* Форма заявки на возврат заказа. */
+/* Order return request form. */
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { ArrowLeft } from "../../iconComponents";
@@ -13,7 +13,7 @@ import "../../styles/profile-page.scss";
 import "./ProfileOrderFormPage.scss";
 
 /**
- * Создаёт пустые черновики причин возврата для каждой позиции заказа.
+ * Creates empty draft return reasons for each order item.
  * @param {Array<object>} products
  * @returns {Array<object>}
  */
@@ -23,7 +23,7 @@ const createInitialReturns = (products) =>
   }));
 
 /**
- * Поток оформления возврата для каждого товара в заказе.
+ * Return processing flow for each item in the order.
  */
 const ProfileOrderReturn = () => {
   const { orderId } = useParams();
@@ -36,7 +36,7 @@ const ProfileOrderReturn = () => {
   const [submitted, setSubmitted] = useState(false);
 
   /**
-   * Обновляет причину возврата для одного товара и сбрасывает ошибку валидации.
+   * Updates the return reason for one item and resets the validation error.
    * @param {number} index
    * @param {string} value
    */

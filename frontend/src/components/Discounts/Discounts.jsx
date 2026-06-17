@@ -1,4 +1,4 @@
-/* Секция главной страницы: карусель/сетка товаров со скидкой. */
+/* Home page section: carousel/grid of discounted products. */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Discounts.scss";
 import ProductCard from "../ProductCard/ProductCard";
@@ -15,7 +15,7 @@ const SPACE_BETWEEN = 20;
 const MIN_SLIDE_WIDTH = 280;
 
 /**
- * Карусель товаров со скидкой на главной с адаптивными элементами постраничной навигации.
+ * A carousel of discounted products on the main page with adaptive page navigation elements.
  */
 const Discounts = ({ className = "" }) => {
   const { getDiscountProducts, isFetchingCatalog } = useCatalog();
@@ -41,7 +41,7 @@ const Discounts = ({ className = "" }) => {
     : previewProducts;
   const hasMoreDiscounts = discountProducts.length > DISCOUNTS_PREVIEW_COUNT;
   /**
-   * Определяет, сколько слайдов помещается при текущей ширине viewport.
+   * Determines how many slides will fit at the current viewport width.
    */
   const getSlidesPerView = useCallback(
     (width) => {
@@ -56,7 +56,7 @@ const Discounts = ({ className = "" }) => {
     [sliderItems.length],
   );
   /**
-   * Вычисляет общее число точек пager из количества слайдов и видимых слайдов.
+   * Calculates the total number of pager points from the number of slides and visible slides.
    */
   const getPageCount = useCallback(
     (perView) => {
@@ -65,7 +65,7 @@ const Discounts = ({ className = "" }) => {
     [sliderItems.length],
   );
   /**
-   * Синхронизирует параметры Swiper, число страниц и активную точку с разметкой.
+   * Synchronizes Swiper parameters, number of pages and hotspot with markup.
    */
   const updateSliderState = useCallback(
     (swiper) => {
@@ -104,7 +104,7 @@ const Discounts = ({ className = "" }) => {
     return () => observer.disconnect();
   }, [updateSliderState]);
   /**
-   * Переходит карусель к указанному индексу pager.
+   * Moves the carousel to the specified pager index.
    */
   const goToPage = (pageIndex) => {
     const swiper = swiperRef.current;
@@ -115,7 +115,7 @@ const Discounts = ({ className = "" }) => {
     swiper.slideTo(pageIndex * perView);
   };
   /**
-   * Переходит к предыдущей группе слайдов, с переходом на последнюю страницу в начале.
+   * Moves to the previous group of slides, with the last page at the beginning.
    */
   const handlePrev = () => {
     const swiper = swiperRef.current;
@@ -132,7 +132,7 @@ const Discounts = ({ className = "" }) => {
     swiper.slidePrev();
   };
   /**
-   * Переходит к следующей группе слайдов, с переходом на первую страницу в конце.
+   * Moves to the next group of slides, with a transition to the first page at the end.
    */
   const handleNext = () => {
     const swiper = swiperRef.current;

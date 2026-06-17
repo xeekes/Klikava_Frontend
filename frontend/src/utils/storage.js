@@ -1,10 +1,10 @@
 /*
- * Типизированные хелперы localStorage и реестр ключей.
- * Пользовательские ключи формируются через getUserStorageKey для изоляции данных между аккаунтами.
+ * Typed localStorage helpers and key registry.
+ * User keys are generated via getUserStorageKey to isolate data between accounts.
  */
 
 /**
- * Читает и парсит JSON из localStorage, возвращая fallback при отсутствии или ошибке парсинга.
+ * Reads and parses JSON from localStorage, returning fallback if parsing is missing or fails.
  * @param {string} key
  * @param {unknown} fallback
  * @returns {unknown}
@@ -22,7 +22,7 @@ export const readStorage = (key, fallback) => {
 };
 
 /**
- * Сериализует значение в JSON и записывает в localStorage; молча игнорирует ошибки квоты.
+ * Serializes the value to JSON and writes it to localStorage; silently ignores quota errors.
  * @param {string} key
  * @param {unknown} value
  */
@@ -30,12 +30,12 @@ export const writeStorage = (key, value) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    /* хранилище может быть недоступно */
+    /* storage may be unavailable */
   }
 };
 
 /**
- * Добавляет суффикс id пользователя к ключу хранилища для изоляции данных аккаунта.
+ * Adds a user id suffix to the vault key to isolate account data.
  * @param {string} key
  * @param {string|number|null|undefined} userId
  * @returns {string}
@@ -43,7 +43,7 @@ export const writeStorage = (key, value) => {
 export const getUserStorageKey = (key, userId) =>
   userId ? `${key}__${userId}` : key;
 
-/** Реестр ключей localStorage для профиля и функций покупок. */
+/** LocalStorage key registry for profile and shopping features. */
 export const STORAGE_KEYS = {
   favorites: "klikava_favorites",
   browsingHistory: "klikava_browsing_history",

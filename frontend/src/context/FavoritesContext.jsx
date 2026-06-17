@@ -1,5 +1,5 @@
 /*
- * Список желаний: id товаров в localStorage, разрешаются через товары CatalogContext.
+ * Wishlist: product ids in localStorage, resolved through CatalogContext products.
  */
 import {
   createContext,
@@ -14,7 +14,7 @@ import { useCatalog } from "./CatalogContext";
 import { readStorage, STORAGE_KEYS, writeStorage } from "../utils/storage";
 
 /**
- * Находит товар в списке по числовому или строковому id.
+ * Finds a product in the list by numeric or string id.
  * @param {object[]} products
  * @param {string|number} productId
  * @returns {object|null}
@@ -22,12 +22,12 @@ import { readStorage, STORAGE_KEYS, writeStorage } from "../utils/storage";
 const findProductById = (products, productId) =>
   products.find((item) => String(item.id) === String(productId)) || null;
 
-/** React-контекст для сохранённых id товаров и обработчиков списка желаний. */
+/** React context for saved product ids and wishlist handlers. */
 const FavoritesContext = createContext(null);
 const FEEDBACK_DURATION_MS = 5500;
 
 /**
- * Предоставляет состояние списка желаний, сохранение и toast-уведомления дереву компонентов.
+ * Provides wishlist state, persistence, and toast notifications to the component tree.
  * @param {{ children: import("react").ReactNode }} props
  */
 export const FavoritesProvider = ({ children }) => {
@@ -39,14 +39,14 @@ export const FavoritesProvider = ({ children }) => {
   const feedbackTimerRef = useRef(null);
 
   /**
-   * Синхронизирует id избранного с хранилищем при изменении списка в памяти.
+   * Synchronizes the favorites id with the storage when the list in memory changes.
    */
   useEffect(() => {
     writeStorage(STORAGE_KEYS.favorites, favoriteIds);
   }, [favoriteIds]);
 
   /**
-   * Очищает таймер скрытия уведомления при размонтировании провайдера.
+   * Clears the notification hiding timer when the provider is unmounted.
    */
   useEffect(
     () => () => {
@@ -57,7 +57,7 @@ export const FavoritesProvider = ({ children }) => {
     [],
   );
 
-  /** Сбрасывает отложенный таймер toast и скрывает активное уведомление списка желаний. */
+  /** Resets the snooze toast timer and hides the active wishlist notification. */
   const dismissWishlistFeedback = useCallback(() => {
     if (feedbackTimerRef.current) {
       clearTimeout(feedbackTimerRef.current);
@@ -67,7 +67,7 @@ export const FavoritesProvider = ({ children }) => {
   }, []);
 
   /**
-   * Показывает кратковременный toast после добавления или удаления.
+   * Shows a brief toast after adding or deleting.
    * @param {object} payload
    */
   const showWishlistFeedback = useCallback(
@@ -87,7 +87,7 @@ export const FavoritesProvider = ({ children }) => {
   );
 
   /**
-   * Формирует payload toast из снимка товара и итогового количества.
+   * Generates a payload toast from a product snapshot and the total quantity.
    * @param {object|null} product
    * @param {string} action
    * @param {number} favoritesCount
@@ -112,7 +112,7 @@ export const FavoritesProvider = ({ children }) => {
   );
 
   /**
-   * Добавляет или удаляет id товара и показывает соответствующий toast.
+   * Adds or removes a product id and shows the corresponding toast.
    * @param {string|number} productId
    */
   const toggleFavorite = useCallback(
@@ -134,7 +134,7 @@ export const FavoritesProvider = ({ children }) => {
   );
 
   /**
-   * Удаляет id товара, если он есть, и показывает уведомление об удалении.
+   * Deletes the product id, if any, and displays a deletion notification.
    * @param {string|number} productId
    */
   const removeFavorite = useCallback(
@@ -152,7 +152,7 @@ export const FavoritesProvider = ({ children }) => {
   );
 
   /**
-   * Проверяет, сохранён ли id товара в списке желаний.
+   * Checks whether the product id is saved in the wishlist.
    * @param {string|number} productId
    * @returns {boolean}
    */
@@ -204,7 +204,7 @@ export const FavoritesProvider = ({ children }) => {
 };
 
 /**
- * Читает состояние списка желаний и действия из ближайшего провайдера.
+ * Reads wishlist status and actions from the nearest provider.
  * @returns {object}
  */
 export const useFavorites = () => {

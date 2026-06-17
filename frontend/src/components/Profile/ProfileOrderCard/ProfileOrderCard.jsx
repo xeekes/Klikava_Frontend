@@ -1,9 +1,11 @@
-/* Карточка сводки заказа с кнопками действий в зависимости от статуса. */
+/* Order summary card with action buttons based on status. */
 import { Link } from "react-router-dom";
+import { useCatalog } from "../../../context/CatalogContext";
 import {
   getBuyAgainProductId,
   getOrderCoverImage,
 } from "../../../utils/orderHelpers";
+import { getProductPath } from "../../../utils/productPaths";
 import "./ProfileOrderCard.scss";
 
 const ACTION_LABELS = {
@@ -14,21 +16,23 @@ const ACTION_LABELS = {
 };
 
 /**
- * Карточка сводки заказа с кнопками действий в зависимости от статуса.
+ * Order summary card with action buttons based on status.
  */
 const ProfileOrderCard = ({ order, actions }) => {
+  const { getProductById } = useCatalog();
   const orderBasePath = `/profile/orders/${encodeURIComponent(order.id)}`;
   const coverImage = order.image || getOrderCoverImage(order);
 
   /**
-   * Определяет маршрут для заданного типа действия с заказом.
+   * Defines the route for a given order action type.
    */
   const getActionLink = (action) => {
     if (action === "track") return `${orderBasePath}/track`;
     if (action === "review") return `${orderBasePath}/review`;
     if (action === "return") return `${orderBasePath}/return`;
     const productId = getBuyAgainProductId(order);
-    return productId ? `/product/${productId}` : "/catalog";
+    const product = productId ? getProductById(productId) : null;
+    return product ? getProductPath(product) : productId ? `/product/${productId}` : "/catalog";
   };
 
   return (

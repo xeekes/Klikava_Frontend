@@ -1,8 +1,8 @@
-/* Универсальный контейнер-карточка с рамкой для маркетинговых секций. */
+/* Universal card container with frame for marketing sections. */
 import "./Card.scss";
 
 /**
- * Универсальный контейнер-карточка с рамкой для маркетинговых секций.
+ * Universal card container with frame for marketing sections.
  */
 const Card = ({
   title = "",

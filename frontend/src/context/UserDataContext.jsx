@@ -1,6 +1,6 @@
 /*
- * Данные профиля: гибридное хранение — адреса/карты/личные данные из API при наличии,
- * заказы из API при наличии; отзывы/чат/купоны в localStorage на пользователя.
+ * Profile data: hybrid storage - addresses/cards/personal data from API if available,
+ * orders from API, subject to availability; reviews/chat/coupons in localStorage per user.
  */
 import {
   createContext,
@@ -31,7 +31,7 @@ import {
 } from "../utils/storage";
 import { useAuth } from "./AuthContext";
 
-/** React-контекст для срезов профиля и обработчиков изменений. */
+/** React context for profile slicers and change handlers. */
 const UserDataContext = createContext(null);
 
 export const EMPTY_PERSONAL_INFO = {
@@ -47,7 +47,7 @@ export const EMPTY_PERSONAL_INFO = {
 };
 
 /**
- * Формирует строки отображения для карточки адреса доставки.
+ * Generates display lines for the delivery address card.
  * @param {object} address
  * @returns {string[]}
  */
@@ -58,7 +58,7 @@ const buildAddressLines = (address) => [
 ];
 
 /**
- * Добавляет производное полное имя и форматированные строки к сырой записи адреса.
+ * Appends the derived full name and formatted strings to the raw address record.
  * @param {object} address
  * @returns {object}
  */
@@ -69,7 +69,7 @@ const normalizeAddress = (address) => ({
 });
 
 /**
- * Читает все пользовательские срезы из локального хранилища для указанного id аккаунта.
+ * Reads all user slices from local storage for the specified account id.
  * @param {string|number} userId
  * @returns {object}
  */
@@ -95,7 +95,7 @@ const loadLocalUserData = (userId) => ({
 });
 
 /**
- * Возвращает пустые срезы, когда нет авторизованного аккаунта.
+ * Returns empty slices when there is no authorized account.
  * @returns {object}
  */
 const emptyUserData = () => ({
@@ -109,7 +109,7 @@ const emptyUserData = () => ({
 });
 
 /**
- * Предоставляет срезы профиля, гибридное сохранение и обработчики изменений дереву компонентов.
+ * Provides profile slices, hybrid persistence, and change handlers to the component tree.
  * @param {{ children: import("react").ReactNode }} props
  */
 export const UserDataProvider = ({ children }) => {
@@ -126,12 +126,12 @@ export const UserDataProvider = ({ children }) => {
   const [dataUserId, setDataUserId] = useState(null);
   const [isUserDataLoading, setIsUserDataLoading] = useState(false);
   const [userDataError, setUserDataError] = useState(null);
-  /* Блокирует запись, пока не загружены данные нужного пользователя (защита от утечки между аккаунтами). */
+  /* Blocks the recording until the data of the desired user is loaded (protection against leakage between accounts). */
   const canPersistLocal = Boolean(userId && dataUserId === userId && !usesApi);
   const canPersistLocalExtras = Boolean(userId && dataUserId === userId);
 
   /**
-   * Загружает адреса, карты и личные данные из удалённого API профиля.
+   * Loads addresses, maps and personal data from a remote profile API.
    * @param {string|number} nextUserId
    * @param {object} authUser
    */
@@ -155,17 +155,17 @@ export const UserDataProvider = ({ children }) => {
   }, []);
 
   /**
-   * Загружает или очищает срезы профиля при смене авторизованного аккаунта.
+   * Loads or clears profile slices when changing the authorized account.
    */
   useEffect(() => {
     if (isAuthLoading) {
       return;
     }
-    /* Не даёт устаревшему async-результату перезаписать данные после смены аккаунта. */
+    /* Prevents legacy async results from overwriting data after an account change. */
     let cancelled = false;
 
     /**
-     * Наполняет удалённые или локальные срезы для активного аккаунта.
+     * Fills remote or local slices for the active account.
      */
     const load = async () => {
       if (!userId) {
@@ -231,7 +231,7 @@ export const UserDataProvider = ({ children }) => {
   }, [userId, isAuthLoading, usesApi, user, loadRemoteProfileData]);
 
   /**
-   * Сохраняет личные данные в localStorage (в т.ч. локальные поля и аватар в API-режиме).
+   * Stores personal data in localStorage (including local fields and avatar in API mode).
    */
   useEffect(() => {
     if (!userId || dataUserId !== userId) {
@@ -244,7 +244,7 @@ export const UserDataProvider = ({ children }) => {
   }, [personalInfo, userId, dataUserId]);
 
   /**
-   * Сохраняет адреса в localStorage в офлайн-режиме.
+   * Stores addresses in localStorage in offline mode.
    */
   useEffect(() => {
     if (!canPersistLocal) return;
@@ -252,7 +252,7 @@ export const UserDataProvider = ({ children }) => {
   }, [addresses, userId, canPersistLocal]);
 
   /**
-   * Сохраняет платёжные карты в localStorage в офлайн-режиме.
+   * Stores payment cards in localStorage in offline mode.
    */
   useEffect(() => {
     if (!canPersistLocal) return;
@@ -260,7 +260,7 @@ export const UserDataProvider = ({ children }) => {
   }, [cards, userId, canPersistLocal]);
 
   /**
-   * Сохраняет историю заказов в localStorage пользователя.
+   * Saves order history in the user's localStorage.
    */
   useEffect(() => {
     if (!canPersistLocalExtras || usesApi) return;
@@ -268,7 +268,7 @@ export const UserDataProvider = ({ children }) => {
   }, [orders, userId, canPersistLocalExtras, usesApi]);
 
   /**
-   * Сохраняет отзывы о товарах в localStorage пользователя.
+   * Stores product reviews in the user's localStorage.
    */
   useEffect(() => {
     if (!canPersistLocalExtras) return;
@@ -276,7 +276,7 @@ export const UserDataProvider = ({ children }) => {
   }, [feedback, userId, canPersistLocalExtras]);
 
   /**
-   * Сохраняет сообщения чата поддержки в localStorage пользователя.
+   * Stores support chat messages in the user's localStorage.
    */
   useEffect(() => {
     if (!canPersistLocalExtras) return;
@@ -287,7 +287,7 @@ export const UserDataProvider = ({ children }) => {
   }, [chatMessages, userId, canPersistLocalExtras]);
 
   /**
-   * Сохраняет выбранный активный купон в localStorage пользователя.
+   * Saves the selected active coupon to the user's localStorage.
    */
   useEffect(() => {
     if (!canPersistLocalExtras) return;
@@ -298,7 +298,7 @@ export const UserDataProvider = ({ children }) => {
   }, [activeCoupon, userId, canPersistLocalExtras]);
 
   /**
-   * Обновляет личные данные локально и в удалённом профиле при активном API-режиме.
+   * Updates personal data locally and in a remote profile when API mode is active.
    * @param {object} nextInfo
    */
   const savePersonalInfo = useCallback(
@@ -315,7 +315,7 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Сохраняет только изменённые поля: API-поля уходят PATCH-запросом, остальное в localStorage.
+   * Saves only changed fields: API fields are sent with a PATCH request, the rest is stored in localStorage.
    * @param {object} nextInfo
    * @param {string[]} changedFieldIds
    * @returns {Promise<void>}
@@ -347,7 +347,7 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Создаёт адрес доставки через API или добавляет локальную запись.
+   * Creates a delivery address via the API or adds a local entry.
    * @param {object} form
    * @returns {Promise<object>}
    */
@@ -373,7 +373,7 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Обновляет существующий адрес доставки по id.
+   * Updates an existing delivery address by id.
    * @param {string|number} addressId
    * @param {object} form
    * @returns {Promise<object|undefined>}
@@ -406,7 +406,7 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Удаляет адрес доставки локально и удалённо при активном API-режиме.
+   * Deletes the delivery address locally and remotely when API mode is active.
    * @param {string|number} addressId
    */
   const deleteAddress = useCallback(
@@ -422,7 +422,7 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Создаёт платёжную карту через API или добавляет локальную запись.
+   * Creates a payment card via API or adds a local entry.
    * @param {object} card
    * @returns {Promise<object>}
    */
@@ -445,7 +445,7 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Применяет патч к существующей платёжной карте по id.
+   * Applies a patch to an existing payment card by id.
    * @param {string|number} cardId
    * @param {object} patch
    * @returns {Promise<object|undefined>}
@@ -474,7 +474,7 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Удаляет платёжную карту локально и удалённо при активном API-режиме.
+   * Deletes a payment card locally and remotely when API mode is active.
    * @param {string|number} cardId
    */
   const deleteCard = useCallback(
@@ -488,7 +488,7 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Создаёт заказ через API или добавляет локальную запись.
+   * Creates an order via the API or adds a local record.
    * @param {object|Array<object>} orderOrCartItems
    * @param {{ deliveryPrice?: number, discountItemId?: number|null, localSnapshot?: object }} [options]
    * @returns {Promise<object>}
@@ -516,7 +516,7 @@ export const UserDataProvider = ({ children }) => {
   );
 
   /**
-   * Перезагружает заказы с бэкенда.
+   * Reloads orders from the backend.
    * @returns {Promise<Array<object>>}
    */
   const reloadOrders = useCallback(async () => {
@@ -529,7 +529,7 @@ export const UserDataProvider = ({ children }) => {
   }, [orders, usesApi]);
 
   /**
-   * Удаляет аккаунт на бэкенде и очищает локальные данные пользователя.
+   * Deletes the account on the backend and clears the user's local data.
    * @returns {Promise<void>}
    */
   const deleteAccount = useCallback(async () => {
@@ -539,7 +539,7 @@ export const UserDataProvider = ({ children }) => {
   }, [usesApi, userId]);
 
   /**
-   * Добавляет новый отзыв о товаре с сгенерированным id.
+   * Adds a new review about a product with the generated id.
    * @param {object} entry
    * @returns {object}
    */
@@ -550,7 +550,7 @@ export const UserDataProvider = ({ children }) => {
   }, []);
 
   /**
-   * Применяет патч к существующей записи отзыва по id.
+   * Applies a patch to an existing review entry by id.
    * @param {string} feedbackId
    * @param {object} patch
    */
@@ -563,7 +563,7 @@ export const UserDataProvider = ({ children }) => {
   }, []);
 
   /**
-   * Удаляет запись отзыва из локальной истории по id.
+   * Removes a review entry from the local history by id.
    * @param {string} feedbackId
    */
   const deleteFeedback = useCallback((feedbackId) => {
@@ -571,7 +571,7 @@ export const UserDataProvider = ({ children }) => {
   }, []);
 
   /**
-   * Добавляет исходящее сообщение в чат поддержки, если текст не пустой.
+   * Adds an outgoing message to the support chat if the text is not empty.
    * @param {string} text
    */
   const sendChatMessage = useCallback((text) => {
@@ -597,14 +597,14 @@ export const UserDataProvider = ({ children }) => {
   }, []);
 
   /**
-   * Сохраняет купон, применённый при оформлении заказа.
+   * Saves the coupon applied at checkout.
    * @param {object} coupon
    */
   const applyCoupon = useCallback((coupon) => {
     setActiveCoupon(coupon);
   }, []);
 
-  /** Сбрасывает выбранный активный купон. */
+  /** Resets the selected active coupon. */
   const clearCoupon = useCallback(() => {
     setActiveCoupon(null);
   }, []);
@@ -678,7 +678,7 @@ export const UserDataProvider = ({ children }) => {
 };
 
 /**
- * Читает срезы профиля и действия из ближайшего провайдера.
+ * Reads profile slices and actions from the nearest provider.
  * @returns {object}
  */
 export const useUserData = () => {

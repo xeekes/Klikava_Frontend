@@ -1,11 +1,11 @@
-/* Выбор купона; выбранный купон хранится в UserDataContext. */
+/* Coupon selection; the selected coupon is stored in the UserDataContext. */
 import { useNavigate } from "react-router-dom";
 import { useUserData } from "../../context/UserDataContext";
 import "../../styles/profile-page.scss";
 import "./ProfileCoupons.scss";
 
 /**
- * Выбор купона; выбранный купон применяется при оформлении заказа через контекст данных пользователя.
+ * Coupon selection; the selected coupon is applied when placing an order through the user data context.
  */
 const ProfileCoupons = () => {
   const navigate = useNavigate();

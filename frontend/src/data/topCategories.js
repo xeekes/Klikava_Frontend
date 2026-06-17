@@ -1,4 +1,4 @@
-/* Статические подписи топ-категорий для главной страницы и UI scope поиска. */
+/* Static signatures of top categories for the main page and UI search scope. */
 export const TOP_PRODUCT_CATEGORIES = [
   { id: "all", name: "All" },
   { id: "home", name: "Home and comfort" },

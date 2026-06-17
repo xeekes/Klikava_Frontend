@@ -1,6 +1,7 @@
-/* Позиция корзины со степпером количества и действием удаления. */
+/* Cart position with quantity stepper and delete action. */
 import { Link } from "react-router-dom";
 import { useActionFeedback } from "../../context/ActionFeedbackContext";
+import { getProductPath } from "../../utils/productPaths";
 import { Clock, Star } from "../../iconComponents";
 import "./CartItem.scss";
 
@@ -12,7 +13,7 @@ const REMOVE_CONFIRM = {
 };
 
 /**
- * Позиция корзины со степпером количества и действием удаления.
+ * Cart position with quantity stepper and delete action.
  */
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   const { confirm, showSuccess } = useActionFeedback();
@@ -25,7 +26,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     typeof item.originalPrice === "number";
 
   /**
-   * Удаляет позицию после подтверждения пользователя.
+   * Deletes a position after user confirmation.
    */
   const handleRemove = async (event) => {
     event.preventDefault();
@@ -37,7 +38,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   };
 
   /**
-   * Уменьшает количество или удаляет последнюю единицу с подтверждением.
+   * Decreases the quantity or removes the last unit with confirmation.
    */
   const handleDecrease = async (event) => {
     event.preventDefault();
@@ -54,7 +55,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   };
 
   /**
-   * Увеличивает количество позиции в корзине.
+   * Increases the number of items in the cart.
    */
   const handleIncrease = (event) => {
     event.preventDefault();
@@ -64,11 +65,11 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
 
   return (
     <article className="cart-item">
-      <Link to={`/product/${item.productId}`} className="cart-item__image-wrap">
+      <Link to={getProductPath(item)} className="cart-item__image-wrap">
         <img src={item.image} alt={item.title} />
       </Link>
       <div className="cart-item__body">
-        <Link to={`/product/${item.productId}`} className="cart-item__title">
+        <Link to={getProductPath(item)} className="cart-item__title">
           {item.title}
         </Link>
         <div className="cart-item__summary">

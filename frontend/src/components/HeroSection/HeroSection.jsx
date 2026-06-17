@@ -1,4 +1,4 @@
-/* Hero-баннер главной страницы со ссылками CTA. */
+/* Home page hero banner with CTA links. */
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -7,9 +7,10 @@ import { ArrowRight, Sale } from "../../iconComponents";
 import OfferBubble from "../OfferBubble/OfferBubble";
 import { OfferBubbleSkeleton } from "../CatalogSkeleton/CatalogSkeleton";
 import { useCatalog } from "../../context/CatalogContext";
+import { getProductPath } from "../../utils/productPaths";
 
 /**
- * Hero-баннер главной страницы со ссылками CTA и каруселью недельных предложений.
+ * Homepage hero banner with CTA links and weekly offers carousel.
  */
 const HeroSection = ({ className = "" }) => {
   const { getDiscountProducts, isFetchingCatalog } = useCatalog();
@@ -80,7 +81,7 @@ const HeroSection = ({ className = "" }) => {
                       price={product.price}
                       background="gray"
                       productId={product.id}
-                      to={`/product/${product.id}`}
+                      to={getProductPath(product)}
                     />
                   </SwiperSlide>
                 ))}

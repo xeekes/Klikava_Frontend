@@ -1,6 +1,6 @@
 /*
- * Локальные заглушки товаров, пока бэкенд не отдаёт pictures.
- * Добавь .webp в assets/images/products/ — Vite подхватит автоматически.
+ * Local product stubs until the backend returns pictures.
+ * Add .webp to assets/images/products/ - Vite will pick it up automatically.
  */
 const placeholderModules = import.meta.glob("./images/products/*.webp", {
   eager: true,

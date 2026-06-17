@@ -2,7 +2,7 @@ import IconMask from "./IconMask";
 import icon from "../assets/icons/cart.svg";
 
 /**
- * Иконка корзины для кнопки корзины в шапке и действий «добавить в корзину».
+ * Cart icon for the cart button in the header and the “add to cart” actions.
  * @param {object} props
  */
 const Cart = (props) => <IconMask src={icon} {...props} />;

@@ -1,5 +1,5 @@
 /*
- * Загрузка и удаление аватара пользователя.
+ * Uploading and deleting a user's avatar.
  */
 import {
   apiRequest,
@@ -8,6 +8,7 @@ import {
   hasApiBaseUrl,
   resolveMediaUrl,
 } from "./client";
+import { createLazyMockApi } from "./createLazyMockApi";
 import { pickUserAvatar } from "./mapUserData";
 
 const getAuthToken = () => localStorage.getItem("auth_token");
@@ -58,7 +59,7 @@ const unwrapPayload = (payload) => {
 
 const realPicturesApi = {
   /**
-   * Загружает аватар пользователя.
+   * Loads the user's avatar.
    * @param {string|number} userId
    * @param {File} file
    * @returns {Promise<unknown>}
@@ -70,7 +71,7 @@ const realPicturesApi = {
   },
 
   /**
-   * Удаляет аватар пользователя.
+   * Deletes a user's avatar.
    * @param {string|number} userId
    * @returns {Promise<unknown>}
    */
@@ -79,7 +80,7 @@ const realPicturesApi = {
   },
 
   /**
-   * Загружает медиа с JWT и возвращает blob:-URL для <img>.
+   * Loads media from a JWT and returns a blob:-URL for an <img>.
    * @param {string} url
    * @returns {Promise<string>}
    */
@@ -118,7 +119,7 @@ const realPicturesApi = {
   },
 
   /**
-   * Читает avatar_url через GET /pictures/users/{id} (JSON, не файл).
+   * Reads avatar_url via GET /pictures/users/{id} (JSON, not a file).
    * @param {string|number} userId
    * @returns {Promise<string>}
    */
@@ -134,7 +135,7 @@ const realPicturesApi = {
   },
 
   /**
-   * Подбирает рабочий src аватара: blob для API-медиа или внешний URL.
+   * Selects a working avatar src: blob for API media or external URL.
    * @param {{ userId: string|number, avatarUrl?: string }} params
    * @returns {Promise<string>}
    */
@@ -160,7 +161,7 @@ const realPicturesApi = {
   },
 
   /**
-   * Загружает аватар с JWT и возвращает blob:-URL для <img>.
+   * Loads an avatar from a JWT and returns a blob:-URL for an <img>.
    * @param {string|number} userId
    * @returns {Promise<string>}
    */
@@ -169,13 +170,21 @@ const realPicturesApi = {
   },
 };
 
-const mockPicturesApi = {
-  uploadUserAvatar: async () => ({ avatar_url: "" }),
-  deleteUserAvatar: async () => ({ success: true }),
-  fetchUserAvatarUrl: async () => "",
-  fetchAuthenticatedMediaObjectUrl: async () => "",
-  resolveUserAvatarObjectUrl: async () => "",
-  fetchUserAvatarObjectUrl: async () => "",
-};
+const PICTURES_METHODS = [
+  "uploadUserAvatar",
+  "deleteUserAvatar",
+  "fetchUserAvatarUrl",
+  "fetchAuthenticatedMediaObjectUrl",
+  "resolveUserAvatarObjectUrl",
+  "fetchUserAvatarObjectUrl",
+];
 
-export const picturesApi = hasApiBaseUrl() ? realPicturesApi : mockPicturesApi;
+/**
+ * Pictures API facade: real backend with VITE_API_BASE_URL at build stage;
+ * otherwise - a lazy mock proxy in a separate chunk.
+ */
+export const picturesApi = import.meta.env.VITE_API_BASE_URL
+  ? realPicturesApi
+  : createLazyMockApi(PICTURES_METHODS, () =>
+      import("./pictures.mock.js").then((module) => module.mockPicturesApi),
+    );

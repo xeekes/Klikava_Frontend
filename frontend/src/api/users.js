@@ -1,12 +1,13 @@
 /*
- * API профиля пользователя: личные данные, адреса доставки, банковские карты.
- * Прокси-объект делегирует mock-заглушкам, если базовый URL API не настроен.
+ * User profile API: personal data, delivery addresses, bank cards.
+ * Mock implementation is loaded dynamically when VITE_API_BASE_URL is empty.
  */
-import { apiRequest, hasApiBaseUrl } from "./client";
+import { apiRequest } from "./client";
+import { createLazyMockApi } from "./createLazyMockApi";
 import { getListItems } from "./listUtils";
 
 /**
- * Сериализует параметры пагинации в query string для list-endpoint'ов.
+ * Serializes pagination parameters in query string for list-endpoints.
  * @param {{ page?: number, perPage?: number }} [params]
  * @returns {string}
  */
@@ -20,14 +21,14 @@ const buildPaginationQuery = (params = {}) => {
 
 const realUsersApi = {
   /**
-   * Загружает профиль пользователя по id с бэкенда.
+   * Loads the user profile by id from the backend.
    * @param {string|number} userId
    * @returns {Promise<object>}
    */
   getUser: (userId) => apiRequest(`/users/${userId}`),
 
   /**
-   * Применяет частичное обновление записи пользователя.
+   * Applies a partial update to a user record.
    * @param {string|number} userId
    * @param {object} body
    * @returns {Promise<object>}
@@ -39,7 +40,7 @@ const realUsersApi = {
     }),
 
   /**
-   * Возвращает адреса доставки пользователя с пагинацией.
+   * Returns the user's shipping addresses with pagination.
    * @param {string|number} userId
    * @param {{ page?: number, perPage?: number }} [params]
    * @returns {Promise<Array<object>>}
@@ -52,7 +53,7 @@ const realUsersApi = {
   },
 
   /**
-   * Создаёт новый адрес доставки для пользователя.
+   * Creates a new shipping address for the user.
    * @param {string|number} userId
    * @param {object} body
    * @returns {Promise<object>}
@@ -64,7 +65,7 @@ const realUsersApi = {
     }),
 
   /**
-   * Обновляет существующий адрес доставки по id.
+   * Updates an existing delivery address by id.
    * @param {string|number} userId
    * @param {string|number} addressId
    * @param {object} body
@@ -77,7 +78,7 @@ const realUsersApi = {
     }),
 
   /**
-   * Удаляет адрес доставки из профиля пользователя.
+   * Removes the shipping address from the user's profile.
    * @param {string|number} userId
    * @param {string|number} addressId
    * @returns {Promise<object>}
@@ -88,7 +89,7 @@ const realUsersApi = {
     }),
 
   /**
-   * Возвращает сохранённые карты пользователя с пагинацией.
+   * Returns the user's saved maps with pagination.
    * @param {string|number} userId
    * @param {{ page?: number, perPage?: number }} [params]
    * @returns {Promise<Array<object>>}
@@ -101,7 +102,7 @@ const realUsersApi = {
   },
 
   /**
-   * Добавляет новую запись банковской карты для пользователя.
+   * Adds a new bank card entry for the user.
    * @param {string|number} userId
    * @param {object} body
    * @returns {Promise<object>}
@@ -113,7 +114,7 @@ const realUsersApi = {
     }),
 
   /**
-   * Обновляет существующую карту по id.
+   * Updates an existing map by id.
    * @param {string|number} userId
    * @param {string|number} cardId
    * @param {object} body
@@ -126,7 +127,7 @@ const realUsersApi = {
     }),
 
   /**
-   * Удаляет сохранённую карту из профиля пользователя.
+   * Removes a saved map from the user profile.
    * @param {string|number} userId
    * @param {string|number} cardId
    * @returns {Promise<object>}
@@ -137,7 +138,7 @@ const realUsersApi = {
     }),
 
   /**
-   * Удаляет аккаунт пользователя.
+   * Deletes a user account.
    * @param {string|number} userId
    * @returns {Promise<unknown>}
    */
@@ -147,143 +148,26 @@ const realUsersApi = {
     }),
 };
 
-const mockUsersApi = {
-  /**
-   * Возвращает null в mock-режиме (профиль на сервере не сохраняется).
-   * @returns {Promise<null>}
-   */
-  getUser: async () => null,
-
-  /**
-   * Подтверждает обновление профиля без сохранения данных в mock-режиме.
-   * @returns {Promise<{ success: boolean }>}
-   */
-  updateUser: async () => ({ success: true }),
-
-  /**
-   * Возвращает пустой список адресов в mock-режиме.
-   * @returns {Promise<[]>}
-   */
-  listDeliveryAddresses: async () => [],
-
-  /**
-   * Заглушка создания адреса для офлайн-разработки.
-   * @returns {Promise<null>}
-   */
-  createDeliveryAddress: async () => null,
-
-  /**
-   * Заглушка обновления адреса для офлайн-разработки.
-   * @returns {Promise<null>}
-   */
-  updateDeliveryAddress: async () => null,
-
-  /**
-   * Подтверждает удаление адреса без побочных эффектов в mock-режиме.
-   * @returns {Promise<{ success: boolean }>}
-   */
-  deleteDeliveryAddress: async () => ({ success: true }),
-
-  /**
-   * Возвращает пустой список карт в mock-режиме.
-   * @returns {Promise<[]>}
-   */
-  listCreditCards: async () => [],
-
-  /**
-   * Заглушка создания карты для офлайн-разработки.
-   * @returns {Promise<null>}
-   */
-  createCreditCard: async () => null,
-
-  /**
-   * Заглушка обновления карты для офлайн-разработки.
-   * @returns {Promise<null>}
-   */
-  updateCreditCard: async () => null,
-
-  /**
-   * Подтверждает удаление карты без побочных эффектов в mock-режиме.
-   * @returns {Promise<{ success: boolean }>}
-   */
-  deleteCreditCard: async () => ({ success: true }),
-
-  deleteUser: async () => ({ success: true }),
-};
+const USERS_METHODS = [
+  "getUser",
+  "updateUser",
+  "listDeliveryAddresses",
+  "createDeliveryAddress",
+  "updateDeliveryAddress",
+  "deleteDeliveryAddress",
+  "listCreditCards",
+  "createCreditCard",
+  "updateCreditCard",
+  "deleteCreditCard",
+  "deleteUser",
+];
 
 /**
- * Выбирает реальную или mock-реализацию users API по конфигурации окружения.
- * @returns {typeof realUsersApi}
+ * Users API facade: real backend with VITE_API_BASE_URL at build stage;
+ * otherwise - a lazy mock proxy in a separate chunk.
  */
-const resolveApi = () => (hasApiBaseUrl() ? realUsersApi : mockUsersApi);
-
-/**
- * Фасад Users API: каждый вызов делегируется активной реализации бэкенда или mock.
- */
-export const usersApi = {
-  /**
-   * @param {...Parameters<typeof realUsersApi.getUser>} args
-   * @returns {ReturnType<typeof realUsersApi.getUser>}
-   */
-  getUser: (...args) => resolveApi().getUser(...args),
-
-  /**
-   * @param {...Parameters<typeof realUsersApi.updateUser>} args
-   * @returns {ReturnType<typeof realUsersApi.updateUser>}
-   */
-  updateUser: (...args) => resolveApi().updateUser(...args),
-
-  /**
-   * @param {...Parameters<typeof realUsersApi.listDeliveryAddresses>} args
-   * @returns {ReturnType<typeof realUsersApi.listDeliveryAddresses>}
-   */
-  listDeliveryAddresses: (...args) =>
-    resolveApi().listDeliveryAddresses(...args),
-
-  /**
-   * @param {...Parameters<typeof realUsersApi.createDeliveryAddress>} args
-   * @returns {ReturnType<typeof realUsersApi.createDeliveryAddress>}
-   */
-  createDeliveryAddress: (...args) =>
-    resolveApi().createDeliveryAddress(...args),
-
-  /**
-   * @param {...Parameters<typeof realUsersApi.updateDeliveryAddress>} args
-   * @returns {ReturnType<typeof realUsersApi.updateDeliveryAddress>}
-   */
-  updateDeliveryAddress: (...args) =>
-    resolveApi().updateDeliveryAddress(...args),
-
-  /**
-   * @param {...Parameters<typeof realUsersApi.deleteDeliveryAddress>} args
-   * @returns {ReturnType<typeof realUsersApi.deleteDeliveryAddress>}
-   */
-  deleteDeliveryAddress: (...args) =>
-    resolveApi().deleteDeliveryAddress(...args),
-
-  /**
-   * @param {...Parameters<typeof realUsersApi.listCreditCards>} args
-   * @returns {ReturnType<typeof realUsersApi.listCreditCards>}
-   */
-  listCreditCards: (...args) => resolveApi().listCreditCards(...args),
-
-  /**
-   * @param {...Parameters<typeof realUsersApi.createCreditCard>} args
-   * @returns {ReturnType<typeof realUsersApi.createCreditCard>}
-   */
-  createCreditCard: (...args) => resolveApi().createCreditCard(...args),
-
-  /**
-   * @param {...Parameters<typeof realUsersApi.updateCreditCard>} args
-   * @returns {ReturnType<typeof realUsersApi.updateCreditCard>}
-   */
-  updateCreditCard: (...args) => resolveApi().updateCreditCard(...args),
-
-  /**
-   * @param {...Parameters<typeof realUsersApi.deleteCreditCard>} args
-   * @returns {ReturnType<typeof realUsersApi.deleteCreditCard>}
-   */
-  deleteCreditCard: (...args) => resolveApi().deleteCreditCard(...args),
-
-  deleteUser: (...args) => resolveApi().deleteUser(...args),
-};
+export const usersApi = import.meta.env.VITE_API_BASE_URL
+  ? realUsersApi
+  : createLazyMockApi(USERS_METHODS, () =>
+      import("./users.mock.js").then((module) => module.mockUsersApi),
+    );

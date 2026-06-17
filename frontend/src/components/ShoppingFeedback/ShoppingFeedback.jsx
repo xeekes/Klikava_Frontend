@@ -1,6 +1,6 @@
 /*
- * Плавающий toast для действий с корзиной/избранным; одновременно виден только один.
- * Рендерится один раз в MainLayout, читает данные из CartContext и FavoritesContext.
+ * Floating toast for actions with cart/favorites; Only one is visible at a time.
+ * Renders once in MainLayout, reads data from CartContext and FavoritesContext.
  */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -12,7 +12,7 @@ import "./ShoppingFeedback.scss";
 const CLOSE_MS = 280;
 
 /**
- * Плавающий toast для действий с корзиной и избранным; одновременно виден только один.
+ * Floating toast for actions with cart and favorites; Only one is visible at a time.
  */
 const ShoppingFeedback = () => {
   const { isAuthenticated } = useAuth();
@@ -55,7 +55,7 @@ const ShoppingFeedback = () => {
     return null;
   }
   /**
-   * Закрывает активный toast обратной связи и проигрывает анимацию выхода.
+   * Closes the active feedback toast and plays the exit animation.
    */
   const handleContinue = () => {
     dismissActive();
